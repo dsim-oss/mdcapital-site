@@ -103,9 +103,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       <div class="card">
         <div class="section-title">Technical Signals</div>
         <div id="techSignals">
-          <div class="signal-row"><span class="signal-name">BTC vs 200D SMA</span><span class="signal-value" id="sig200">--</span><span class="signal-reading"><span class="pill pill-neutral">--</span></span></div>
-          <div class="signal-row"><span class="signal-name">BTC vs 100D SMA</span><span class="signal-value" id="sig100">--</span><span class="signal-reading"><span class="pill pill-neutral">--</span></span></div>
-          <div class="signal-row"><span class="signal-name">10D Consecutive Above Both</span><span class="signal-value" id="sig10d">--</span><span class="signal-reading"><span class="pill pill-neutral">--</span></span></div>
+          <div class="signal-row"><span class="signal-name">BTC vs 50D SMA</span><span class="signal-value" id="sig50">--</span><span class="signal-reading"><span class="pill pill-neutral" id="sig50Pill">--</span></span></div>
+          <div class="signal-row"><span class="signal-name">BTC vs 100D SMA</span><span class="signal-value" id="sig100">--</span><span class="signal-reading"><span class="pill pill-neutral" id="sig100Pill">--</span></span></div>
+          <div class="signal-row"><span class="signal-name">BTC vs 200D SMA</span><span class="signal-value" id="sig200">--</span><span class="signal-reading"><span class="pill pill-neutral" id="sig200Pill">--</span></span></div>
+          <div class="signal-row"><span class="signal-name">BTC vs 365D SMA</span><span class="signal-value" id="sig365">--</span><span class="signal-reading"><span class="pill pill-neutral" id="sig365Pill">--</span></span></div>
           <div class="signal-row"><span class="signal-name">Fear & Greed Index</span><span class="signal-value" id="sigFG">--</span><span class="signal-reading"><span class="pill pill-neutral" id="sigFGPill">--</span></span></div>
           <div class="signal-row"><span class="signal-name">BTC Dominance</span><span class="signal-value" id="sigDom">--</span><span class="signal-reading"><span class="pill pill-neutral" id="sigDomPill">--</span></span></div>
         </div>
@@ -313,6 +314,70 @@ function showSection(id, btn) {
 
 let data = { btc: null, btcChg: null, mstr: null, strc: null, fg: null, btcDom: null };
 
+async function fetchBtcSMAs(currentPrice, signals) {
+  const periods = [50, 100, 200, 365];
+  const fmtK = n => n >= 1000 ? '$' + (n/1000).toFixed(1) + 'k' : '$' + n.toFixed(0);
+
+  try {
+    let prices = null;
+    try {
+      const res = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=400&interval=daily');
+      if (res.ok) { const j = await res.json(); prices = j.prices.map(p => p[1]); }
+    } catch(e) {}
+    if (!prices) {
+      try {
+        const res = await fetch('https://api.coincap.io/v2/assets/bitcoin/history?interval=d1');
+        if (res.ok) { const j = await res.json(); prices = j.data.slice(-400).map(d => parseFloat(d.priceUsd)); }
+      } catch(e) {}
+    }
+    if (!prices || prices.length < 50) return;
+
+    let maBull = 0;
+    periods.forEach(period => {
+      const valEl = document.getElementById('sig' + period);
+      const pillEl = document.getElementById('sig' + period + 'Pill');
+      if (!valEl || prices.length < period) return;
+
+      const sma = prices.slice(-period).reduce((a, b) => a + b, 0) / period;
+      const diff = ((currentPrice - sma) / sma * 100);
+      const above = currentPrice > sma;
+
+      valEl.textContent = fmtK(sma) + ' (' + (diff >= 0 ? '+' : '') + diff.toFixed(1) + '%)';
+      if (pillEl) {
+        pillEl.textContent = above ? 'BULL' : 'BEAR';
+        pillEl.className = 'pill pill-' + (above ? 'bull' : 'bear');
+      }
+      if (above) maBull++;
+
+      // Add to signal count for regime
+      signals.push({ reading: above ? 'bull' : 'bear' });
+    });
+
+    // Recount and update regime with MA data included
+    let bull = signals.filter(s => s.reading === 'bull').length;
+    let bear = signals.filter(s => s.reading === 'bear').length;
+    let neutral = signals.filter(s => s.reading === 'neutral').length;
+    document.getElementById('bullCount').textContent = bull;
+    document.getElementById('bearCount').textContent = bear;
+    document.getElementById('neutralCount').textContent = neutral;
+
+    const total = bull + bear + neutral;
+    let regime, regimeClass, regimeSub;
+    if (bull >= Math.ceil(total * 0.6)) {
+      regime = 'OFFENSIVE'; regimeClass = 'regime-offensive'; regimeSub = 'Lean into risk — accumulate BTC & MSTR on weakness';
+    } else if (bear >= Math.ceil(total * 0.6)) {
+      regime = 'DEFENSIVE'; regimeClass = 'regime-defensive'; regimeSub = 'Reduce risk — tighten positions, harvest income, raise cash';
+    } else {
+      regime = 'NEUTRAL'; regimeClass = 'regime-neutral'; regimeSub = 'Hold IPS targets — harvest STRC income, await clearer signals';
+    }
+    const box = document.getElementById('regimeBox');
+    box.className = 'regime-box ' + regimeClass;
+    document.getElementById('regimeLabel').textContent = regime;
+    document.getElementById('regimeSub').textContent = regimeSub;
+
+  } catch(e) { console.error('SMA fetch error:', e); }
+}
+
 async function fetchData() {
   // BTC
   try {
@@ -401,11 +466,9 @@ function computeSignals() {
   document.getElementById('sigYield').textContent = 'Manual input';
   document.getElementById('sigETF').textContent = 'Manual input';
 
-  // We need historical BTC data for SMA - approximate
+  // Fetch real BTC SMA data
   if (data.btc) {
-    document.getElementById('sig200').textContent = '$' + data.btc.toLocaleString();
-    document.getElementById('sig100').textContent = '$' + data.btc.toLocaleString();
-    document.getElementById('sig10d').textContent = 'Need historical data';
+    fetchBtcSMAs(data.btc, signals);
   }
 
   // Count signals
