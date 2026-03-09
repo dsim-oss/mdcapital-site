@@ -60,31 +60,15 @@ button.btn-outline{background:transparent;border:1px solid var(--accent);color:v
 .footer{text-align:center;padding:24px;color:var(--muted);font-size:.68rem;border-top:1px solid var(--border);margin-top:32px}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 </head>
-<body>
-<div id="demo-banner" style="
-  position:fixed;top:0;left:0;right:0;z-index:9999;
-  background:linear-gradient(90deg,#f7931a,#e8851a,#f7931a);
-  color:#000;text-align:center;padding:10px 20px;
-  font-family:'Inter',system-ui,sans-serif;font-size:.85rem;font-weight:600;
-  letter-spacing:1px;box-shadow:0 2px 20px rgba(247,147,26,.3);
-">
-  DEMO MODE — Sample data shown for illustration purposes only
-  <button onclick="document.getElementById('demo-banner').style.display='none'" style="
-    background:rgba(0,0,0,.15);border:none;color:#000;padding:4px 12px;
-    border-radius:4px;margin-left:16px;cursor:pointer;font-size:.75rem;font-weight:600;
-  ">Dismiss</button>
-</div>
-<div style="height:40px"></div>
-
+<body><div id="demo-banner" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#f7931a,#e8851a,#f7931a);color:#000;text-align:center;padding:10px 20px;font-family:Inter,system-ui,sans-serif;font-size:.85rem;font-weight:600;letter-spacing:1px;box-shadow:0 2px 20px rgba(247,147,26,.3);">DEMO MODE — Sample data for illustration only<button onclick="document.getElementById('demo-banner').style.display='none'" style="background:rgba(0,0,0,.15);border:none;color:#000;padding:4px 12px;border-radius:4px;margin-left:16px;cursor:pointer;font-size:.75rem;font-weight:600;">Dismiss</button></div><div style="height:40px"></div>
 
 <div class="header">
   <div>
     <h1><span>MD</span> Capital — Analytics</h1>
     <div class="nav-links" style="margin-top:8px">
-      <a href="/demo/">Portfolio</a>
-      <a href="/demo/MD_Capital_Signal_System_Demo.html">Signals & Thesis</a>
+      <a href="MD_Capital_Dashboard_Demo.html">Portfolio</a>
+      <a href="MD_Capital_Signal_System_Demo.html">Signals & Thesis</a>
       <a href="MD_Capital_Analytics.html" class="active">Analytics</a>
     </div>
   </div>
@@ -465,15 +449,40 @@ button.btn-outline{background:transparent;border:1px solid var(--accent);color:v
 
 <script>
 // ===== CONFIG =====
-const H = { btc: 2.50, mstr: 15.0, strc: 250.0, cashBank: 4000, cashIBKR: 1700 };
+const H = { btc: 0.10312090, mstr: 1.271, strc: 35.2813, cashBank: 4000, cashIBKR: 1700 };
 const TOTAL_CASH = H.cashBank + H.cashIBKR;
-const PROT_CAP = 250000;
+const PROT_CAP = 20000;
 const PREF_RATE = 0.05;
 const FUND_START = new Date('2025-08-25');
 const HALVING_DATE = new Date('2024-04-20');
 const STRC_DIV = 0.115;
 const STRC_PAR = 100;
-const BTC_AT_INCEPTION = 64000; // approx BTC price Aug 25, 2025
+const BTC_AT_INCEPTION = 64000; // BTC price at LLC formation Aug 25, 2025
+const BTC_AVG_COST = 101822.23; // weighted avg across all Swan purchases
+const BTC_COST_BASIS = 250000; // total USD deployed into BTC
+const MSTR_COST_BASIS = 2036;
+const STRC_COST_BASIS = 24697.00;
+const MSTR_AVG_COST = 135.71;
+const STRC_AVG_COST = 98.79;
+
+// Swan purchase lots (date, btc qty, price, total USD)
+const BTC_LOTS = [
+  { date: '2025-10-20', qty: 0.00445824, price: 111030.36, cost: 500 },
+  { date: '2025-10-20', qty: 0.00667789, price: 111187.82, cost: 750 },
+  { date: '2025-10-30', qty: 0.00917311, price: 107924.14, cost: 1000 },
+  { date: '2025-10-30', qty: 0.00915327, price: 108158.07, cost: 1000 },
+  { date: '2025-10-30', qty: 0.00921358, price: 107450.09, cost: 1000 },
+  { date: '2025-11-03', qty: 0.00900713, price: 109912.92, cost: 1000 },
+  { date: '2025-11-03', qty: 0.00456128, price: 108522.17, cost: 500 },
+  { date: '2025-11-03', qty: 0.00457055, price: 108302.06, cost: 500 },
+  { date: '2025-11-03', qty: 0.00468010, price: 105766.97, cost: 500 },
+  { date: '2025-11-04', qty: 0.00945624, price: 104692.77, cost: 1000 },
+  { date: '2025-11-14', qty: 0.00569787, price: 95562.03, cost: 550 },
+  { date: '2026-01-26', qty: 0.00615704, price: 88435.35, cost: 550 },
+  { date: '2026-01-30', qty: 0.01191738, price: 83071.95, cost: 1000 },
+  { date: '2026-01-31', qty: 0.00624198, price: 79301.76, cost: 500 },
+  { date: '2026-03-09', qty: 0.00215524, price: 68901.84, cost: 150 },
+];
 
 let P = { btc: null, mstr: null, strc: null };
 
@@ -889,14 +898,12 @@ function renderPricedIn(){
 // ===== TAX TRACKER =====
 function renderTax(){
   const now=new Date();
-  const lots=[
-    {date:'2025-08-25',asset:'BTC',qty:0.05,cost:64000*0.05,price:P.btc,curQty:0.05},
-    {date:'2025-09-15',asset:'BTC',qty:0.03,cost:58000*0.03,price:P.btc,curQty:0.03},
-    {date:'2025-10-01',asset:'BTC',qty:0.02096566,cost:63000*0.02096566,price:P.btc,curQty:0.02096566},
-    {date:'2025-08-25',asset:'STRC',qty:20,cost:100*20,price:P.strc||100,curQty:20},
-    {date:'2025-10-15',asset:'STRC',qty:15.2813,cost:100*15.2813,price:P.strc||100,curQty:15.2813},
-    {date:'2025-08-25',asset:'MSTR',qty:15.0,cost:250*15.0,price:P.mstr,curQty:15.0},
-  ];
+  // Build lots from real Swan purchase data + IBKR positions
+  const lots = BTC_LOTS.map(l => ({
+    date: l.date, asset: 'BTC', qty: l.qty, cost: l.cost, price: P.btc, curQty: l.qty
+  }));
+  lots.push({ date: '2025-10-20', asset: 'STRC', qty: 250.0, cost: STRC_COST_BASIS, price: P.strc || 100, curQty: 35.2813 });
+  lots.push({ date: '2025-10-20', asset: 'MSTR', qty: 15.0, cost: MSTR_COST_BASIS, price: P.mstr, curQty: 1.271 });
 
   let totalCost=0,totalVal=0,html='';
   lots.forEach(l=>{
@@ -947,7 +954,7 @@ function renderLiquidation(){
   const items=[
     {name:'STRC (35.28 shares)',val:H.strc*(P.strc||100),time:'T+1 day',priority:1,note:'Most liquid. Trades near par. Sell first to generate cash for Protected Capital.'},
     {name:'Cash (Bank + IBKR)',val:TOTAL_CASH,time:'Immediate',priority:0,note:'Already liquid. Apply directly to Protected Capital obligation.'},
-    {name:'MSTR (15.0 shares)',val:H.mstr*P.mstr,time:'T+1 day',priority:2,note:'Small position. Fractional shares may have wider spread. Market order acceptable at this size.'},
+    {name:'MSTR (1.271 shares)',val:H.mstr*P.mstr,time:'T+1 day',priority:2,note:'Small position. Fractional shares may have wider spread. Market order acceptable at this size.'},
     {name:'BTC (0.101 via Swan)',val:H.btc*P.btc,time:'T+2-3 days',priority:3,note:'Withdraw from Swan to exchange or sell direct. May have withdrawal hold period. Plan for 2-3 business days.'},
   ];
   items.sort((a,b)=>a.priority-b.priority);

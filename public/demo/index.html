@@ -157,7 +157,7 @@ a{color:var(--accent);text-decoration:none}
       <div class="section-title">Holdings Breakdown</div>
       <table class="holdings-table">
         <thead>
-          <tr><th>Asset</th><th>Qty</th><th>Price</th><th>Value</th><th>% of NAV</th><th>24h</th></tr>
+          <tr><th>Asset</th><th>Qty</th><th>Price</th><th>Value</th><th>Cost Basis</th><th>P&L</th><th>24h</th></tr>
         </thead>
         <tbody id="holdingsBody">
           <tr><td colspan="6" class="loading">Loading...</td></tr>
@@ -166,7 +166,8 @@ a{color:var(--accent);text-decoration:none}
           <tr style="font-weight:700;border-top:2px solid var(--accent)">
             <td colspan="3">Total</td>
             <td id="holdingsTotal">--</td>
-            <td>100%</td>
+            <td id="holdingsTotalCost">--</td>
+            <td id="holdingsTotalPL">--</td>
             <td id="holdingsTotalChange">--</td>
           </tr>
         </tfoot>
@@ -237,7 +238,7 @@ a{color:var(--accent);text-decoration:none}
       <div class="section-title">Capital Account & Distribution Waterfall</div>
       <div style="font-size:.85rem;margin-bottom:16px">
         <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
-          <span>Mike's Total Contributions</span><span style="font-weight:600">$20,000</span>
+          <span>Member Contributions</span><span style="font-weight:600">$250,000</span>
         </div>
         <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
           <span>Accrued Preferred Return (5% simple p.a.)</span><span style="font-weight:600" id="preferredReturn">--</span>
@@ -260,11 +261,13 @@ a{color:var(--accent);text-decoration:none}
       <div class="section-title">STRC Dividend Income</div>
       <div style="font-size:.85rem">
         <div class="div-row"><span>Shares Held</span><span style="font-weight:600">250.0000</span></div>
+        <div class="div-row"><span>Avg Cost / Share</span><span style="font-weight:600">$98.79</span></div>
+        <div class="div-row"><span>Cost Basis</span><span style="font-weight:600">$24,697</span></div>
         <div class="div-row"><span>Annual Dividend Rate</span><span style="font-weight:600">11.50%</span></div>
         <div class="div-row"><span>Annual Income (est.)</span><span style="font-weight:600;color:var(--green)" id="annualDiv">--</span></div>
         <div class="div-row"><span>Monthly Income (est.)</span><span style="font-weight:600;color:var(--green)" id="monthlyDiv">--</span></div>
         <div class="div-row"><span>Next Ex-Dividend</span><span>Mar 13, 2026</span></div>
-        <div class="div-row"><span>Yield on Cost</span><span style="font-weight:600" id="yieldOnCost">11.50%</span></div>
+        <div class="div-row"><span>Yield on Cost</span><span style="font-weight:600;color:var(--green)" id="yieldOnCost">11.64%</span></div>
       </div>
     </div>
   </div>
@@ -376,19 +379,21 @@ a{color:var(--accent);text-decoration:none}
 <script>
 // ===== CONFIGURATION =====
 const HOLDINGS = {
-  btc: { qty: 2.50000000, label: 'Bitcoin (Spot)', ticker: 'BTC', account: 'Swan' },
-  mstr: { qty: 15.000, label: 'Strategy Inc', ticker: 'MSTR', account: 'IBKR' },
-  strc: { qty: 250.0000, label: 'Strategy Pref (STRC)', ticker: 'STRC', account: 'IBKR' },
+  btc: { qty: 2.50000000, label: 'Bitcoin (Spot)', ticker: 'BTC', account: 'Swan', costBasis: 250000, avgCost: 101822.23 },
+  mstr: { qty: 15.000, label: 'Strategy Inc', ticker: 'MSTR', account: 'IBKR', costBasis: 2036, avgCost: 135.71 },
+  strc: { qty: 250.0000, label: 'Strategy Pref (STRC)', ticker: 'STRC', account: 'IBKR', costBasis: 24697, avgCost: 98.79 },
   cash_bank: { qty: 25000, label: 'Cash (Bank)', ticker: 'USD', account: 'Bank' },
   cash_ibkr: { qty: 12000, label: 'Cash (IBKR)', ticker: 'USD', account: 'IBKR' }
 };
 const STRATEGY_BTC_HOLDINGS = 738750;
-const TOTAL_CONTRIBUTED = 250000; // Demo
+const TOTAL_CONTRIBUTED = 250000; // Mike contributed $20k total (2 deposits)
 const PROTECTED_CAPITAL = 250000;
 const PREFERRED_RATE = 0.05;
 const FUND_START = new Date('2025-08-25');
 const STRC_DIV_RATE = 0.115;
 const STRC_PAR = 100;
+const SWAN_FEE_MONTHLY = 37.12;
+const TOTAL_COST_BASIS = 250000 + 24697 + 2036; // $14,158.49 deployed into positions
 
 // ===== STATE =====
 let prices = { btc: null, mstr: null, strc: null };
@@ -516,21 +521,32 @@ function render() {
     { ...HOLDINGS.cash_ibkr, price: 1, val: HOLDINGS.cash_ibkr.qty, chg: 0 }
   ];
   let tbody = '';
+  let totalCostBasis = 0;
   holdings.forEach(h => {
     const pct = totalNav > 0 ? (h.val / totalNav * 100).toFixed(1) : 0;
     const chgClass = (h.chg||0) >= 0 ? 'positive' : 'negative';
     const qtyDisplay = h.ticker === 'BTC' ? h.qty.toFixed(8) : h.ticker === 'USD' ? fmt(h.qty) : h.qty.toFixed(4);
+    const cb = h.costBasis || (h.ticker === 'USD' ? h.val : 0);
+    const pl = h.val - cb;
+    const plPct = cb > 0 ? (pl / cb * 100) : 0;
+    const plClass = pl >= 0 ? 'positive' : 'negative';
+    if (h.ticker !== 'USD') totalCostBasis += cb;
     tbody += `<tr>
       <td><span class="ticker">${h.ticker}</span><br><span style="font-size:.7rem;color:var(--muted)">${h.account}</span></td>
       <td>${qtyDisplay}</td>
       <td>${h.ticker === 'USD' ? '$1.00' : h.price ? fmt(h.price) : '--'}</td>
       <td style="font-weight:600">${fmt(h.val)}</td>
-      <td>${pct}%</td>
+      <td style="font-size:.78rem">${h.ticker === 'USD' ? '--' : fmt(cb)}<br><span style="font-size:.65rem;color:var(--muted)">avg ${h.ticker === 'BTC' ? fmt(h.avgCost) : h.avgCost ? fmt(h.avgCost) : '--'}</span></td>
+      <td class="${plClass}" style="font-size:.78rem">${h.ticker === 'USD' ? '--' : (pl >= 0 ? '+' : '') + fmt(Math.abs(pl))}<br><span style="font-size:.65rem">${h.ticker === 'USD' ? '' : (plPct >= 0 ? '+' : '') + plPct.toFixed(1) + '%'}</span></td>
       <td class="${chgClass}">${h.ticker === 'USD' ? '--' : fmtPct(h.chg)}</td>
     </tr>`;
   });
   el('holdingsBody').innerHTML = tbody;
   el('holdingsTotal').textContent = fmt(totalNav);
+  const totalPL = totalNav - cashVal - totalCostBasis;
+  el('holdingsTotalCost').textContent = fmt(totalCostBasis);
+  el('holdingsTotalPL').textContent = (totalPL >= 0 ? '+' : '') + fmt(Math.abs(totalPL));
+  el('holdingsTotalPL').className = totalPL >= 0 ? 'positive' : 'negative';
   el('holdingsTotalChange').textContent = fmtPct(totalChangePct);
   el('holdingsTotalChange').className = totalChangePct >= 0 ? 'positive' : 'negative';
 
