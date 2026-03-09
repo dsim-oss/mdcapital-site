@@ -133,15 +133,15 @@ a{color:var(--accent);text-decoration:none}
  * MD Capital Secure Portal
  * ---------------------------------------------------------
  * Password Protection: SHA-256 hash comparison (client-side)
- * Default password: MDCapital2025!
+ * Default password: HardeyPrep
  * To change: update HASH below with SHA-256 of new password
  * Generate new hash: open browser console, run:
  *   crypto.subtle.digest('SHA-256', new TextEncoder().encode('YOUR_NEW_PASSWORD'))
  *     .then(h => console.log(Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('')))
  */
 
-// SHA-256 hash of "MDCapital2025!"
-const PASS_HASH = '7e1e664fc5318e07df5d61c4e7b6e2e3fbb6c8a0f5e4d3c2b1a09f8e7d6c5b4a';
+// SHA-256 hash of "HardeyPrep"
+const PASS_HASH = '4520ac04a22621ce74a6fc5826e877d11a01418fd960d12f2c173341bbeee1d0';
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_MINUTES = 15;
 const SESSION_DURATION = 4 * 60 * 60 * 1000; // 4 hours
@@ -186,7 +186,7 @@ async function attemptLogin() {
   const hash = await hashPassword(pwd);
 
   // Compare hashes — also accept plaintext match as fallback for first use
-  if (hash === PASS_HASH || pwd === 'MDCapital2025!') {
+  if (hash === PASS_HASH || pwd === 'HardeyPrep') {
     // Success
     attempts = 0;
     localStorage.setItem('md_attempts', '0');
