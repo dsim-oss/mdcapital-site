@@ -77,8 +77,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   <div>
     <h1><span>MD</span> Capital — Strategy Console</h1>
     <div style="display:flex;gap:6px;margin-top:6px">
-      <a href="MD_Capital_Dashboard_Demo.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;color:var(--muted);text-decoration:none">Portfolio</a>
-      <a href="MD_Capital_Signal_System.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--accent);border-radius:6px;color:var(--accent);text-decoration:none">Signals & Thesis</a>
+      <a href="index.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;color:var(--muted);text-decoration:none">Portfolio</a>
+      <a href="MD_Capital_Signal_System_Demo.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--accent);border-radius:6px;color:var(--accent);text-decoration:none">Signals & Thesis</a>
       <a href="MD_Capital_Analytics_Demo.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;color:var(--muted);text-decoration:none">Analytics</a>
     </div>
   </div>
@@ -320,16 +320,31 @@ async function fetchBtcSMAs(currentPrice, signals) {
 
   try {
     let prices = null;
-    try {
-      const res = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=400&interval=daily');
-      if (res.ok) { const j = await res.json(); prices = j.prices.map(p => p[1]); }
-    } catch(e) {}
-    if (!prices) {
-      try {
-        const res = await fetch('https://api.coincap.io/v2/assets/bitcoin/history?interval=d1');
-        if (res.ok) { const j = await res.json(); prices = j.data.slice(-400).map(d => parseFloat(d.priceUsd)); }
-      } catch(e) {}
-    }
+    // Binance (most reliable)
+    if (!prices) { try {
+      const r = await fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=400');
+      if (r.ok) { const j = await r.json(); prices = j.map(k => parseFloat(k[4])); }
+    } catch(e) {} }
+    // Binance US fallback
+    if (!prices) { try {
+      const r = await fetch('https://api.binance.us/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=400');
+      if (r.ok) { const j = await r.json(); prices = j.map(k => parseFloat(k[4])); }
+    } catch(e) {} }
+    // CoinGecko
+    if (!prices) { try {
+      const r = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=400&interval=daily');
+      if (r.ok) { const j = await r.json(); prices = j.prices.map(p => p[1]); }
+    } catch(e) {} }
+    // CryptoCompare
+    if (!prices) { try {
+      const r = await fetch('https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&limit=400');
+      if (r.ok) { const j = await r.json(); prices = j.Data.Data.map(d => d.close); }
+    } catch(e) {} }
+    // CoinCap
+    if (!prices) { try {
+      const r = await fetch('https://api.coincap.io/v2/assets/bitcoin/history?interval=d1');
+      if (r.ok) { const j = await r.json(); prices = j.data.slice(-400).map(d => parseFloat(d.priceUsd)); }
+    } catch(e) {} }
     if (!prices || prices.length < 50) return;
 
     let maBull = 0;

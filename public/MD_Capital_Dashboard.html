@@ -635,35 +635,72 @@ async function fetchBtcMovingAverages(currentPrice) {
   const fmtK = n => n >= 1000 ? '$' + (n/1000).toFixed(1) + 'k' : '$' + n.toFixed(0);
 
   try {
-    // CoinGecko free API: daily prices for last 400 days
     let data = null;
-    const urls = [
-      `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=${maxDays}&interval=daily`,
-      `https://api.coincap.io/v2/assets/bitcoin/history?interval=d1`
-    ];
 
-    // Try CoinGecko first
-    try {
-      const res = await fetch(urls[0]);
-      if (res.ok) {
-        const json = await res.json();
-        data = json.prices.map(p => p[1]); // array of daily close prices
-      }
-    } catch(e) {}
-
-    // Fallback: CoinCap
+    // Source 1: Binance (most reliable, no API key needed)
     if (!data) {
       try {
-        const res = await fetch(urls[1]);
+        // Binance klines: 1d interval, limit 400
+        const endTime = Date.now();
+        const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=${maxDays}`);
+        if (res.ok) {
+          const json = await res.json();
+          data = json.map(k => parseFloat(k[4])); // k[4] = close price
+          console.log('MA data from Binance:', data.length, 'days');
+        }
+      } catch(e) { console.warn('Binance failed:', e); }
+    }
+
+    // Source 2: Binance US (if main Binance blocked)
+    if (!data) {
+      try {
+        const res = await fetch(`https://api.binance.us/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=${maxDays}`);
+        if (res.ok) {
+          const json = await res.json();
+          data = json.map(k => parseFloat(k[4]));
+          console.log('MA data from Binance US:', data.length, 'days');
+        }
+      } catch(e) { console.warn('Binance US failed:', e); }
+    }
+
+    // Source 3: CoinGecko
+    if (!data) {
+      try {
+        const res = await fetch(`https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=${maxDays}&interval=daily`);
+        if (res.ok) {
+          const json = await res.json();
+          data = json.prices.map(p => p[1]);
+          console.log('MA data from CoinGecko:', data.length, 'days');
+        }
+      } catch(e) { console.warn('CoinGecko failed:', e); }
+    }
+
+    // Source 4: CryptoCompare (no key needed for basic)
+    if (!data) {
+      try {
+        const res = await fetch(`https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&limit=${maxDays}`);
+        if (res.ok) {
+          const json = await res.json();
+          data = json.Data.Data.map(d => d.close);
+          console.log('MA data from CryptoCompare:', data.length, 'days');
+        }
+      } catch(e) { console.warn('CryptoCompare failed:', e); }
+    }
+
+    // Source 5: CoinCap
+    if (!data) {
+      try {
+        const res = await fetch('https://api.coincap.io/v2/assets/bitcoin/history?interval=d1');
         if (res.ok) {
           const json = await res.json();
           data = json.data.slice(-maxDays).map(d => parseFloat(d.priceUsd));
+          console.log('MA data from CoinCap:', data.length, 'days');
         }
-      } catch(e) {}
+      } catch(e) { console.warn('CoinCap failed:', e); }
     }
 
     if (!data || data.length < 50) {
-      el('maSummary').textContent = 'Could not fetch historical data — try refreshing';
+      el('maSummary').textContent = 'Could not fetch historical data from any source — try refreshing';
       return;
     }
 
