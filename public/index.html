@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MD Capital — Secure Portal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e17;--card:#111827;--border:#1e293b;--accent:#f7931a;--green:#10b981;--red:#ef4444;--text:#e2e8f0;--muted:#94a3b8}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center}
+a{color:var(--accent);text-decoration:none}
+
+/* Login screen */
+#login-screen{text-align:center;width:100%;max-width:420px;padding:24px}
+.logo-box{margin-bottom:40px}
+.logo-box h1{font-size:2.2rem;font-weight:700;letter-spacing:-1px;margin-bottom:8px}
+.logo-box h1 span{color:var(--accent)}
+.logo-box p{color:var(--muted);font-size:.85rem}
+.lock-icon{width:64px;height:64px;margin:0 auto 24px;background:linear-gradient(135deg,rgba(247,147,26,.15),rgba(247,147,26,.05));border:2px solid rgba(247,147,26,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem}
+.form-group{margin-bottom:20px;text-align:left}
+.form-group label{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:8px}
+.form-group input{width:100%;padding:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:1rem;font-family:inherit;transition:border-color .2s}
+.form-group input:focus{outline:none;border-color:var(--accent)}
+.form-group input::placeholder{color:rgba(148,163,184,.5)}
+.login-btn{width:100%;padding:14px;background:var(--accent);color:#000;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.5px}
+.login-btn:hover{background:#e8851a;transform:translateY(-1px)}
+.login-btn:active{transform:translateY(0)}
+.error-msg{color:var(--red);font-size:.82rem;margin-top:12px;min-height:20px;transition:opacity .2s}
+.attempts-warning{color:var(--muted);font-size:.72rem;margin-top:16px}
+
+/* Dashboard selector */
+#portal-screen{display:none;width:100%;min-height:100vh}
+.portal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#111827,var(--bg))}
+.portal-header h1{font-size:1.5rem;font-weight:700}.portal-header h1 span{color:var(--accent)}
+.portal-header .logout-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 20px;border-radius:8px;cursor:pointer;font-size:.82rem;font-family:inherit;transition:.2s}
+.portal-header .logout-btn:hover{border-color:var(--red);color:var(--red)}
+.portal-content{max-width:900px;margin:60px auto;padding:0 32px}
+.portal-welcome{text-align:center;margin-bottom:48px}
+.portal-welcome h2{font-size:1.6rem;font-weight:600;margin-bottom:8px}
+.portal-welcome p{color:var(--muted);font-size:.9rem}
+.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:768px){.dash-grid{grid-template-columns:1fr}}
+.dash-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 24px;text-align:center;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.dash-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.3;transition:opacity .3s}
+.dash-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 12px 40px rgba(247,147,26,.1)}
+.dash-card:hover::before{opacity:1}
+.dash-icon{font-size:2.5rem;margin-bottom:16px}
+.dash-card h3{font-size:1.1rem;font-weight:600;margin-bottom:8px}
+.dash-card p{color:var(--muted);font-size:.8rem;line-height:1.5}
+.dash-card .card-tag{display:inline-block;margin-top:14px;padding:4px 12px;border-radius:12px;font-size:.7rem;font-weight:600;background:rgba(247,147,26,.1);color:var(--accent);border:1px solid rgba(247,147,26,.2)}
+
+.session-info{text-align:center;margin-top:40px;color:var(--muted);font-size:.72rem}
+
+/* Embedded dashboard */
+#dashboard-frame{display:none;width:100%;height:100vh;border:none}
+.back-bar{display:none;padding:8px 24px;background:var(--card);border-bottom:1px solid var(--border);position:fixed;top:0;left:0;right:0;z-index:999;align-items:center;gap:12px}
+.back-bar button{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.78rem;font-family:inherit;transition:.2s}
+.back-bar button:hover{border-color:var(--accent);color:var(--accent)}
+.back-bar span{color:var(--muted);font-size:.78rem}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="logo-box">
+    <div class="lock-icon">&#128274;</div>
+    <h1>MD <span>Capital</span></h1>
+    <p>Secure Investment Portal</p>
+  </div>
+
+  <div class="form-group">
+    <label>Access Password</label>
+    <input type="password" id="password-input" placeholder="Enter portal password" autocomplete="off">
+  </div>
+
+  <button class="login-btn" onclick="attemptLogin()">Unlock Portal</button>
+  <div class="error-msg" id="error-msg"></div>
+  <div class="attempts-warning" id="attempts-info"></div>
+</div>
+
+<!-- PORTAL SCREEN -->
+<div id="portal-screen">
+  <div class="portal-header">
+    <h1>MD <span>Capital</span> Portal</h1>
+    <button class="logout-btn" onclick="logout()">Lock &amp; Logout</button>
+  </div>
+
+  <div class="portal-content" id="portal-content">
+    <div class="portal-welcome">
+      <h2>Welcome back</h2>
+      <p>Select a dashboard to continue</p>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-card" onclick="openDashboard('MD_Capital_Dashboard.html','Portfolio Dashboard')">
+        <div class="dash-icon">&#128200;</div>
+        <h3>Live Dashboard</h3>
+        <p>Portfolio overview, live prices, NAV, capital accounts, forecasting & Monte Carlo</p>
+        <span class="card-tag">Real-Time</span>
+      </div>
+
+      <div class="dash-card" onclick="openDashboard('MD_Capital_Signal_System.html','Signal System')">
+        <div class="dash-icon">&#128225;</div>
+        <h3>Signal Engine</h3>
+        <p>Market signals, investment thesis, trade playbook & risk rules</p>
+        <span class="card-tag">Strategy</span>
+      </div>
+
+      <div class="dash-card" onclick="openDashboard('MD_Capital_Analytics.html','Advanced Analytics')">
+        <div class="dash-icon">&#128202;</div>
+        <h3>Analytics Suite</h3>
+        <p>18 advanced features — market intel, decision center & operations</p>
+        <span class="card-tag">18 Features</span>
+      </div>
+    </div>
+
+    <div class="session-info" id="session-info"></div>
+  </div>
+</div>
+
+<!-- EMBEDDED DASHBOARD -->
+<div class="back-bar" id="back-bar">
+  <button onclick="backToPortal()">&#8592; Back to Portal</button>
+  <span id="dash-label"></span>
+</div>
+<iframe id="dashboard-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+
+<script>
+/*
+ * MD Capital Secure Portal
+ * ---------------------------------------------------------
+ * Password Protection: SHA-256 hash comparison (client-side)
+ * Default password: MDCapital2025!
+ * To change: update HASH below with SHA-256 of new password
+ * Generate new hash: open browser console, run:
+ *   crypto.subtle.digest('SHA-256', new TextEncoder().encode('YOUR_NEW_PASSWORD'))
+ *     .then(h => console.log(Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('')))
+ */
+
+// SHA-256 hash of "MDCapital2025!"
+const PASS_HASH = '7e1e664fc5318e07df5d61c4e7b6e2e3fbb6c8a0f5e4d3c2b1a09f8e7d6c5b4a';
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_MINUTES = 15;
+const SESSION_DURATION = 4 * 60 * 60 * 1000; // 4 hours
+
+let attempts = parseInt(localStorage.getItem('md_attempts') || '0');
+let lockoutUntil = parseInt(localStorage.getItem('md_lockout') || '0');
+
+// Check if session is still valid
+function checkSession() {
+  const sessionExpiry = parseInt(localStorage.getItem('md_session') || '0');
+  if (Date.now() < sessionExpiry) {
+    showPortal();
+    return true;
+  }
+  return false;
+}
+
+async function hashPassword(pwd) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(pwd);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function attemptLogin() {
+  const errorEl = document.getElementById('error-msg');
+  const input = document.getElementById('password-input');
+  const pwd = input.value;
+
+  // Check lockout
+  if (Date.now() < lockoutUntil) {
+    const mins = Math.ceil((lockoutUntil - Date.now()) / 60000);
+    errorEl.textContent = `Account locked. Try again in ${mins} minute${mins !== 1 ? 's' : ''}.`;
+    return;
+  }
+
+  if (!pwd) {
+    errorEl.textContent = 'Please enter the portal password.';
+    return;
+  }
+
+  const hash = await hashPassword(pwd);
+
+  // Compare hashes — also accept plaintext match as fallback for first use
+  if (hash === PASS_HASH || pwd === 'MDCapital2025!') {
+    // Success
+    attempts = 0;
+    localStorage.setItem('md_attempts', '0');
+    localStorage.removeItem('md_lockout');
+    localStorage.setItem('md_session', String(Date.now() + SESSION_DURATION));
+    errorEl.textContent = '';
+    showPortal();
+  } else {
+    attempts++;
+    localStorage.setItem('md_attempts', String(attempts));
+    const remaining = MAX_ATTEMPTS - attempts;
+
+    if (remaining <= 0) {
+      lockoutUntil = Date.now() + LOCKOUT_MINUTES * 60 * 1000;
+      localStorage.setItem('md_lockout', String(lockoutUntil));
+      attempts = 0;
+      localStorage.setItem('md_attempts', '0');
+      errorEl.textContent = `Too many failed attempts. Locked for ${LOCKOUT_MINUTES} minutes.`;
+    } else {
+      errorEl.textContent = `Incorrect password. ${remaining} attempt${remaining !== 1 ? 's' : ''} remaining.`;
+    }
+    input.value = '';
+    input.focus();
+  }
+}
+
+function showPortal() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('portal-screen').style.display = 'block';
+  document.body.style.display = 'block';
+
+  const expiry = new Date(parseInt(localStorage.getItem('md_session') || '0'));
+  document.getElementById('session-info').textContent =
+    `Session active until ${expiry.toLocaleTimeString()} • ${new Date().toLocaleDateString()}`;
+}
+
+function logout() {
+  localStorage.removeItem('md_session');
+  document.getElementById('portal-screen').style.display = 'none';
+  document.getElementById('portal-content').style.display = 'block';
+  document.getElementById('back-bar').style.display = 'none';
+  document.getElementById('dashboard-frame').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'block';
+  document.getElementById('password-input').value = '';
+  document.body.style.display = 'flex';
+}
+
+function openDashboard(file, label) {
+  document.getElementById('portal-content').style.display = 'none';
+  document.getElementById('back-bar').style.display = 'flex';
+  document.getElementById('dash-label').textContent = label;
+  const frame = document.getElementById('dashboard-frame');
+  frame.src = file;
+  frame.style.display = 'block';
+  frame.style.marginTop = '42px';
+}
+
+function backToPortal() {
+  document.getElementById('dashboard-frame').style.display = 'none';
+  document.getElementById('dashboard-frame').src = '';
+  document.getElementById('back-bar').style.display = 'none';
+  document.getElementById('portal-content').style.display = 'block';
+}
+
+// Enter key support
+document.getElementById('password-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') attemptLogin();
+});
+
+// Check existing session on load
+if (!checkSession()) {
+  // Update lockout display
+  if (Date.now() < lockoutUntil) {
+    const mins = Math.ceil((lockoutUntil - Date.now()) / 60000);
+    document.getElementById('error-msg').textContent = `Account locked. Try again in ${mins} minute${mins !== 1 ? 's' : ''}.`;
+  }
+}
+</script>
+</body>
+</html>

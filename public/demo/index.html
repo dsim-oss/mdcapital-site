@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MD Capital — Live Dashboard [DEMO]</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e17;--card:#111827;--border:#1e293b;--accent:#f7931a;--green:#10b981;
+  --red:#ef4444;--text:#e2e8f0;--muted:#94a3b8;--blue:#3b82f6;--purple:#8b5cf6;
+}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#111827 0%,var(--bg) 100%)}
+.header h1{font-size:1.5rem;font-weight:700;letter-spacing:-0.5px}
+.header h1 span{color:var(--accent)}
+.header-right{display:flex;align-items:center;gap:16px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.last-update{font-size:.75rem;color:var(--muted)}
+
+/* Layout */
+.container{max-width:1440px;margin:0 auto;padding:24px 32px}
+.grid-top{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.grid-main{display:grid;grid-template-columns:2fr 1fr;gap:24px;margin-bottom:24px}
+.grid-signals{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0.3}
+.card-label{font-size:.7rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:8px}
+.card-value{font-size:1.8rem;font-weight:700;letter-spacing:-1px}
+.card-change{font-size:.8rem;margin-top:4px}
+.positive{color:var(--green)}.negative{color:var(--red)}
+
+/* Holdings table */
+.holdings-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.holdings-table th{text-align:left;padding:10px 12px;color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border)}
+.holdings-table td{padding:10px 12px;border-bottom:1px solid var(--border)}
+.holdings-table tr:hover{background:rgba(247,147,26,0.04)}
+.ticker{font-weight:600;color:var(--accent)}
+
+/* Signal cards */
+.signal-card{text-align:center}
+.signal-status{display:inline-block;padding:6px 16px;border-radius:20px;font-size:.8rem;font-weight:600;margin-top:8px}
+.signal-on{background:rgba(16,185,129,0.15);color:var(--green);border:1px solid rgba(16,185,129,0.3)}
+.signal-off{background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.2)}
+.signal-neutral{background:rgba(148,163,184,0.1);color:var(--muted);border:1px solid rgba(148,163,184,0.2)}
+
+/* Allocation bar */
+.alloc-bar{display:flex;height:32px;border-radius:8px;overflow:hidden;margin:12px 0}
+.alloc-segment{display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:600;color:#fff;transition:width .5s}
+.alloc-legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:8px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--muted)}
+.legend-dot{width:10px;height:10px;border-radius:3px}
+
+/* MSTR Premium */
+.premium-gauge{text-align:center;padding:20px 0}
+.premium-value{font-size:2.5rem;font-weight:700}
+.premium-label{font-size:.75rem;color:var(--muted);margin-top:4px}
+
+/* Dividend tracker */
+.div-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.85rem}
+
+/* Section headers */
+.section-title{font-size:1.1rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.section-title::before{content:'';width:3px;height:18px;background:var(--accent);border-radius:2px}
+
+/* Waterfall */
+.waterfall-item{display:flex;align-items:center;gap:12px;padding:8px 0;font-size:.85rem}
+.waterfall-bar{height:8px;border-radius:4px;transition:width .5s}
+
+/* Responsive */
+@media(max-width:1024px){
+  .grid-top{grid-template-columns:repeat(2,1fr)}
+  .grid-main{grid-template-columns:1fr}
+  .grid-signals{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .container{padding:16px}
+  .header{padding:16px}
+  .card-value{font-size:1.4rem}
+}
+
+/* Loading */
+.loading{color:var(--muted);font-style:italic}
+
+/* Thesis section */
+.thesis-box{background:rgba(247,147,26,0.05);border:1px solid rgba(247,147,26,0.15);border-radius:8px;padding:16px;font-size:.85rem;line-height:1.6;color:var(--muted)}
+.thesis-box strong{color:var(--text)}
+
+/* Footer */
+.footer{text-align:center;padding:32px;color:var(--muted);font-size:.7rem;border-top:1px solid var(--border);margin-top:40px}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+<div id="demo-banner" style="
+  position:fixed;top:0;left:0;right:0;z-index:9999;
+  background:linear-gradient(90deg,#f7931a,#e8851a,#f7931a);
+  color:#000;text-align:center;padding:10px 20px;
+  font-family:'Inter',system-ui,sans-serif;font-size:.85rem;font-weight:600;
+  letter-spacing:1px;
+  box-shadow:0 2px 20px rgba(247,147,26,.3);
+">
+  DEMO MODE — Sample data shown for illustration purposes only
+  <button onclick="document.getElementById('demo-banner').style.display='none'" style="
+    background:rgba(0,0,0,.15);border:none;color:#000;padding:4px 12px;
+    border-radius:4px;margin-left:16px;cursor:pointer;font-size:.75rem;font-weight:600;
+  ">Dismiss</button>
+</div>
+<div style="height:40px"></div>
+
+
+<div class="header">
+  <div>
+    <h1><span>MD</span> Capital</h1>
+    <div style="display:flex;gap:6px;margin-top:6px">
+      <a href="MD_Capital_Dashboard.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--accent);border-radius:6px;color:var(--accent)">Portfolio</a>
+      <a href="/demo/MD_Capital_Signal_System_Demo.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;color:var(--muted);text-decoration:none">Signals & Thesis</a>
+      <a href="/demo/MD_Capital_Analytics_Demo.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;color:var(--muted);text-decoration:none">Analytics</a>
+    </div>
+  </div>
+  <div class="header-right">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="status-dot" id="statusDot"></div>
+      <span class="last-update" id="lastUpdate">Connecting...</span>
+    </div>
+    <button onclick="refreshAll()" style="background:var(--accent);color:#000;border:none;padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer">Refresh</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Top KPIs -->
+  <div class="grid-top">
+    <div class="card">
+      <div class="card-label">Total Portfolio NAV</div>
+      <div class="card-value" id="totalNav">--</div>
+      <div class="card-change" id="totalNavChange">--</div>
+    </div>
+    <div class="card">
+      <div class="card-label">BTC Spot Price</div>
+      <div class="card-value" id="btcPrice">--</div>
+      <div class="card-change" id="btcChange">--</div>
+    </div>
+    <div class="card">
+      <div class="card-label">MSTR Price</div>
+      <div class="card-value" id="mstrPrice">--</div>
+      <div class="card-change" id="mstrChange">--</div>
+    </div>
+    <div class="card">
+      <div class="card-label">STRC Price (Yield)</div>
+      <div class="card-value" id="strcPrice">--</div>
+      <div class="card-change" id="strcYield">Div: 11.50%</div>
+    </div>
+  </div>
+
+  <!-- Main grid: Holdings + Allocation -->
+  <div class="grid-main">
+    <div class="card">
+      <div class="section-title">Holdings Breakdown</div>
+      <table class="holdings-table">
+        <thead>
+          <tr><th>Asset</th><th>Qty</th><th>Price</th><th>Value</th><th>% of NAV</th><th>24h</th></tr>
+        </thead>
+        <tbody id="holdingsBody">
+          <tr><td colspan="6" class="loading">Loading...</td></tr>
+        </tbody>
+        <tfoot>
+          <tr style="font-weight:700;border-top:2px solid var(--accent)">
+            <td colspan="3">Total</td>
+            <td id="holdingsTotal">--</td>
+            <td>100%</td>
+            <td id="holdingsTotalChange">--</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="section-title">Allocation vs IPS Target</div>
+        <div class="card-label">Current Allocation</div>
+        <div class="alloc-bar" id="currentAlloc"></div>
+        <div class="card-label" style="margin-top:12px">IPS Target (50/25/25)</div>
+        <div class="alloc-bar">
+          <div class="alloc-segment" style="width:50%;background:var(--accent)">50% BTC</div>
+          <div class="alloc-segment" style="width:25%;background:var(--blue)">25% Equity</div>
+          <div class="alloc-segment" style="width:25%;background:var(--purple)">25% Oppo.</div>
+        </div>
+        <div class="alloc-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Core BTC</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>BTC Equities</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Opportunistic</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title">MSTR NAV Premium</div>
+        <div class="premium-gauge">
+          <div class="premium-value" id="mstrPremium">--</div>
+          <div class="premium-label">Market Cap vs BTC Holdings NAV</div>
+          <div id="mstrPremiumSignal" style="margin-top:8px"></div>
+        </div>
+        <div style="font-size:.75rem;color:var(--muted)">
+          <div style="display:flex;justify-content:space-between;padding:4px 0"><span>Strategy BTC Holdings</span><span id="stratBtc">738,750 BTC</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0"><span>Implied BTC NAV</span><span id="stratNav">--</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0"><span>MSTR Market Cap</span><span id="mstrMcap">--</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signals -->
+  <div class="section-title">Macro & Technical Signals</div>
+  <div class="grid-signals">
+    <div class="card signal-card">
+      <div class="card-label">BTC Trend (200D SMA)</div>
+      <div id="sigTrend" class="signal-status signal-neutral">Loading...</div>
+      <div style="margin-top:8px;font-size:.75rem;color:var(--muted)" id="sigTrendDetail">--</div>
+    </div>
+    <div class="card signal-card">
+      <div class="card-label">Fear & Greed Index</div>
+      <div id="sigFear" class="signal-status signal-neutral">Loading...</div>
+      <div style="margin-top:8px;font-size:.75rem;color:var(--muted)" id="sigFearDetail">--</div>
+    </div>
+    <div class="card signal-card">
+      <div class="card-label">Market State</div>
+      <div id="sigState" class="signal-status signal-neutral">Loading...</div>
+      <div style="margin-top:8px;font-size:.75rem;color:var(--muted)" id="sigStateDetail">--</div>
+    </div>
+  </div>
+
+  <!-- Distribution Waterfall + Dividend Tracker -->
+  <div class="grid-main">
+    <div class="card">
+      <div class="section-title">Capital Account & Distribution Waterfall</div>
+      <div style="font-size:.85rem;margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span>Mike's Total Contributions</span><span style="font-weight:600">$20,000</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span>Accrued Preferred Return (5% simple p.a.)</span><span style="font-weight:600" id="preferredReturn">--</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span>Protected Capital + Accrued</span><span style="font-weight:600;color:var(--accent)" id="protCapOutstanding">--</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span>Shared Capital Account (50/50)</span><span style="font-weight:600" id="sharedCapital">--</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span>NAV Surplus / (Shortfall) vs Protected</span><span style="font-weight:600" id="navShortfall">--</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:700;color:var(--accent)">
+          <span>Total Fund NAV</span><span id="fundNav">--</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title">STRC Dividend Income</div>
+      <div style="font-size:.85rem">
+        <div class="div-row"><span>Shares Held</span><span style="font-weight:600">250.0000</span></div>
+        <div class="div-row"><span>Annual Dividend Rate</span><span style="font-weight:600">11.50%</span></div>
+        <div class="div-row"><span>Annual Income (est.)</span><span style="font-weight:600;color:var(--green)" id="annualDiv">--</span></div>
+        <div class="div-row"><span>Monthly Income (est.)</span><span style="font-weight:600;color:var(--green)" id="monthlyDiv">--</span></div>
+        <div class="div-row"><span>Next Ex-Dividend</span><span>Mar 13, 2026</span></div>
+        <div class="div-row"><span>Yield on Cost</span><span style="font-weight:600" id="yieldOnCost">11.50%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Investment Thesis -->
+  <div class="card" style="margin-bottom:24px">
+    <div class="section-title">Investment Thesis — Quick View</div>
+    <div class="thesis-box">
+      <strong>Core Thesis:</strong> Bitcoin is in a secular bull market driven by institutional adoption, sovereign accumulation, and monetary debasement. MD Capital captures this via a barbell strategy: direct BTC spot exposure (Swan) for pure upside + BTC-treasury equities (MSTR/STRC) for leveraged convexity and yield.<br><br>
+      <strong>Edge:</strong> STRC provides ~11.5% yield anchored at $100 par, funded by Strategy's BTC-collateralized issuance engine. This generates income while maintaining BTC-correlated upside through the MSTR common equity position. The combination of spot BTC + high-yield preferred + common equity creates a full-stack BTC exposure with differentiated risk/return across the capital structure.<br><br>
+      <strong>Risk Framework:</strong> Max 2x leverage · No >30% single non-BTC position · Daily VaR ≤ 5% · Stress-tested for 50%+ BTC drawdowns · Protected Capital priority waterfall ensures Mike's $20k + 5% is repaid first.
+    </div>
+  </div>
+
+  <!-- ===== FORECASTING & PROJECTIONS ===== -->
+  <div style="margin-bottom:24px">
+    <div class="section-title" style="font-size:1.3rem;margin-bottom:20px">Forecasting & Projections</div>
+
+    <!-- BTC Scenario Analysis -->
+    <div class="grid-main" style="margin-bottom:16px">
+      <div class="card">
+        <div class="section-title">BTC Price Scenario → Portfolio NAV</div>
+        <p style="font-size:.75rem;color:var(--muted);margin-bottom:12px">Assumes STRC holds ~$100 par, MSTR trades at 1.5× BTC beta, current holdings + cash. Green = above Protected Capital ($20k).</p>
+        <table class="holdings-table">
+          <thead><tr><th>BTC Price</th><th>BTC Value</th><th>MSTR Est.</th><th>STRC</th><th>Cash</th><th>Total NAV</th><th>vs $20k</th></tr></thead>
+          <tbody id="scenarioBody"></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="section-title">Protected Capital Repayment Timeline</div>
+        <p style="font-size:.75rem;color:var(--muted);margin-bottom:12px">When does NAV recover to $20k + accrued preferred return?</p>
+        <div id="repaymentTimeline"></div>
+      </div>
+    </div>
+
+    <!-- DCA Simulator -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-title">DCA Deployment Simulator</div>
+      <p style="font-size:.75rem;color:var(--muted);margin-bottom:16px">Model different ways to deploy the $5,700 cash across spot BTC (Swan) and STRC (IBKR). Adjust the sliders to see projected outcomes.</p>
+      <div class="grid-2" style="margin-bottom:16px">
+        <div>
+          <div style="margin-bottom:16px">
+            <label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:6px">Weekly BTC Buy (Swan): $<span id="dcaBtcLabel">150</span></label>
+            <input type="range" id="dcaBtcSlider" min="0" max="500" value="150" step="25" style="width:100%;accent-color:var(--accent)" oninput="updateDCA()">
+            <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted)"><span>$0/wk</span><span>$500/wk</span></div>
+          </div>
+          <div style="margin-bottom:16px">
+            <label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:6px">STRC Shares to Add (IBKR): <span id="dcaStrcLabel">17</span></label>
+            <input type="range" id="dcaStrcSlider" min="0" max="40" value="17" step="1" style="width:100%;accent-color:var(--blue)" oninput="updateDCA()">
+            <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted)"><span>0 shares</span><span>40 shares</span></div>
+          </div>
+          <div style="margin-bottom:16px">
+            <label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:6px">BTC Price Assumption for DCA Period: $<span id="dcaPriceLabel">68,000</span></label>
+            <input type="range" id="dcaPriceSlider" min="40000" max="120000" value="68000" step="1000" style="width:100%;accent-color:var(--green)" oninput="updateDCA()">
+            <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted)"><span>$40k</span><span>$120k</span></div>
+          </div>
+        </div>
+        <div>
+          <div id="dcaResults" style="font-size:.85rem"></div>
+        </div>
+      </div>
+      <div id="dcaWeeklyBreakdown" style="font-size:.8rem;color:var(--muted)"></div>
+    </div>
+
+    <!-- Income Projections -->
+    <div class="grid-main" style="margin-bottom:16px">
+      <div class="card">
+        <div class="section-title">Cumulative STRC Income Projection</div>
+        <p style="font-size:.75rem;color:var(--muted);margin-bottom:12px">Monthly dividend income at current vs expanded STRC holdings</p>
+        <div id="incomeProjection"></div>
+      </div>
+      <div class="card">
+        <div class="section-title">NAV Projection (12-Month Forward)</div>
+        <p style="font-size:.75rem;color:var(--muted);margin-bottom:12px">Base / Bull / Bear scenarios factoring in DCA + income</p>
+        <div id="navProjection"></div>
+      </div>
+    </div>
+
+    <!-- Monte Carlo -->
+    <div class="card">
+      <div class="section-title">Probability Analysis — Where is NAV in 12 Months?</div>
+      <p style="font-size:.75rem;color:var(--muted);margin-bottom:12px">Based on BTC's historical annual volatility (~60%), current holdings, DCA plan, and STRC income. 10,000 simulations.</p>
+      <div class="grid-3">
+        <div style="text-align:center;padding:16px">
+          <div style="font-size:.7rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px">P(NAV > $20k) — Full Recovery</div>
+          <div style="font-size:2.5rem;font-weight:700;color:var(--green)" id="mcProb20k">--</div>
+        </div>
+        <div style="text-align:center;padding:16px">
+          <div style="font-size:.7rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px">P(NAV > $25k) — 25% Return</div>
+          <div style="font-size:2.5rem;font-weight:700;color:var(--blue)" id="mcProb25k">--</div>
+        </div>
+        <div style="text-align:center;padding:16px">
+          <div style="font-size:.7rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px">P(NAV < $10k) — Deep Loss</div>
+          <div style="font-size:2.5rem;font-weight:700;color:var(--red)" id="mcProb10k">--</div>
+        </div>
+      </div>
+      <div id="mcDistribution" style="margin-top:16px"></div>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:12px;font-style:italic">Methodology: Geometric Brownian Motion with μ=0% drift (conservative — no assumed direction), σ=60% annual vol, weekly DCA of BTC per slider settings, STRC dividends reinvested monthly. STRC and cash treated as stable. MSTR modeled at 1.5× BTC beta. This is a statistical model, not a prediction.</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  MD Capital LLC &middot; Illinois Series LLC &middot; For internal use only &middot; Not investment advice<br>
+  Data from CoinGecko, Yahoo Finance &middot; Refreshes automatically every 60 seconds
+</div>
+
+<script>
+// ===== CONFIGURATION =====
+const HOLDINGS = {
+  btc: { qty: 2.50000000, label: 'Bitcoin (Spot)', ticker: 'BTC', account: 'Swan' },
+  mstr: { qty: 15.000, label: 'Strategy Inc', ticker: 'MSTR', account: 'IBKR' },
+  strc: { qty: 250.0000, label: 'Strategy Pref (STRC)', ticker: 'STRC', account: 'IBKR' },
+  cash_bank: { qty: 25000, label: 'Cash (Bank)', ticker: 'USD', account: 'Bank' },
+  cash_ibkr: { qty: 12000, label: 'Cash (IBKR)', ticker: 'USD', account: 'IBKR' }
+};
+const STRATEGY_BTC_HOLDINGS = 738750;
+const TOTAL_CONTRIBUTED = 250000; // Demo data
+const PROTECTED_CAPITAL = 250000;
+const PREFERRED_RATE = 0.05;
+const FUND_START = new Date('2025-08-25');
+const STRC_DIV_RATE = 0.115;
+const STRC_PAR = 100;
+
+// ===== STATE =====
+let prices = { btc: null, mstr: null, strc: null };
+let changes = { btc: null, mstr: null, strc: null };
+let fearGreed = null;
+
+// ===== UTILITIES =====
+const fmt = (n) => {
+  if (n === null || n === undefined) return '--';
+  if (n >= 1e9) return '$' + (n/1e9).toFixed(2) + 'B';
+  if (n >= 1e6) return '$' + (n/1e6).toFixed(2) + 'M';
+  return '$' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+};
+const fmtPct = (n) => n === null ? '--' : (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
+const el = (id) => document.getElementById(id);
+
+// ===== DATA FETCHING =====
+async function fetchBTC() {
+  try {
+    const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true&include_market_cap=true');
+    const d = await r.json();
+    prices.btc = d.bitcoin.usd;
+    changes.btc = d.bitcoin.usd_24h_change;
+    return true;
+  } catch(e) {
+    // Fallback: try alternative
+    try {
+      const r = await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot');
+      const d = await r.json();
+      prices.btc = parseFloat(d.data.amount);
+      changes.btc = 0;
+      return true;
+    } catch(e2) {
+      console.error('BTC fetch failed', e2);
+      return false;
+    }
+  }
+}
+
+async function fetchStocks() {
+  // Use Yahoo Finance v8 via corsproxy for MSTR
+  try {
+    const symbols = ['MSTR', 'STRC'];
+    for (const sym of symbols) {
+      try {
+        const r = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=2d`);
+        if (r.ok) {
+          const d = await r.json();
+          const meta = d.chart.result[0].meta;
+          const key = sym.toLowerCase();
+          prices[key] = meta.regularMarketPrice;
+          changes[key] = ((meta.regularMarketPrice - meta.previousClose) / meta.previousClose) * 100;
+        }
+      } catch(e) {
+        // Try alternative API
+        try {
+          const r = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=2d`)}`);
+          if (r.ok) {
+            const d = await r.json();
+            const meta = d.chart.result[0].meta;
+            const key = sym.toLowerCase();
+            prices[key] = meta.regularMarketPrice;
+            changes[key] = ((meta.regularMarketPrice - meta.previousClose) / meta.previousClose) * 100;
+          }
+        } catch(e2) { console.warn(`${sym} fetch failed`); }
+      }
+    }
+  } catch(e) { console.error('Stock fetch failed', e); }
+}
+
+async function fetchFearGreed() {
+  try {
+    const r = await fetch('https://api.alternative.me/fng/?limit=1');
+    const d = await r.json();
+    fearGreed = d.data[0];
+  } catch(e) { console.warn('Fear&Greed fetch failed'); }
+}
+
+// ===== RENDERING =====
+function render() {
+  const now = new Date();
+  el('lastUpdate').textContent = 'Updated ' + now.toLocaleTimeString();
+  el('statusDot').style.background = (prices.btc ? 'var(--green)' : 'var(--red)');
+
+  // Top KPIs
+  if (prices.btc) {
+    el('btcPrice').textContent = fmt(prices.btc);
+    el('btcChange').textContent = fmtPct(changes.btc);
+    el('btcChange').className = 'card-change ' + (changes.btc >= 0 ? 'positive' : 'negative');
+  }
+  if (prices.mstr) {
+    el('mstrPrice').textContent = fmt(prices.mstr);
+    el('mstrChange').textContent = fmtPct(changes.mstr);
+    el('mstrChange').className = 'card-change ' + (changes.mstr >= 0 ? 'positive' : 'negative');
+  }
+  if (prices.strc !== null) {
+    el('strcPrice').textContent = fmt(prices.strc || STRC_PAR);
+  }
+
+  // Calculate values
+  const btcVal = HOLDINGS.btc.qty * (prices.btc || 0);
+  const mstrVal = HOLDINGS.mstr.qty * (prices.mstr || 0);
+  const strcVal = HOLDINGS.strc.qty * (prices.strc || STRC_PAR);
+  const cashVal = HOLDINGS.cash_bank.qty + HOLDINGS.cash_ibkr.qty;
+  const totalNav = btcVal + mstrVal + strcVal + cashVal;
+
+  // Total NAV
+  el('totalNav').textContent = fmt(totalNav);
+  const totalChange = (
+    (btcVal * (changes.btc||0) / 100) +
+    (mstrVal * (changes.mstr||0) / 100) +
+    (strcVal * (changes.strc||0) / 100)
+    // cash doesn't change
+  );
+  const totalChangePct = totalNav > 0 ? (totalChange / (totalNav - totalChange)) * 100 : 0;
+  el('totalNavChange').textContent = fmtPct(totalChangePct) + ' (' + fmt(Math.abs(totalChange)) + ')';
+  el('totalNavChange').className = 'card-change ' + (totalChangePct >= 0 ? 'positive' : 'negative');
+
+  // Holdings table
+  const holdings = [
+    { ...HOLDINGS.btc, price: prices.btc, val: btcVal, chg: changes.btc },
+    { ...HOLDINGS.mstr, price: prices.mstr, val: mstrVal, chg: changes.mstr },
+    { ...HOLDINGS.strc, price: prices.strc || STRC_PAR, val: strcVal, chg: changes.strc || 0 },
+    { ...HOLDINGS.cash_bank, price: 1, val: HOLDINGS.cash_bank.qty, chg: 0 },
+    { ...HOLDINGS.cash_ibkr, price: 1, val: HOLDINGS.cash_ibkr.qty, chg: 0 }
+  ];
+  let tbody = '';
+  holdings.forEach(h => {
+    const pct = totalNav > 0 ? (h.val / totalNav * 100).toFixed(1) : 0;
+    const chgClass = (h.chg||0) >= 0 ? 'positive' : 'negative';
+    const qtyDisplay = h.ticker === 'BTC' ? h.qty.toFixed(8) : h.ticker === 'USD' ? fmt(h.qty) : h.qty.toFixed(4);
+    tbody += `<tr>
+      <td><span class="ticker">${h.ticker}</span><br><span style="font-size:.7rem;color:var(--muted)">${h.account}</span></td>
+      <td>${qtyDisplay}</td>
+      <td>${h.ticker === 'USD' ? '$1.00' : h.price ? fmt(h.price) : '--'}</td>
+      <td style="font-weight:600">${fmt(h.val)}</td>
+      <td>${pct}%</td>
+      <td class="${chgClass}">${h.ticker === 'USD' ? '--' : fmtPct(h.chg)}</td>
+    </tr>`;
+  });
+  el('holdingsBody').innerHTML = tbody;
+  el('holdingsTotal').textContent = fmt(totalNav);
+  el('holdingsTotalChange').textContent = fmtPct(totalChangePct);
+  el('holdingsTotalChange').className = totalChangePct >= 0 ? 'positive' : 'negative';
+
+  // Allocation bar
+  const btcPct = totalNav > 0 ? (btcVal/totalNav*100) : 0;
+  const eqPct = totalNav > 0 ? ((mstrVal+strcVal)/totalNav*100) : 0;
+  const cashPct = totalNav > 0 ? (cashVal/totalNav*100) : 0;
+  el('currentAlloc').innerHTML = `
+    <div class="alloc-segment" style="width:${btcPct}%;background:var(--accent)">${btcPct.toFixed(0)}% BTC</div>
+    <div class="alloc-segment" style="width:${eqPct}%;background:var(--blue)">${eqPct.toFixed(0)}% Equity</div>
+    <div class="alloc-segment" style="width:${cashPct}%;background:#6b7280">${cashPct.toFixed(0)}% Cash</div>
+  `;
+
+  // MSTR Premium
+  if (prices.btc && prices.mstr) {
+    const btcNav = STRATEGY_BTC_HOLDINGS * prices.btc;
+    const mstrMcap = prices.mstr * 337800000; // ~337.8M diluted shares
+    const premium = ((mstrMcap / btcNav) - 1) * 100;
+    el('mstrPremium').textContent = (premium >= 0 ? '+' : '') + premium.toFixed(1) + '%';
+    el('mstrPremium').style.color = premium < 0 ? 'var(--green)' : premium > 50 ? 'var(--red)' : 'var(--accent)';
+    el('stratNav').textContent = fmt(btcNav);
+    el('mstrMcap').textContent = fmt(mstrMcap);
+    let sig = premium < -10 ? {t:'DEEP DISCOUNT — Accumulate',c:'signal-on'} :
+              premium < 10 ? {t:'FAIR VALUE',c:'signal-neutral'} :
+              premium < 50 ? {t:'MODERATE PREMIUM',c:'signal-neutral'} :
+              {t:'HIGH PREMIUM — Caution',c:'signal-off'};
+    el('mstrPremiumSignal').innerHTML = `<span class="signal-status ${sig.c}">${sig.t}</span>`;
+  }
+
+  // Capital accounts
+  const daysSinceStart = Math.floor((now - FUND_START) / (1000*60*60*24));
+  const yearsFrac = daysSinceStart / 365;
+  const accruedPref = PROTECTED_CAPITAL * PREFERRED_RATE * yearsFrac;
+  const protTotal = PROTECTED_CAPITAL + accruedPref;
+  const shortfall = totalNav - protTotal;
+  el('preferredReturn').textContent = fmt(accruedPref);
+  el('protCapOutstanding').textContent = fmt(protTotal);
+  el('fundNav').textContent = fmt(totalNav);
+  el('sharedCapital').textContent = fmt(totalNav);
+  el('navShortfall').textContent = fmt(Math.abs(shortfall));
+  el('navShortfall').style.color = shortfall >= 0 ? 'var(--green)' : 'var(--red)';
+  el('navShortfall').textContent = (shortfall >= 0 ? '+' : '−') + fmt(Math.abs(shortfall));
+
+  // STRC Dividends
+  const annualDiv = HOLDINGS.strc.qty * STRC_PAR * STRC_DIV_RATE;
+  el('annualDiv').textContent = fmt(annualDiv);
+  el('monthlyDiv').textContent = fmt(annualDiv / 12);
+
+  // Signals
+  // BTC Trend
+  if (prices.btc) {
+    // We don't have SMA data without historical prices, so use a heuristic
+    const sigTrend = el('sigTrend');
+    // Approximation: BTC at ~$68k, 200D SMA was around $75-80k range given the recent selloff
+    sigTrend.textContent = 'Check SMA';
+    sigTrend.className = 'signal-status signal-neutral';
+    el('sigTrendDetail').textContent = `BTC: ${fmt(prices.btc)} · Needs historical data for SMA`;
+  }
+
+  // Fear & Greed
+  if (fearGreed) {
+    const val = parseInt(fearGreed.value);
+    const sigFear = el('sigFear');
+    sigFear.textContent = `${val} — ${fearGreed.value_classification}`;
+    sigFear.className = 'signal-status ' + (val <= 25 ? 'signal-on' : val >= 75 ? 'signal-off' : 'signal-neutral');
+    el('sigFearDetail').textContent = val <= 25 ? 'Extreme Fear = Accumulation zone' : val >= 75 ? 'Extreme Greed = Take profits' : 'Neutral territory';
+  }
+
+  // Market State
+  const sigState = el('sigState');
+  if (prices.btc) {
+    // Simplified state engine based on available data
+    let state = 'NEUTRAL';
+    let stateClass = 'signal-neutral';
+    let detail = 'Awaiting full macro data for state determination';
+    if (fearGreed) {
+      const fgVal = parseInt(fearGreed.value);
+      if (fgVal <= 20) { state = 'OFFENSIVE'; stateClass = 'signal-on'; detail = 'Extreme fear + potential accumulation opportunity'; }
+      else if (fgVal >= 80) { state = 'DEFENSIVE'; stateClass = 'signal-off'; detail = 'Euphoria detected — tighten stops, consider hedges'; }
+    }
+    sigState.textContent = state;
+    sigState.className = 'signal-status ' + stateClass;
+    el('sigStateDetail').textContent = detail;
+  }
+}
+
+// ===== FORECASTING ENGINE =====
+
+function renderScenarioTable() {
+  const curBtc = prices.btc || 68000;
+  const curMstr = prices.mstr || 134;
+  const curStrc = prices.strc || 100;
+  const scenarios = [40000, 50000, 60000, 68000, 80000, 95000, 110000, 130000, 150000];
+  let html = '';
+  scenarios.forEach(btcP => {
+    const btcRatio = btcP / curBtc;
+    const mstrP = curMstr * Math.pow(btcRatio, 1.5); // 1.5x beta
+    const btcV = HOLDINGS.btc.qty * btcP;
+    const mstrV = HOLDINGS.mstr.qty * mstrP;
+    const strcV = HOLDINGS.strc.qty * STRC_PAR;
+    const cashV = HOLDINGS.cash_bank.qty + HOLDINGS.cash_ibkr.qty;
+    const nav = btcV + mstrV + strcV + cashV;
+    const vs20k = ((nav - PROTECTED_CAPITAL) / PROTECTED_CAPITAL * 100);
+    const isGreen = nav >= PROTECTED_CAPITAL;
+    const isCurrent = btcP === 68000;
+    const rowStyle = isCurrent ? 'background:rgba(247,147,26,0.08);' : '';
+    html += `<tr style="${rowStyle}">
+      <td style="font-weight:600;${isCurrent?'color:var(--accent)':''}">$${(btcP/1000).toFixed(0)}k${isCurrent?' ←':''}</td>
+      <td>${fmt(btcV)}</td>
+      <td>${fmt(mstrV)} <span style="font-size:.65rem;color:var(--muted)">@${fmt(mstrP)}</span></td>
+      <td>${fmt(strcV)}</td>
+      <td>${fmt(cashV)}</td>
+      <td style="font-weight:700">${fmt(nav)}</td>
+      <td class="${isGreen?'positive':'negative'}" style="font-weight:600">${vs20k>=0?'+':''}${vs20k.toFixed(1)}%</td>
+    </tr>`;
+  });
+  el('scenarioBody').innerHTML = html;
+}
+
+function renderRepaymentTimeline() {
+  const curBtc = prices.btc || 68000;
+  const curMstr = prices.mstr || 134;
+  const cashTotal = HOLDINGS.cash_bank.qty + HOLDINGS.cash_ibkr.qty;
+  const monthlyStrcDiv = HOLDINGS.strc.qty * STRC_PAR * STRC_DIV_RATE / 12;
+  const daysSinceStart = Math.floor((new Date() - FUND_START) / (1000*60*60*24));
+
+  const scenarios = [
+    { name: 'Bear — BTC flat at $68k', annualBtcReturn: 0, color: 'var(--red)' },
+    { name: 'Base — BTC +30% to $88k', annualBtcReturn: 0.30, color: 'var(--accent)' },
+    { name: 'Bull — BTC +60% to $109k', annualBtcReturn: 0.60, color: 'var(--green)' },
+    { name: 'Moon — BTC +100% to $136k', annualBtcReturn: 1.00, color: 'var(--blue)' },
+  ];
+
+  let html = '';
+  scenarios.forEach(s => {
+    // Simulate month by month
+    let nav = 0;
+    let btcQty = HOLDINGS.btc.qty;
+    let strcQty = HOLDINGS.strc.qty;
+    let cash = cashTotal;
+    let repaidMonth = null;
+    const monthlyBtcReturn = Math.pow(1 + s.annualBtcReturn, 1/12) - 1;
+    let btcP = curBtc;
+    const dcaWeekly = parseInt(el('dcaBtcSlider').value);
+
+    for (let m = 1; m <= 36; m++) {
+      btcP *= (1 + monthlyBtcReturn);
+      const mstrP = curMstr * Math.pow(btcP / curBtc, 1.5);
+
+      // DCA: weekly buys from cash
+      const monthlyDca = dcaWeekly * 4.33;
+      if (cash >= monthlyDca && monthlyDca > 0) {
+        btcQty += monthlyDca / btcP;
+        cash -= monthlyDca;
+      }
+
+      // STRC dividends added to cash (or reinvested)
+      cash += strcQty * STRC_PAR * STRC_DIV_RATE / 12;
+
+      nav = (btcQty * btcP) + (HOLDINGS.mstr.qty * mstrP) + (strcQty * STRC_PAR) + Math.max(cash, 0);
+
+      const yearsFrac = (daysSinceStart + m * 30) / 365;
+      const target = PROTECTED_CAPITAL + (PROTECTED_CAPITAL * PREFERRED_RATE * yearsFrac);
+
+      if (nav >= target && !repaidMonth) repaidMonth = m;
+    }
+
+    const repaidText = repaidMonth ? `Month ${repaidMonth} (~${repaidMonth <= 12 ? new Date(2026, 2 + repaidMonth, 1).toLocaleDateString('en-US',{month:'short',year:'numeric'}) : repaidMonth <= 24 ? new Date(2027, 2 + repaidMonth - 12, 1).toLocaleDateString('en-US',{month:'short',year:'numeric'}) : '2028+'})` : 'Not within 36 months';
+    const barWidth = repaidMonth ? Math.min(100, (36 - repaidMonth) / 36 * 100 + 10) : 5;
+
+    html += `<div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:4px">
+        <span style="font-weight:600;color:${s.color}">${s.name}</span>
+        <span style="font-weight:600">${repaidText}</span>
+      </div>
+      <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${barWidth}%;background:${s.color};border-radius:4px;transition:width .5s"></div>
+      </div>
+    </div>`;
+  });
+  el('repaymentTimeline').innerHTML = html;
+}
+
+function renderIncomeProjection() {
+  const curStrcQty = HOLDINGS.strc.qty;
+  const expandedStrcQty = curStrcQty + parseInt(el('dcaStrcSlider').value);
+  const monthlyBase = curStrcQty * STRC_PAR * STRC_DIV_RATE / 12;
+  const monthlyExpanded = expandedStrcQty * STRC_PAR * STRC_DIV_RATE / 12;
+
+  let html = '<table class="holdings-table"><thead><tr><th>Month</th><th>Current ('+curStrcQty.toFixed(1)+' shares)</th><th>Expanded ('+expandedStrcQty.toFixed(0)+' shares)</th><th>Difference</th></tr></thead><tbody>';
+  for (let m = 1; m <= 12; m++) {
+    const cumBase = monthlyBase * m;
+    const cumExp = monthlyExpanded * m;
+    const monthLabel = new Date(2026, 2 + m, 1).toLocaleDateString('en-US',{month:'short',year:'numeric'});
+    html += `<tr>
+      <td>${monthLabel}</td>
+      <td>${fmt(cumBase)}</td>
+      <td style="color:var(--green);font-weight:600">${fmt(cumExp)}</td>
+      <td style="color:var(--accent)">+${fmt(cumExp - cumBase)}</td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  el('incomeProjection').innerHTML = html;
+}
+
+function renderNavProjection() {
+  const curBtc = prices.btc || 68000;
+  const curMstr = prices.mstr || 134;
+  const cashTotal = HOLDINGS.cash_bank.qty + HOLDINGS.cash_ibkr.qty;
+  const dcaWeekly = parseInt(el('dcaBtcSlider').value);
+  const strcAdd = parseInt(el('dcaStrcSlider').value);
+
+  const scenarios = [
+    { name: 'Bear (BTC −30%)', annual: -0.30, color: 'var(--red)' },
+    { name: 'Base (BTC +30%)', annual: 0.30, color: 'var(--accent)' },
+    { name: 'Bull (BTC +80%)', annual: 0.80, color: 'var(--green)' },
+  ];
+
+  let html = '<table class="holdings-table"><thead><tr><th>Month</th>';
+  scenarios.forEach(s => html += `<th style="color:${s.color}">${s.name}</th>`);
+  html += '</tr></thead><tbody>';
+
+  for (let m = 0; m <= 12; m += 3) {
+    const monthLabel = m === 0 ? 'Today' : new Date(2026, 2 + m, 1).toLocaleDateString('en-US',{month:'short',year:'numeric'});
+    html += `<tr><td style="font-weight:600">${monthLabel}</td>`;
+    scenarios.forEach(s => {
+      let btcQty = HOLDINGS.btc.qty;
+      let strcQty = HOLDINGS.strc.qty + strcAdd;
+      let cash = cashTotal - (strcAdd * STRC_PAR);
+      if (cash < 0) cash = 0;
+      let btcP = curBtc;
+      const monthlyR = Math.pow(1 + s.annual, 1/12) - 1;
+
+      for (let i = 1; i <= m; i++) {
+        btcP *= (1 + monthlyR);
+        const monthlyDca = dcaWeekly * 4.33;
+        if (cash >= monthlyDca && monthlyDca > 0) {
+          btcQty += monthlyDca / btcP;
+          cash -= monthlyDca;
+        }
+        cash += strcQty * STRC_PAR * STRC_DIV_RATE / 12;
+      }
+
+      const mstrP = curMstr * Math.pow(btcP / curBtc, 1.5);
+      const nav = (btcQty * btcP) + (HOLDINGS.mstr.qty * mstrP) + (strcQty * STRC_PAR) + Math.max(cash, 0);
+      const vs20 = nav >= 250000;
+      html += `<td style="font-weight:600;${vs20?'color:var(--green)':'color:var(--red)'}">${fmt(nav)}</td>`;
+    });
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  html += `<div style="font-size:.7rem;color:var(--muted);margin-top:8px">Green = above $20k Protected Capital threshold</div>`;
+  el('navProjection').innerHTML = html;
+}
+
+function runMonteCarlo() {
+  const curBtc = prices.btc || 68000;
+  const curMstr = prices.mstr || 134;
+  const cashTotal = HOLDINGS.cash_bank.qty + HOLDINGS.cash_ibkr.qty;
+  const dcaWeekly = parseInt(el('dcaBtcSlider').value);
+  const strcAdd = parseInt(el('dcaStrcSlider').value);
+  const N = 10000;
+  const weeks = 52;
+  const weeklyVol = 0.60 / Math.sqrt(52); // 60% annual vol → weekly
+  const weeklyDrift = 0; // conservative: 0% drift
+
+  let finalNavs = [];
+
+  for (let sim = 0; sim < N; sim++) {
+    let btcP = curBtc;
+    let btcQty = HOLDINGS.btc.qty;
+    let strcQty = HOLDINGS.strc.qty + strcAdd;
+    let cash = cashTotal - (strcAdd * STRC_PAR);
+    if (cash < 0) cash = 0;
+
+    for (let w = 0; w < weeks; w++) {
+      // GBM step
+      const z = gaussianRandom();
+      btcP *= Math.exp((weeklyDrift - 0.5 * weeklyVol * weeklyVol) + weeklyVol * z);
+
+      // DCA
+      if (cash >= dcaWeekly && dcaWeekly > 0) {
+        btcQty += dcaWeekly / btcP;
+        cash -= dcaWeekly;
+      }
+
+      // Monthly dividend (every 4 weeks)
+      if (w > 0 && w % 4 === 0) {
+        cash += strcQty * STRC_PAR * STRC_DIV_RATE / 12;
+      }
+    }
+
+    const mstrP = curMstr * Math.pow(btcP / curBtc, 1.5);
+    const nav = (btcQty * btcP) + (HOLDINGS.mstr.qty * mstrP) + (strcQty * STRC_PAR) + Math.max(cash, 0);
+    finalNavs.push(nav);
+  }
+
+  finalNavs.sort((a, b) => a - b);
+
+  const prob20k = finalNavs.filter(n => n >= 250000).length / N * 100;
+  const prob25k = finalNavs.filter(n => n >= 25000).length / N * 100;
+  const prob10k = finalNavs.filter(n => n < 10000).length / N * 100;
+
+  el('mcProb20k').textContent = prob20k.toFixed(0) + '%';
+  el('mcProb25k').textContent = prob25k.toFixed(0) + '%';
+  el('mcProb10k').textContent = prob10k.toFixed(0) + '%';
+
+  // Distribution histogram
+  const buckets = {};
+  const bucketSize = 2500;
+  finalNavs.forEach(n => {
+    const b = Math.floor(n / bucketSize) * bucketSize;
+    buckets[b] = (buckets[b] || 0) + 1;
+  });
+
+  const maxCount = Math.max(...Object.values(buckets));
+  const sortedBuckets = Object.entries(buckets).sort((a,b) => parseInt(a[0]) - parseInt(b[0]));
+
+  // Trim extremes
+  const trimmed = sortedBuckets.filter(([k]) => parseInt(k) >= 0 && parseInt(k) <= 60000);
+
+  let distHtml = '<div style="display:flex;align-items:flex-end;gap:2px;height:120px;padding:0 4px">';
+  trimmed.forEach(([bucket, count]) => {
+    const pct = (count / maxCount * 100);
+    const bVal = parseInt(bucket);
+    const color = bVal >= 250000 ? 'var(--green)' : bVal >= 125000 ? 'var(--accent)' : 'var(--red)';
+    distHtml += `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%">
+      <div style="width:100%;background:${color};border-radius:2px 2px 0 0;height:${pct}%;min-height:1px;opacity:0.7"></div>
+    </div>`;
+  });
+  distHtml += '</div>';
+  distHtml += '<div style="display:flex;justify-content:space-between;font-size:.6rem;color:var(--muted);padding:4px">';
+  distHtml += `<span>$0</span><span style="color:var(--accent)">$20k target →</span><span>$60k+</span></div>`;
+
+  // Percentiles
+  const p10 = finalNavs[Math.floor(N * 0.10)];
+  const p25 = finalNavs[Math.floor(N * 0.25)];
+  const p50 = finalNavs[Math.floor(N * 0.50)];
+  const p75 = finalNavs[Math.floor(N * 0.75)];
+  const p90 = finalNavs[Math.floor(N * 0.90)];
+
+  distHtml += `<div style="display:flex;justify-content:space-around;margin-top:12px;font-size:.75rem">
+    <div style="text-align:center"><div style="color:var(--muted)">10th %ile</div><div style="font-weight:700;color:var(--red)">${fmt(p10)}</div></div>
+    <div style="text-align:center"><div style="color:var(--muted)">25th %ile</div><div style="font-weight:700">${fmt(p25)}</div></div>
+    <div style="text-align:center"><div style="color:var(--muted)">Median</div><div style="font-weight:700;color:var(--accent)">${fmt(p50)}</div></div>
+    <div style="text-align:center"><div style="color:var(--muted)">75th %ile</div><div style="font-weight:700">${fmt(p75)}</div></div>
+    <div style="text-align:center"><div style="color:var(--muted)">90th %ile</div><div style="font-weight:700;color:var(--green)">${fmt(p90)}</div></div>
+  </div>`;
+
+  el('mcDistribution').innerHTML = distHtml;
+}
+
+// Box-Muller for normal distribution
+function gaussianRandom() {
+  let u = 0, v = 0;
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+}
+
+function updateDCA() {
+  const dcaBtc = parseInt(el('dcaBtcSlider').value);
+  const dcaStrc = parseInt(el('dcaStrcSlider').value);
+  const dcaPrice = parseInt(el('dcaPriceSlider').value);
+  el('dcaBtcLabel').textContent = dcaBtc.toLocaleString();
+  el('dcaStrcLabel').textContent = dcaStrc;
+  el('dcaPriceLabel').textContent = dcaPrice.toLocaleString();
+
+  const cashTotal = HOLDINGS.cash_bank.qty + HOLDINGS.cash_ibkr.qty;
+  const strcCost = dcaStrc * STRC_PAR;
+  const cashAfterStrc = cashTotal - strcCost;
+  const weeksOfDca = dcaBtc > 0 ? Math.floor(Math.max(cashAfterStrc, 0) / dcaBtc) : 0;
+  const totalBtcBought = dcaBtc > 0 ? (weeksOfDca * dcaBtc) / dcaPrice : 0;
+  const cashRemaining = Math.max(cashAfterStrc - (weeksOfDca * dcaBtc), 0);
+  const newStrcQty = HOLDINGS.strc.qty + dcaStrc;
+  const newBtcQty = HOLDINGS.btc.qty + totalBtcBought;
+  const newAnnualDiv = newStrcQty * STRC_PAR * STRC_DIV_RATE;
+
+  let html = `
+    <div style="padding:12px;background:rgba(247,147,26,0.06);border-radius:8px;margin-bottom:12px">
+      <div style="font-weight:700;margin-bottom:8px;color:var(--accent)">Deployment Plan</div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>STRC purchase (upfront)</span><span style="font-weight:600">${dcaStrc} shares → ${fmt(strcCost)}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>Cash remaining for BTC DCA</span><span style="font-weight:600">${fmt(Math.max(cashAfterStrc,0))}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>BTC DCA duration</span><span style="font-weight:600">${weeksOfDca} weeks (~${(weeksOfDca/4.33).toFixed(1)} months)</span></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>Total BTC accumulated</span><span style="font-weight:600">${totalBtcBought.toFixed(8)} BTC (${fmt(totalBtcBought * dcaPrice)})</span></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>Cash remaining after DCA</span><span style="font-weight:600">${fmt(cashRemaining)}</span></div>
+    </div>
+    <div style="padding:12px;background:rgba(16,185,129,0.06);border-radius:8px">
+      <div style="font-weight:700;margin-bottom:8px;color:var(--green)">Post-Deployment Portfolio</div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>BTC Holdings</span><span style="font-weight:600">${newBtcQty.toFixed(8)} BTC (${fmt(newBtcQty * dcaPrice)})</span></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>STRC Holdings</span><span style="font-weight:600">${newStrcQty.toFixed(4)} shares (${fmt(newStrcQty * STRC_PAR)})</span></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>Annual STRC Income</span><span style="font-weight:600;color:var(--green)">${fmt(newAnnualDiv)} (${fmt(newAnnualDiv/12)}/mo)</span></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;font-weight:700"><span>Est. NAV at ${fmt(dcaPrice)} BTC</span><span style="color:var(--accent)">${fmt(newBtcQty * dcaPrice + HOLDINGS.mstr.qty * (prices.mstr||134) + newStrcQty * STRC_PAR + cashRemaining)}</span></div>
+    </div>`;
+  el('dcaResults').innerHTML = html;
+
+  // Update all projections
+  renderRepaymentTimeline();
+  renderIncomeProjection();
+  renderNavProjection();
+  runMonteCarlo();
+}
+
+function renderAllProjections() {
+  if (!prices.btc) return;
+  renderScenarioTable();
+  updateDCA();
+}
+
+// ===== MAIN =====
+async function refreshAll() {
+  el('lastUpdate').textContent = 'Refreshing...';
+  await Promise.all([fetchBTC(), fetchStocks(), fetchFearGreed()]);
+
+  // If stock APIs failed, use fallback prices
+  if (!prices.mstr) { prices.mstr = 133.69; changes.mstr = -4.5; }
+  if (!prices.strc) { prices.strc = 100.02; changes.strc = 0.05; }
+
+  render();
+  renderAllProjections();
+}
+
+// Initial load
+refreshAll();
+// Auto-refresh every 60 seconds
+setInterval(refreshAll, 60000);
+</script>
+
+</body>
+</html>

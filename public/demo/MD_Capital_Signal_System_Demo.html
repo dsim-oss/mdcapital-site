@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MD Capital — Signal Engine [DEMO]</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e17;--card:#111827;--border:#1e293b;--accent:#f7931a;--green:#10b981;--red:#ef4444;--text:#e2e8f0;--muted:#94a3b8;--blue:#3b82f6;--purple:#8b5cf6;--yellow:#eab308}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+.header{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;border-bottom:1px solid var(--border)}
+.header h1{font-size:1.4rem;font-weight:700}.header h1 span{color:var(--accent)}
+.nav{display:flex;gap:4px}
+.nav button{background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.8rem;transition:all .2s}
+.nav button.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}
+.nav button:hover{border-color:var(--accent)}
+
+.container{max-width:1440px;margin:0 auto;padding:24px 32px}
+.section{display:none}.section.active{display:block}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
+.section-title{font-size:1.1rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.section-title::before{content:'';width:3px;height:18px;background:var(--accent);border-radius:2px}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:768px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+/* Signal system */
+.signal-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);font-size:.85rem}
+.signal-row:last-child{border-bottom:none}
+.signal-name{font-weight:500;flex:1}
+.signal-value{flex:1;text-align:center;font-weight:600}
+.signal-reading{flex:1;text-align:right}
+.pill{display:inline-block;padding:4px 12px;border-radius:12px;font-size:.75rem;font-weight:600}
+.pill-bull{background:rgba(16,185,129,.15);color:var(--green)}
+.pill-bear{background:rgba(239,68,68,.15);color:var(--red)}
+.pill-neutral{background:rgba(148,163,184,.1);color:var(--muted)}
+
+/* Regime indicator */
+.regime-box{text-align:center;padding:32px;border-radius:12px;margin-bottom:24px}
+.regime-offensive{background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(16,185,129,.05));border:2px solid rgba(16,185,129,.3)}
+.regime-neutral{background:linear-gradient(135deg,rgba(148,163,184,.1),rgba(148,163,184,.05));border:2px solid rgba(148,163,184,.3)}
+.regime-defensive{background:linear-gradient(135deg,rgba(239,68,68,.1),rgba(239,68,68,.05));border:2px solid rgba(239,68,68,.3)}
+.regime-label{font-size:2rem;font-weight:700;letter-spacing:2px}
+.regime-sub{font-size:.85rem;color:var(--muted);margin-top:8px}
+
+/* Action items */
+.action-item{padding:12px 16px;background:rgba(247,147,26,.05);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;margin-bottom:8px;font-size:.85rem}
+
+/* Thesis */
+.thesis-section{margin-bottom:24px}
+.thesis-section h3{font-size:1rem;font-weight:600;margin-bottom:12px;color:var(--accent)}
+.thesis-section p,.thesis-section li{font-size:.85rem;line-height:1.7;color:var(--muted)}
+.thesis-section ul{list-style:none;padding:0}
+.thesis-section li{padding:6px 0;padding-left:16px;position:relative}
+.thesis-section li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+.highlight-box{background:rgba(247,147,26,.06);border:1px solid rgba(247,147,26,.15);border-radius:8px;padding:16px;margin:12px 0}
+.highlight-box strong{color:var(--text)}
+
+/* Playbook */
+.play{padding:16px;border:1px solid var(--border);border-radius:8px;margin-bottom:12px}
+.play-title{font-weight:600;font-size:.9rem;margin-bottom:8px}
+.play-trigger{font-size:.8rem;color:var(--accent);margin-bottom:4px}
+.play-action{font-size:.8rem;color:var(--muted)}
+
+.footer{text-align:center;padding:32px;color:var(--muted);font-size:.7rem;border-top:1px solid var(--border);margin-top:40px}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+<div id="demo-banner" style="
+  position:fixed;top:0;left:0;right:0;z-index:9999;
+  background:linear-gradient(90deg,#f7931a,#e8851a,#f7931a);
+  color:#000;text-align:center;padding:10px 20px;
+  font-family:'Inter',system-ui,sans-serif;font-size:.85rem;font-weight:600;
+  letter-spacing:1px;box-shadow:0 2px 20px rgba(247,147,26,.3);
+">
+  DEMO MODE — Sample data shown for illustration purposes only
+  <button onclick="document.getElementById('demo-banner').style.display='none'" style="
+    background:rgba(0,0,0,.15);border:none;color:#000;padding:4px 12px;
+    border-radius:4px;margin-left:16px;cursor:pointer;font-size:.75rem;font-weight:600;
+  ">Dismiss</button>
+</div>
+<div style="height:40px"></div>
+
+
+<div class="header">
+  <div>
+    <h1><span>MD</span> Capital — Strategy Console</h1>
+    <div style="display:flex;gap:6px;margin-top:6px">
+      <a href="/demo/" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;color:var(--muted);text-decoration:none">Portfolio</a>
+      <a href="MD_Capital_Signal_System.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--accent);border-radius:6px;color:var(--accent);text-decoration:none">Signals & Thesis</a>
+      <a href="/demo/MD_Capital_Analytics_Demo.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;color:var(--muted);text-decoration:none">Analytics</a>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="active" onclick="showSection('signals',this)">Signal Engine</button>
+    <button onclick="showSection('thesis',this)">Investment Thesis</button>
+    <button onclick="showSection('playbook',this)">Playbook</button>
+    <button onclick="showSection('rules',this)">Risk Rules</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ===== SIGNAL ENGINE ===== -->
+  <div class="section active" id="signals">
+    <div id="regimeBox" class="regime-box regime-neutral">
+      <div class="regime-label" id="regimeLabel">LOADING...</div>
+      <div class="regime-sub" id="regimeSub">Calculating market regime...</div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="section-title">Technical Signals</div>
+        <div id="techSignals">
+          <div class="signal-row"><span class="signal-name">BTC vs 200D SMA</span><span class="signal-value" id="sig200">--</span><span class="signal-reading"><span class="pill pill-neutral">--</span></span></div>
+          <div class="signal-row"><span class="signal-name">BTC vs 100D SMA</span><span class="signal-value" id="sig100">--</span><span class="signal-reading"><span class="pill pill-neutral">--</span></span></div>
+          <div class="signal-row"><span class="signal-name">10D Consecutive Above Both</span><span class="signal-value" id="sig10d">--</span><span class="signal-reading"><span class="pill pill-neutral">--</span></span></div>
+          <div class="signal-row"><span class="signal-name">Fear & Greed Index</span><span class="signal-value" id="sigFG">--</span><span class="signal-reading"><span class="pill pill-neutral" id="sigFGPill">--</span></span></div>
+          <div class="signal-row"><span class="signal-name">BTC Dominance</span><span class="signal-value" id="sigDom">--</span><span class="signal-reading"><span class="pill pill-neutral" id="sigDomPill">--</span></span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title">Macro Signals</div>
+        <div id="macroSignals">
+          <div class="signal-row"><span class="signal-name">DXY (Dollar Index)</span><span class="signal-value" id="sigDXY">--</span><span class="signal-reading"><span class="pill pill-neutral" id="sigDXYPill">--</span></span></div>
+          <div class="signal-row"><span class="signal-name">VIX (Volatility)</span><span class="signal-value" id="sigVIX">--</span><span class="signal-reading"><span class="pill pill-neutral" id="sigVIXPill">--</span></span></div>
+          <div class="signal-row"><span class="signal-name">US 10Y Real Yield</span><span class="signal-value" id="sigYield">--</span><span class="signal-reading"><span class="pill pill-neutral" id="sigYieldPill">--</span></span></div>
+          <div class="signal-row"><span class="signal-name">MSTR NAV Premium</span><span class="signal-value" id="sigPrem">--</span><span class="signal-reading"><span class="pill pill-neutral" id="sigPremPill">--</span></span></div>
+          <div class="signal-row"><span class="signal-name">BTC ETF Flows (trend)</span><span class="signal-value" id="sigETF">--</span><span class="signal-reading"><span class="pill pill-neutral" id="sigETFPill">--</span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Composite Score & Recommended Actions</div>
+      <div class="grid-3" style="margin-bottom:16px">
+        <div style="text-align:center">
+          <div style="font-size:.7rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px">Bull Signals</div>
+          <div style="font-size:2rem;font-weight:700;color:var(--green)" id="bullCount">0</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:.7rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px">Neutral Signals</div>
+          <div style="font-size:2rem;font-weight:700;color:var(--muted)" id="neutralCount">0</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:.7rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px">Bear Signals</div>
+          <div style="font-size:2rem;font-weight:700;color:var(--red)" id="bearCount">0</div>
+        </div>
+      </div>
+      <div id="actionItems"></div>
+    </div>
+  </div>
+
+  <!-- ===== INVESTMENT THESIS ===== -->
+  <div class="section" id="thesis">
+    <div class="card">
+      <div class="section-title">MD Capital Investment Thesis v2.0</div>
+      <div style="font-size:.75rem;color:var(--muted);margin-bottom:24px">Last updated: March 2026 · Damir Simunac, Managing Member</div>
+
+      <div class="thesis-section">
+        <h3>1. Core Conviction</h3>
+        <p>Bitcoin is a monetary network undergoing a phase transition from speculative asset to global reserve collateral. The macro tailwinds — sovereign adoption, corporate treasury strategies, spot ETF inflows, and persistent monetary debasement — create asymmetric upside on a 3-5 year horizon. MD Capital positions across the full BTC capital structure to capture this transition.</p>
+      </div>
+
+      <div class="thesis-section">
+        <h3>2. The Strategy (MSTR/STRC) Thesis</h3>
+        <div class="highlight-box">
+          <strong>Key Insight:</strong> Strategy Inc. has invented a new financial primitive — using equity and preferred stock issuance to accumulate Bitcoin, creating a self-reinforcing flywheel where capital markets access becomes a BTC acquisition engine.
+        </div>
+        <p style="margin-top:12px">As of March 2026, Strategy holds ~738,750 BTC (~$50B+). Their capital structure offers three distinct instruments:</p>
+        <ul>
+          <li><strong>MSTR (Common):</strong> Levered BTC upside with NAV premium/discount dynamics. Trades as a high-beta BTC proxy. Currently at a significant discount to NAV — a potential accumulation signal.</li>
+          <li><strong>STRC (Perpetual Preferred):</strong> $100 par, 11.5% variable dividend, paid monthly. Designed to trade near par with income. Provides high yield income while maintaining BTC-correlated exposure through the issuer.</li>
+          <li><strong>Convertible bonds:</strong> Not held by MD Capital currently, but worth monitoring for future opportunistic entry.</li>
+        </ul>
+      </div>
+
+      <div class="thesis-section">
+        <h3>3. Our Edge</h3>
+        <ul>
+          <li><strong>Full Capital Structure Play:</strong> Most BTC investors hold spot only. We diversify across spot BTC (direct exposure), STRC (income + stability), and MSTR (convexity). Each instrument serves a different portfolio function.</li>
+          <li><strong>Income Generation:</strong> 35.28 shares of STRC at 11.5% = ~$406/year in dividends. This income stream partially offsets BTC volatility and accelerates Protected Capital repayment.</li>
+          <li><strong>NAV Premium Arbitrage:</strong> When MSTR trades at a deep discount to NAV (as now), it offers BTC exposure at a discount. When at premium, we rotate to spot. This systematic approach adds alpha vs buy-and-hold.</li>
+          <li><strong>Systematic Signal Framework:</strong> Rather than emotional trading, our macro + technical signal engine defines three regimes (Offensive / Neutral / Defensive) with pre-defined allocation adjustments.</li>
+        </ul>
+      </div>
+
+      <div class="thesis-section">
+        <h3>4. Market Regime Framework</h3>
+        <div class="highlight-box">
+          <strong>OFFENSIVE (Score ≥ 6/10 bullish signals):</strong> Lean into risk. Target 55-60% BTC, 25-30% equities, 10-20% opportunistic. Consider adding MSTR on dips.<br><br>
+          <strong>NEUTRAL (Score 4-5/10):</strong> Hold steady at IPS targets. 50% BTC, 25% equities, 25% opportunistic. Harvest STRC income, no aggressive moves.<br><br>
+          <strong>DEFENSIVE (Score ≤ 3/10):</strong> Reduce risk. Tighten to 40-45% BTC, 20% equities, rest in stables/hedges. Sell covered calls on MSTR if IV is elevated.
+        </div>
+      </div>
+
+      <div class="thesis-section">
+        <h3>5. Risk Factors</h3>
+        <ul>
+          <li><strong>BTC Drawdown Risk:</strong> A 50%+ BTC correction would significantly impair NAV. Stress test: at $35k BTC, portfolio NAV drops to ~$5.4k. STRC provides partial cushion via continued dividends.</li>
+          <li><strong>Strategy Concentration Risk:</strong> MSTR and STRC are both Strategy Inc. instruments. If Strategy faces a credit event, both positions are impaired simultaneously. Mitigation: STRC has seniority over common equity.</li>
+          <li><strong>Regulatory Risk:</strong> Adverse crypto regulation could impact BTC price and Strategy's business model. Diversification across spot and equity mitigates somewhat.</li>
+          <li><strong>Liquidity Risk:</strong> With ~$14.7k total NAV (including $4k cash), position sizes are small but proportionally concentrated. Any single position exit is manageable at current sizes.</li>
+          <li><strong>Protected Capital Obligation:</strong> Mike's $20k (two deposits) + 5% annual return must be prioritized. Current NAV is below the Protected Capital threshold — this needs monitoring and a clear repayment plan.</li>
+        </ul>
+      </div>
+
+      <div class="thesis-section">
+        <h3>6. Growth Path</h3>
+        <p>MD Capital's next milestones:</p>
+        <ul>
+          <li>Repay Protected Capital ($20k + accrued interest) via combination of NAV appreciation, STRC dividend income, and disciplined deployment of $4k cash reserve</li>
+          <li>Scale AUM through additional member contributions or LP admission</li>
+          <li>Expand to covered call / cash-secured put strategies on MSTR/IBIT for additional income</li>
+          <li>Build track record for potential LP fundraising (2% management fee + 20% carry above 8% hurdle)</li>
+          <li>Consider adding IBIT position for ETF-based BTC exposure with options overlay capability</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PLAYBOOK ===== -->
+  <div class="section" id="playbook">
+    <div class="card">
+      <div class="section-title">Trade Playbook — Pre-Defined Actions</div>
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:20px">These are pre-approved actions you can execute when triggers fire. No emotion, just execution.</p>
+
+      <div class="play">
+        <div class="play-title" style="color:var(--green)">PLAY 1: BTC Accumulation (Offensive)</div>
+        <div class="play-trigger">Trigger: Fear & Greed ≤ 20 AND BTC below 200D SMA AND MSTR at NAV discount</div>
+        <div class="play-action">Action: Deploy available cash to spot BTC via Swan. If no cash, consider selling STRC shares at par to buy BTC (only if conviction is high). Log in Allocation Tracker.</div>
+      </div>
+
+      <div class="play">
+        <div class="play-title" style="color:var(--green)">PLAY 2: MSTR Discount Accumulation</div>
+        <div class="play-trigger">Trigger: MSTR NAV premium &lt; -15% (trading at significant discount to BTC holdings)</div>
+        <div class="play-action">Action: Accumulate MSTR shares on IBKR. You're effectively buying BTC at a discount. Size: up to 5% of NAV per entry.</div>
+      </div>
+
+      <div class="play">
+        <div class="play-title" style="color:var(--blue)">PLAY 3: STRC Income Harvest</div>
+        <div class="play-trigger">Trigger: STRC trading at or below $100 par with dividend rate ≥ 10%</div>
+        <div class="play-action">Action: Add STRC shares on IBKR for income. The yield acts as a consistent return floor. Monthly dividends compound or fund future BTC purchases.</div>
+      </div>
+
+      <div class="play">
+        <div class="play-title" style="color:var(--yellow)">PLAY 4: Covered Call Income (Neutral/Defensive)</div>
+        <div class="play-trigger">Trigger: MSTR IV Percentile ≥ 70 AND market regime is Neutral or Defensive</div>
+        <div class="play-action">Action: Sell covered calls on MSTR at 20-30% OTM, 30-45 DTE. Premium income reduces cost basis. Only if holding 100+ shares (future consideration at current position size).</div>
+      </div>
+
+      <div class="play">
+        <div class="play-title" style="color:var(--red)">PLAY 5: Defensive Rotation</div>
+        <div class="play-trigger">Trigger: Bear signal composite (≤ 3/10 bull signals) OR BTC breaks below 200D SMA by 20%+</div>
+        <div class="play-action">Action: Reduce MSTR position by 50%. Rotate proceeds to STRC (income preservation) or spot BTC (if conviction remains). Increase cash/stablecoin allocation. Log reasoning.</div>
+      </div>
+
+      <div class="play">
+        <div class="play-title" style="color:var(--purple)">PLAY 6: Rebalance (Quarterly)</div>
+        <div class="play-trigger">Trigger: End of Q1, Q2, Q3, Q4 — or when any allocation drifts &gt; ±10% from IPS targets</div>
+        <div class="play-action">Action: Review allocation vs IPS (50/25/25). Trim overweight positions, add to underweight. Write quarterly memo in Allocation Tracker. Compare performance vs. pure BTC benchmark.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RISK RULES ===== -->
+  <div class="section" id="rules">
+    <div class="card">
+      <div class="section-title">Risk Management Rules (per IPS & Operating Agreement)</div>
+
+      <div class="grid-2">
+        <div>
+          <h3 style="font-size:.9rem;font-weight:600;color:var(--accent);margin-bottom:12px">Hard Limits</h3>
+          <div class="signal-row"><span class="signal-name">Max Leverage</span><span class="signal-value" style="color:var(--red);font-weight:700">2x Net Assets</span></div>
+          <div class="signal-row"><span class="signal-name">Max Single Non-BTC Position</span><span class="signal-value" style="color:var(--red);font-weight:700">30% of NAV</span></div>
+          <div class="signal-row"><span class="signal-name">Daily VaR Limit</span><span class="signal-value" style="color:var(--red);font-weight:700">≤ 5%</span></div>
+          <div class="signal-row"><span class="signal-name">Protected Capital Sleeve</span><span class="signal-value" style="color:var(--red);font-weight:700">≥ 20% in Fixed Income</span></div>
+          <div class="signal-row"><span class="signal-name">Redemption Notice</span><span class="signal-value">30 days written</span></div>
+          <div class="signal-row"><span class="signal-name">Lock-up Period</span><span class="signal-value">3 years</span></div>
+        </div>
+        <div>
+          <h3 style="font-size:.9rem;font-weight:600;color:var(--accent);margin-bottom:12px">Current Compliance Status</h3>
+          <div class="signal-row"><span class="signal-name">Leverage</span><span class="signal-value" id="compLev">0x</span><span class="signal-reading"><span class="pill pill-bull">OK</span></span></div>
+          <div class="signal-row"><span class="signal-name">Concentration (STRC)</span><span class="signal-value" id="compConc">--</span><span class="signal-reading"><span class="pill" id="compConcPill">--</span></span></div>
+          <div class="signal-row"><span class="signal-name">Protected Capital Sleeve</span><span class="signal-value" id="compProt">--</span><span class="signal-reading"><span class="pill" id="compProtPill">--</span></span></div>
+          <div class="signal-row"><span class="signal-name">Quarterly Report</span><span class="signal-value">Q1 2026</span><span class="signal-reading"><span class="pill pill-neutral">Due Mar 31</span></span></div>
+          <div class="signal-row"><span class="signal-name">IPS Annual Review</span><span class="signal-value">Aug 2026</span><span class="signal-reading"><span class="pill pill-bull">OK</span></span></div>
+        </div>
+      </div>
+
+      <div style="margin-top:24px">
+        <h3 style="font-size:.9rem;font-weight:600;color:var(--accent);margin-bottom:12px">Stress Test: 50% BTC Drawdown</h3>
+        <div class="highlight-box" id="stressTest">Loading...</div>
+      </div>
+
+      <div style="margin-top:24px">
+        <h3 style="font-size:.9rem;font-weight:600;color:var(--accent);margin-bottom:12px">Money Movement Authorization</h3>
+        <div class="highlight-box">
+          <strong>Reminder:</strong> Per the Operating Agreement (Section 6.3b), any withdrawal, transfer, or disbursement of cash or assets from Company accounts to external accounts requires written approval of BOTH members (Damir + Mike). Trading transactions within accounts do NOT require dual approval.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  MD Capital LLC · For internal use only · Not investment advice<br>
+  Signal data from CoinGecko, Alternative.me · Auto-refreshes every 60s
+</div>
+
+<script>
+const STRATEGY_BTC = 738750;
+const MSTR_SHARES_DILUTED = 337800000;
+
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+let data = { btc: null, btcChg: null, mstr: null, strc: null, fg: null, btcDom: null };
+
+async function fetchData() {
+  // BTC
+  try {
+    const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true&include_market_cap=true');
+    const d = await r.json();
+    data.btc = d.bitcoin.usd;
+    data.btcChg = d.bitcoin.usd_24h_change;
+  } catch(e) {
+    try {
+      const r = await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot');
+      const d = await r.json();
+      data.btc = parseFloat(d.data.amount);
+    } catch(e2) { data.btc = 68500; }
+  }
+
+  // BTC Dominance
+  try {
+    const r = await fetch('https://api.coingecko.com/api/v3/global');
+    const d = await r.json();
+    data.btcDom = d.data.market_cap_percentage.btc;
+  } catch(e) {}
+
+  // Stocks - try Yahoo, fallback to known values
+  try {
+    for (const sym of ['MSTR','STRC']) {
+      try {
+        const r = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=2d`);
+        if (r.ok) {
+          const d = await r.json();
+          data[sym.toLowerCase()] = d.chart.result[0].meta.regularMarketPrice;
+        }
+      } catch(e) {}
+    }
+  } catch(e) {}
+  if (!data.mstr) data.mstr = 133.69;
+  if (!data.strc) data.strc = 100.02;
+
+  // Fear & Greed
+  try {
+    const r = await fetch('https://api.alternative.me/fng/?limit=1');
+    const d = await r.json();
+    data.fg = parseInt(d.data[0].value);
+    data.fgLabel = d.data[0].value_classification;
+  } catch(e) {}
+}
+
+function computeSignals() {
+  let signals = []; // each: { name, value, reading: 'bull'|'bear'|'neutral' }
+
+  // Fear & Greed
+  if (data.fg !== null) {
+    const reading = data.fg <= 25 ? 'bull' : data.fg >= 75 ? 'bear' : 'neutral';
+    signals.push({ name: 'fg', value: data.fg, label: data.fgLabel, reading });
+    document.getElementById('sigFG').textContent = data.fg + ' — ' + data.fgLabel;
+    const pill = document.getElementById('sigFGPill');
+    pill.textContent = reading === 'bull' ? 'BULLISH' : reading === 'bear' ? 'BEARISH' : 'NEUTRAL';
+    pill.className = 'pill pill-' + reading;
+  }
+
+  // BTC Dominance
+  if (data.btcDom) {
+    const reading = data.btcDom >= 55 ? 'bull' : data.btcDom <= 40 ? 'bear' : 'neutral';
+    signals.push({ name: 'dom', value: data.btcDom, reading });
+    document.getElementById('sigDom').textContent = data.btcDom.toFixed(1) + '%';
+    const pill = document.getElementById('sigDomPill');
+    pill.textContent = reading === 'bull' ? 'BTC STRONG' : reading === 'bear' ? 'ALT SEASON' : 'NEUTRAL';
+    pill.className = 'pill pill-' + reading;
+  }
+
+  // MSTR Premium
+  if (data.btc && data.mstr) {
+    const btcNav = STRATEGY_BTC * data.btc;
+    const mstrMcap = data.mstr * MSTR_SHARES_DILUTED;
+    const premium = ((mstrMcap / btcNav) - 1) * 100;
+    const reading = premium < -10 ? 'bull' : premium > 50 ? 'bear' : 'neutral';
+    signals.push({ name: 'prem', value: premium, reading });
+    document.getElementById('sigPrem').textContent = (premium >= 0 ? '+' : '') + premium.toFixed(1) + '%';
+    const pill = document.getElementById('sigPremPill');
+    pill.textContent = premium < -10 ? 'DISCOUNT' : premium > 50 ? 'EXPENSIVE' : 'FAIR';
+    pill.className = 'pill pill-' + reading;
+  }
+
+  // For signals we can't fetch easily (DXY, VIX, Real Yield, ETF Flows), mark as manual
+  document.getElementById('sigDXY').textContent = 'Manual input';
+  document.getElementById('sigVIX').textContent = 'Manual input';
+  document.getElementById('sigYield').textContent = 'Manual input';
+  document.getElementById('sigETF').textContent = 'Manual input';
+
+  // We need historical BTC data for SMA - approximate
+  if (data.btc) {
+    document.getElementById('sig200').textContent = '$' + data.btc.toLocaleString();
+    document.getElementById('sig100').textContent = '$' + data.btc.toLocaleString();
+    document.getElementById('sig10d').textContent = 'Need historical data';
+  }
+
+  // Count signals
+  let bull = signals.filter(s => s.reading === 'bull').length;
+  let bear = signals.filter(s => s.reading === 'bear').length;
+  let neutral = signals.filter(s => s.reading === 'neutral').length;
+
+  document.getElementById('bullCount').textContent = bull;
+  document.getElementById('neutralCount').textContent = neutral;
+  document.getElementById('bearCount').textContent = bear;
+
+  // Determine regime
+  const total = bull + bear + neutral;
+  let regime, regimeClass, regimeSub;
+  if (total === 0) {
+    regime = 'LOADING'; regimeClass = 'regime-neutral'; regimeSub = 'Waiting for data...';
+  } else if (bull >= Math.ceil(total * 0.6)) {
+    regime = 'OFFENSIVE'; regimeClass = 'regime-offensive'; regimeSub = 'Lean into risk — accumulate BTC & MSTR on weakness';
+  } else if (bear >= Math.ceil(total * 0.6)) {
+    regime = 'DEFENSIVE'; regimeClass = 'regime-defensive'; regimeSub = 'Reduce risk — tighten positions, harvest income, raise cash';
+  } else {
+    regime = 'NEUTRAL'; regimeClass = 'regime-neutral'; regimeSub = 'Hold IPS targets — harvest STRC income, await clearer signals';
+  }
+
+  const box = document.getElementById('regimeBox');
+  box.className = 'regime-box ' + regimeClass;
+  document.getElementById('regimeLabel').textContent = regime;
+  document.getElementById('regimeSub').textContent = regimeSub;
+
+  // Action items
+  let actions = [];
+  if (data.fg !== null && data.fg <= 25) actions.push('Fear & Greed at extreme fear — consider BTC accumulation (Play 1)');
+  const prem = signals.find(s => s.name === 'prem');
+  if (prem && prem.value < -15) actions.push('MSTR trading at deep NAV discount (' + prem.value.toFixed(1) + '%) — consider accumulating (Play 2)');
+  if (data.strc && data.strc <= 100) actions.push('STRC at/below par — attractive entry for income harvest (Play 3)');
+  if (actions.length === 0) actions.push('No immediate action triggers. Hold positions and monitor.');
+
+  document.getElementById('actionItems').innerHTML = actions.map(a => `<div class="action-item">${a}</div>`).join('');
+
+  // Compliance
+  if (data.btc) {
+    const btcVal = 2.50 * data.btc;
+    const mstrVal = 15.0 * data.mstr;
+    const strcVal = 250.0 * data.strc;
+    const cashVal = 5700;
+    const totalNav = btcVal + mstrVal + strcVal + cashVal;
+
+    // STRC concentration
+    const strcPct = (strcVal / totalNav * 100).toFixed(1);
+    document.getElementById('compConc').textContent = strcPct + '%';
+    const concPill = document.getElementById('compConcPill');
+    concPill.textContent = parseFloat(strcPct) > 30 ? 'BREACH' : 'OK';
+    concPill.className = 'pill ' + (parseFloat(strcPct) > 30 ? 'pill-bear' : 'pill-bull');
+
+    // Protected capital sleeve (STRC counts as fixed-income-like)
+    const protPct = (strcVal / totalNav * 100).toFixed(1);
+    document.getElementById('compProt').textContent = protPct + '%';
+    const protPill = document.getElementById('compProtPill');
+    protPill.textContent = parseFloat(protPct) >= 20 ? 'OK' : 'BELOW';
+    protPill.className = 'pill ' + (parseFloat(protPct) >= 20 ? 'pill-bull' : 'pill-bear');
+
+    // Stress test
+    const stressBtc = data.btc * 0.5;
+    const stressMstr = data.mstr * 0.6; // MSTR drops more than BTC typically
+    const stressNav = (2.50 * stressBtc) + (15.0 * stressMstr) + (250.0 * 100) + 37000; // STRC stays near par + cash
+    document.getElementById('stressTest').innerHTML = `
+      <strong>Scenario: BTC drops 50% to $${(stressBtc).toLocaleString()}</strong><br>
+      Estimated portfolio NAV: <span style="color:var(--red);font-weight:700">$${stressNav.toLocaleString(undefined,{maximumFractionDigits:0})}</span><br>
+      BTC position: $${(2.50*stressBtc).toLocaleString(undefined,{maximumFractionDigits:0})} · MSTR: $${(15.0*stressMstr).toLocaleString(undefined,{maximumFractionDigits:0})} · STRC: $${(250.0*100).toLocaleString()} (par stable) · Cash: $37,000<br>
+      <span style="color:var(--muted)">STRC dividends continue at ~$33.81/mo regardless of BTC price. Protected Capital shortfall would be $${(20000 - stressNav).toLocaleString(undefined,{maximumFractionDigits:0})} if immediately liquidated.</span>
+    `;
+  }
+}
+
+async function init() {
+  await fetchData();
+  computeSignals();
+}
+
+init();
+setInterval(async () => { await fetchData(); computeSignals(); }, 60000);
+</script>
+
+</body>
+</html>

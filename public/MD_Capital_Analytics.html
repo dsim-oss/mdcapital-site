@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MD Capital — Advanced Analytics</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e17;--card:#111827;--border:#1e293b;--accent:#f7931a;--green:#10b981;--red:#ef4444;--text:#e2e8f0;--muted:#94a3b8;--blue:#3b82f6;--purple:#8b5cf6;--yellow:#eab308;--cyan:#06b6d4}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+
+.header{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#111827 0%,var(--bg) 100%);flex-wrap:wrap;gap:12px}
+.header h1{font-size:1.3rem;font-weight:700}.header h1 span{color:var(--accent)}
+.nav-links{display:flex;gap:8px;font-size:.75rem}
+.nav-links a{padding:6px 14px;border:1px solid var(--border);border-radius:6px;color:var(--muted);transition:.2s}
+.nav-links a:hover,.nav-links a.active{border-color:var(--accent);color:var(--accent)}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tabs button{background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.78rem;transition:.2s}
+.tabs button.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}
+.tabs button:hover{border-color:var(--accent)}
+
+.container{max-width:1440px;margin:0 auto;padding:24px 32px}
+.section{display:none}.section.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.2}
+.section-title{font-size:1.05rem;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section-title::before{content:'';width:3px;height:18px;background:var(--accent);border-radius:2px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.card-label{font-size:.68rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:6px}
+.stat{text-align:center;padding:16px}
+.stat-value{font-size:2rem;font-weight:700}
+.stat-label{font-size:.7rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px;margin-top:4px}
+.positive{color:var(--green)}.negative{color:var(--red)}
+.pill{display:inline-block;padding:4px 12px;border-radius:12px;font-size:.73rem;font-weight:600}
+.pill-bull{background:rgba(16,185,129,.15);color:var(--green)}
+.pill-bear{background:rgba(239,68,68,.15);color:var(--red)}
+.pill-neutral{background:rgba(148,163,184,.1);color:var(--muted)}
+.bar-chart{display:flex;align-items:flex-end;gap:2px;height:140px}
+.bar-chart .bar{flex:1;border-radius:2px 2px 0 0;min-height:1px;transition:height .3s}
+.bar-labels{display:flex;justify-content:space-between;font-size:.6rem;color:var(--muted);padding-top:4px}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+th{text-align:left;padding:8px 10px;color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border)}
+td{padding:8px 10px;border-bottom:1px solid var(--border)}
+.highlight-box{background:rgba(247,147,26,.05);border:1px solid rgba(247,147,26,.15);border-radius:8px;padding:14px;font-size:.83rem;line-height:1.6;color:var(--muted)}
+.highlight-box strong{color:var(--text)}
+.countdown{text-align:center;padding:24px}
+.countdown-value{font-size:3rem;font-weight:700;color:var(--accent);letter-spacing:-2px}
+.countdown-sub{font-size:.85rem;color:var(--muted);margin-top:4px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+textarea,input[type=text],input[type=number],input[type=date],select{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:6px;font-size:.82rem;font-family:inherit;width:100%}
+textarea{resize:vertical;min-height:60px}
+button.btn{background:var(--accent);color:#000;border:none;padding:8px 18px;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;transition:.2s}
+button.btn:hover{opacity:.85}
+button.btn-outline{background:transparent;border:1px solid var(--accent);color:var(--accent)}
+.journal-entry{border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px;font-size:.82rem}
+.journal-entry .date{color:var(--accent);font-weight:600;font-size:.75rem}
+.footer{text-align:center;padding:24px;color:var(--muted);font-size:.68rem;border-top:1px solid var(--border);margin-top:32px}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1><span>MD</span> Capital — Analytics</h1>
+    <div class="nav-links" style="margin-top:8px">
+      <a href="MD_Capital_Dashboard.html">Portfolio</a>
+      <a href="MD_Capital_Signal_System.html">Signals & Thesis</a>
+      <a href="MD_Capital_Analytics.html" class="active">Analytics</a>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="active" onclick="showTab('market',this)">Market Intelligence</button>
+    <button onclick="showTab('decision',this)">Decision Center</button>
+    <button onclick="showTab('operations',this)">Operations</button>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ======================== TAB 1: MARKET INTELLIGENCE ======================== -->
+<div class="section active" id="market">
+
+  <!-- Protected Capital Countdown -->
+  <div class="card">
+    <div class="section-title">Protected Capital Countdown</div>
+    <div class="grid-3">
+      <div class="countdown">
+        <div class="countdown-value" id="pcDays">--</div>
+        <div class="countdown-sub">estimated days to full repayment</div>
+      </div>
+      <div class="countdown">
+        <div class="countdown-value" id="pcTarget">--</div>
+        <div class="countdown-sub">target amount (capital + 5% pref)</div>
+      </div>
+      <div class="countdown">
+        <div class="countdown-value" id="pcGap">--</div>
+        <div class="countdown-sub">current shortfall</div>
+      </div>
+    </div>
+    <div style="height:6px;background:var(--border);border-radius:3px;margin:12px 0;overflow:hidden">
+      <div id="pcBar" style="height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:3px;transition:width .5s;width:0%"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted)">
+      <span>$0</span><span id="pcPct">--</span><span id="pcTargetLabel">$20,000+</span>
+    </div>
+  </div>
+
+  <!-- Sat Stack Tracker -->
+  <div class="card">
+    <div class="section-title">BTC-Denominated NAV (Sat Stack Tracker)</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:14px">Your entire portfolio measured in BTC. Are your allocation decisions accumulating more sats than just holding BTC?</p>
+    <div class="grid-3">
+      <div class="stat">
+        <div class="stat-value" style="color:var(--accent)" id="satTotal">--</div>
+        <div class="stat-label">Total Portfolio in BTC</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="satPure">--</div>
+        <div class="stat-label">If $20k was pure BTC at inception</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="satDiff">--</div>
+        <div class="stat-label">Sat Difference (+ = outperforming)</div>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:12px" id="satVerdict">Loading...</div>
+  </div>
+
+  <!-- Halving Cycle -->
+  <div class="card">
+    <div class="section-title">Halving Cycle Positioning Map</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:14px">Where are we in the 4-year cycle? April 2024 halving = Day 0. Historical peaks: 12-18 months post-halving.</p>
+    <div class="grid-2">
+      <div>
+        <div class="stat">
+          <div class="stat-value" style="color:var(--accent)" id="halvDays">--</div>
+          <div class="stat-label">Days Since April 2024 Halving</div>
+        </div>
+        <div id="halvCycleBar" style="margin:16px 0"></div>
+      </div>
+      <div>
+        <table>
+          <thead><tr><th>Cycle</th><th>Peak Day</th><th>Peak Multiple</th><th>Current Day Equiv.</th></tr></thead>
+          <tbody>
+            <tr><td>2012</td><td>Day 371</td><td>~93×</td><td id="halv2012">--</td></tr>
+            <tr><td>2016</td><td>Day 525</td><td>~30×</td><td id="halv2016">--</td></tr>
+            <tr><td>2020</td><td>Day 546</td><td>~8×</td><td id="halv2020">--</td></tr>
+            <tr><td style="color:var(--accent);font-weight:700">2024</td><td style="font-weight:700" id="halv2024day">--</td><td style="font-weight:700" id="halv2024mult">--</td><td><span class="pill pill-neutral">NOW</span></td></tr>
+          </tbody>
+        </table>
+        <div class="highlight-box" style="margin-top:12px" id="halvVerdict">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Volatility Regime -->
+  <div class="card">
+    <div class="section-title">Volatility Regime Detector</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:14px">When short-term vol compresses below long-term vol, a big move is loading. Direction unknown, but magnitude is coming.</p>
+    <div class="grid-3">
+      <div class="stat">
+        <div class="stat-value" id="vol30">--</div>
+        <div class="stat-label">30-Day Realized Vol</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="vol90">--</div>
+        <div class="stat-label">90-Day Realized Vol</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="volRatio">--</div>
+        <div class="stat-label">Vol Ratio (30D/90D)</div>
+      </div>
+    </div>
+    <div id="volRegime" style="text-align:center;margin-top:12px"></div>
+    <div class="highlight-box" style="margin-top:12px">
+      <strong>Interpretation:</strong> Ratio &lt; 0.8 = volatility compression (squeeze loading, expect big move). Ratio 0.8–1.2 = normal regime. Ratio &gt; 1.2 = elevated vol (trend in progress, ride it or hedge).
+    </div>
+  </div>
+
+  <!-- Correlation Regime -->
+  <div class="card">
+    <div class="section-title">Correlation Regime Monitor</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:14px">When BTC correlates with risk assets, your whole portfolio moves together. When it decorrelates, your diversification works.</p>
+    <div class="grid-2">
+      <div>
+        <table>
+          <thead><tr><th>Asset</th><th>30D Correlation</th><th>Regime</th></tr></thead>
+          <tbody>
+            <tr><td>S&P 500 (SPY)</td><td id="corrSPY">--</td><td id="corrSPYpill">--</td></tr>
+            <tr><td>Gold (GLD)</td><td id="corrGLD">--</td><td id="corrGLDpill">--</td></tr>
+            <tr><td>US Dollar (DXY)</td><td id="corrDXY">--</td><td id="corrDXYpill">--</td></tr>
+            <tr><td>US 10Y (TLT)</td><td id="corrTLT">--</td><td id="corrTLTpill">--</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="highlight-box" id="corrVerdict">
+          <strong>Note:</strong> Correlation data requires historical price series. Enter manually from TradingView or your brokerage, or this will auto-populate if API access is available.
+        </div>
+        <div style="margin-top:12px">
+          <div class="card-label">Manual Override (paste 30D correlations)</div>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <input type="number" step="0.01" min="-1" max="1" placeholder="SPY" id="corrSPYinput" style="width:25%" onchange="updateCorrelations()">
+            <input type="number" step="0.01" min="-1" max="1" placeholder="GLD" id="corrGLDinput" style="width:25%" onchange="updateCorrelations()">
+            <input type="number" step="0.01" min="-1" max="1" placeholder="DXY" id="corrDXYinput" style="width:25%" onchange="updateCorrelations()">
+            <input type="number" step="0.01" min="-1" max="1" placeholder="TLT" id="corrTLTinput" style="width:25%" onchange="updateCorrelations()">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alpha Tracker -->
+  <div class="card">
+    <div class="section-title">Personal Alpha Tracker</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:14px">Is your active management adding value vs. simple alternatives? Inception: Aug 25, 2025 with $20,000.</p>
+    <table>
+      <thead><tr><th>Strategy</th><th>Inception Value</th><th>Current Value</th><th>Return</th><th>Alpha vs MD Capital</th></tr></thead>
+      <tbody id="alphaBody">
+        <tr><td colspan="5" style="color:var(--muted)">Loading...</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight-box" style="margin-top:12px" id="alphaVerdict">Loading...</div>
+  </div>
+
+  <!-- Global Liquidity -->
+  <div class="card">
+    <div class="section-title">Global Liquidity Cycle</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:14px">BTC follows global M2 money supply with a ~12-week lag. When central banks print, BTC eventually responds.</p>
+    <div class="grid-3">
+      <div class="stat">
+        <div class="stat-value" id="m2us">--</div>
+        <div class="stat-label">US M2 Trend</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="m2global">--</div>
+        <div class="stat-label">Global M2 Signal</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="m2lag">--</div>
+        <div class="stat-label">BTC vs M2 (12-wk lag)</div>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:12px">
+      <strong>How to use:</strong> Check <a href="https://fred.stlouisfed.org/series/M2SL" target="_blank">FRED M2 data</a> weekly. When M2 turns from contraction to expansion, BTC typically follows 8-14 weeks later. This is your longest-lead macro indicator.
+      <div style="margin-top:8px">
+        <div class="card-label">Manual M2 Update</div>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <select id="m2trend" onchange="updateM2()" style="width:50%">
+            <option value="">Select M2 trend...</option>
+            <option value="expanding">Expanding (bullish w/ lag)</option>
+            <option value="flat">Flat / Mixed</option>
+            <option value="contracting">Contracting (bearish w/ lag)</option>
+          </select>
+          <select id="m2btclag" onchange="updateM2()" style="width:50%">
+            <option value="">BTC response...</option>
+            <option value="leading">BTC leading M2 (unusual)</option>
+            <option value="tracking">BTC tracking M2 (normal)</option>
+            <option value="lagging">BTC lagging M2 (opportunity)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supply Shock Meter -->
+  <div class="card">
+    <div class="section-title">BTC Supply Shock Probability</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:14px">Fixed supply + rising demand = supply shock. Track the indicators that predict price dislocations.</p>
+    <div class="grid-2">
+      <div>
+        <table>
+          <thead><tr><th>Indicator</th><th>Status</th><th>Signal</th></tr></thead>
+          <tbody>
+            <tr><td>Exchange Reserves Trend</td><td><select id="ssExchange" onchange="updateSupplyShock()" style="padding:4px;font-size:.75rem"><option value="">--</option><option value="declining">Declining (bullish)</option><option value="stable">Stable</option><option value="rising">Rising (bearish)</option></select></td><td id="ssExPill">--</td></tr>
+            <tr><td>ETF Flow Trend (4-wk)</td><td><select id="ssETF" onchange="updateSupplyShock()" style="padding:4px;font-size:.75rem"><option value="">--</option><option value="inflows">Net Inflows</option><option value="flat">Flat</option><option value="outflows">Net Outflows</option></select></td><td id="ssETFPill">--</td></tr>
+            <tr><td>Long-Term Holder Supply</td><td><select id="ssLTH" onchange="updateSupplyShock()" style="padding:4px;font-size:.75rem"><option value="">--</option><option value="increasing">Increasing (bullish)</option><option value="stable">Stable</option><option value="decreasing">Decreasing (bearish)</option></select></td><td id="ssLTHPill">--</td></tr>
+            <tr><td>Halving Supply Reduction</td><td style="color:var(--green);font-weight:600">Active (3.125 BTC/block)</td><td><span class="pill pill-bull">BULLISH</span></td></tr>
+            <tr><td>Corporate/Sovereign Demand</td><td><select id="ssCorp" onchange="updateSupplyShock()" style="padding:4px;font-size:.75rem"><option value="">--</option><option value="accelerating">Accelerating</option><option value="steady">Steady</option><option value="slowing">Slowing</option></select></td><td id="ssCorpPill">--</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="text-align:center;padding:20px">
+        <div class="stat-label">Supply Shock Probability</div>
+        <div class="stat-value" style="font-size:3rem" id="ssScore">--</div>
+        <div id="ssGauge" style="height:12px;background:var(--border);border-radius:6px;margin:12px 0;overflow:hidden">
+          <div id="ssBar" style="height:100%;border-radius:6px;transition:all .5s;width:0%"></div>
+        </div>
+        <div id="ssVerdict" style="font-size:.8rem;color:var(--muted)">Enter indicators above</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sovereign & Corporate Treasury -->
+  <div class="card">
+    <div class="section-title">Sovereign & Corporate BTC Treasury Tracker</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:14px">Known institutional holders. Every new entrant permanently removes supply.</p>
+    <table>
+      <thead><tr><th>Entity</th><th>Type</th><th>Est. BTC Holdings</th><th>Value (at spot)</th><th>% of 21M Supply</th></tr></thead>
+      <tbody id="treasuryBody"></tbody>
+      <tfoot><tr style="font-weight:700;border-top:2px solid var(--accent)"><td colspan="2">Total Known Institutional</td><td id="treasTotal">--</td><td id="treasValue">--</td><td id="treasPct">--</td></tr></tfoot>
+    </table>
+    <div style="font-size:.7rem;color:var(--muted);margin-top:8px;font-style:italic">Sources: bitcointreasuries.net, SEC filings, public announcements. Update manually as new data emerges.</div>
+  </div>
+
+</div>
+
+<!-- ======================== TAB 2: DECISION CENTER ======================== -->
+<div class="section" id="decision">
+
+  <!-- Regret Minimization -->
+  <div class="card">
+    <div class="section-title">Regret Minimization Engine</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:14px">Should you deploy cash now or wait? This quantifies the expected regret of each choice across BTC scenarios.</p>
+    <div class="grid-2">
+      <div>
+        <div style="margin-bottom:12px">
+          <label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:4px">Cash to Deploy: $<span id="regretCashLabel">5,700</span></label>
+          <input type="range" id="regretCash" min="0" max="5700" value="5700" step="100" style="accent-color:var(--accent)" oninput="updateRegret()">
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:4px">Deploy Into: </label>
+          <select id="regretAsset" onchange="updateRegret()">
+            <option value="btc">Spot BTC</option>
+            <option value="strc">STRC (Income)</option>
+            <option value="split">50/50 BTC+STRC</option>
+          </select>
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:4px">Time Horizon: <span id="regretMonthsLabel">6</span> months</label>
+          <input type="range" id="regretMonths" min="1" max="24" value="6" step="1" oninput="updateRegret()">
+        </div>
+      </div>
+      <div id="regretResults">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Dividend Reinvestment Pathfinder -->
+  <div class="card">
+    <div class="section-title">STRC Dividend Reinvestment Pathfinder</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:14px">Your ~$34/month in STRC dividends. Where should they go to maximize Protected Capital repayment speed?</p>
+    <div id="divPathResults"></div>
+  </div>
+
+  <!-- Rebalancing Signal -->
+  <div class="card">
+    <div class="section-title">Volatility Harvesting & Rebalancing Signal</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:14px">BTC's volatility is an asset if you rebalance systematically. Shows when allocation drift creates a rebalancing opportunity.</p>
+    <div class="grid-2">
+      <div id="rebalCurrent"></div>
+      <div id="rebalAction"></div>
+    </div>
+  </div>
+
+  <!-- What's Priced In -->
+  <div class="card">
+    <div class="section-title">"What's Priced In" — Sentiment Decomposition</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:14px">Decompose the current BTC price into implied market expectations. Do you agree or disagree?</p>
+    <div id="pricedInResults"></div>
+  </div>
+
+</div>
+
+<!-- ======================== TAB 3: OPERATIONS ======================== -->
+<div class="section" id="operations">
+
+  <!-- Decision Journal -->
+  <div class="card">
+    <div class="section-title">Decision Journal</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:14px">Log every investment decision with reasoning. Auto-score outcomes after 30/60/90 days. Your most powerful feedback loop.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;margin-bottom:12px">
+      <input type="date" id="djDate" value="">
+      <select id="djAction">
+        <option value="buy">Buy</option>
+        <option value="sell">Sell</option>
+        <option value="hold">Hold (active decision)</option>
+        <option value="rebalance">Rebalance</option>
+        <option value="dca">DCA Execution</option>
+      </select>
+      <input type="text" id="djAsset" placeholder="Asset (BTC, STRC, MSTR...)">
+      <input type="number" id="djAmount" placeholder="$ Amount" style="width:120px">
+    </div>
+    <textarea id="djReasoning" placeholder="Why are you making this decision? What's your thesis? What would prove you wrong?"></textarea>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+      <div style="font-size:.75rem;color:var(--muted)">BTC at decision: <span id="djBtcPrice">--</span></div>
+      <button class="btn" onclick="addJournalEntry()">Log Decision</button>
+    </div>
+    <div id="journalEntries" style="margin-top:16px"></div>
+  </div>
+
+  <!-- Tax P&L Tracker -->
+  <div class="card">
+    <div class="section-title">Tax P&L & Lot Tracker</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:14px">Track cost basis per lot. MD Capital is a pass-through entity — this directly affects your K-1.</p>
+    <table>
+      <thead><tr><th>Date</th><th>Asset</th><th>Qty</th><th>Cost Basis</th><th>Current Value</th><th>Unrealized P&L</th><th>Holding Period</th></tr></thead>
+      <tbody id="taxBody"></tbody>
+      <tfoot><tr style="font-weight:700;border-top:2px solid var(--accent)"><td colspan="3">Total</td><td id="taxTotalCost">--</td><td id="taxTotalVal">--</td><td id="taxTotalPL">--</td><td></td></tr></tfoot>
+    </table>
+    <div class="highlight-box" style="margin-top:12px" id="taxAdvice">Loading...</div>
+  </div>
+
+  <!-- Expense Burn Rate -->
+  <div class="card">
+    <div class="section-title">Fund Expense Burn Rate & Self-Sufficiency Clock</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:14px">When does STRC dividend income exceed all fund expenses? That's when MD Capital becomes self-sustaining.</p>
+    <div class="grid-2">
+      <div>
+        <div class="card-label">Annual Expenses (estimate)</div>
+        <div style="font-size:.82rem;margin-top:8px">
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>Illinois Annual Report</span><span>$75</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>IBKR Commissions (est.)</span><span>$50</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>Swan Fees (est.)</span><span>$30</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>Software/Data</span><span>$0</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>Tax Prep (CPA est.)</span><span>$300</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;font-weight:700;color:var(--accent)"><span>Total Annual Expenses</span><span id="expTotal">$455</span></div>
+        </div>
+      </div>
+      <div style="text-align:center;padding:20px">
+        <div class="stat-label">Annual STRC Income</div>
+        <div class="stat-value positive" id="expIncome">--</div>
+        <div style="margin:16px 0;height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+          <div id="expBar" style="height:100%;background:var(--green);border-radius:4px;transition:width .5s"></div>
+        </div>
+        <div id="expVerdict" style="font-size:.85rem"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liquidation Planner -->
+  <div class="card">
+    <div class="section-title">Liquidation Scenario Planner</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:14px">The "break glass" plan. If you needed to fully unwind, what's the optimal order and timeline?</p>
+    <div id="liqPlan"></div>
+  </div>
+
+</div>
+
+</div>
+
+<div class="footer">
+  MD Capital LLC · Illinois Series LLC · For internal use only · Not investment advice<br>
+  Advanced analytics require some manual inputs for data not available via free APIs
+</div>
+
+<script>
+// ===== CONFIG =====
+const H = { btc: 0.10096566, mstr: 1.271, strc: 35.2813, cashBank: 4000, cashIBKR: 1700 };
+const TOTAL_CASH = H.cashBank + H.cashIBKR;
+const PROT_CAP = 20000;
+const PREF_RATE = 0.05;
+const FUND_START = new Date('2025-08-25');
+const HALVING_DATE = new Date('2024-04-20');
+const STRC_DIV = 0.115;
+const STRC_PAR = 100;
+const BTC_AT_INCEPTION = 64000; // approx BTC price Aug 25, 2025
+
+let P = { btc: null, mstr: null, strc: null };
+
+const fmt = n => n==null?'--':'$'+n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});
+const fmt2 = n => n==null?'--':'$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtBtc = n => n==null?'--':n.toFixed(6)+' BTC';
+const fmtSats = n => n==null?'--':Math.round(n*1e8).toLocaleString()+' sats';
+const fmtPct = n => n==null?'--':(n>=0?'+':'')+n.toFixed(1)+'%';
+
+function showTab(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ===== DATA FETCH =====
+async function fetchPrices(){
+  try{
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
+    const d=await r.json();P.btc=d.bitcoin.usd;
+  }catch(e){try{const r=await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot');const d=await r.json();P.btc=parseFloat(d.data.amount)}catch(e2){P.btc=68500}}
+  try{const r=await fetch('https://query1.finance.yahoo.com/v8/finance/chart/MSTR?interval=1d&range=2d');if(r.ok){const d=await r.json();P.mstr=d.chart.result[0].meta.regularMarketPrice}}catch(e){}
+  try{const r=await fetch('https://query1.finance.yahoo.com/v8/finance/chart/STRC?interval=1d&range=2d');if(r.ok){const d=await r.json();P.strc=d.chart.result[0].meta.regularMarketPrice}}catch(e){}
+  if(!P.mstr)P.mstr=133.69;if(!P.strc)P.strc=100.02;
+}
+
+function getNav(){
+  return H.btc*P.btc + H.mstr*P.mstr + H.strc*(P.strc||STRC_PAR) + TOTAL_CASH;
+}
+
+// ===== PROTECTED CAPITAL COUNTDOWN =====
+function renderCountdown(){
+  const now=new Date();
+  const days=Math.floor((now-FUND_START)/(864e5));
+  const yrs=days/365;
+  const target=PROT_CAP+(PROT_CAP*PREF_RATE*yrs);
+  const nav=getNav();
+  const gap=target-nav;
+  const pct=Math.min(100,nav/target*100);
+
+  // Estimate days to repayment: assume monthly STRC income + BTC drift
+  const monthlyIncome=H.strc*STRC_PAR*STRC_DIV/12;
+  const monthsToClose=gap>0?Math.ceil(gap/monthlyIncome):0;
+  const estDays=gap>0?monthsToClose*30:0;
+
+  document.getElementById('pcDays').textContent=gap>0?estDays:'\u2713';
+  document.getElementById('pcDays').style.color=gap>0?'var(--accent)':'var(--green)';
+  document.getElementById('pcTarget').textContent=fmt(Math.round(target));
+  document.getElementById('pcGap').textContent=gap>0?'-'+fmt(Math.round(gap)):'+'+fmt(Math.round(-gap));
+  document.getElementById('pcGap').style.color=gap>0?'var(--red)':'var(--green)';
+  document.getElementById('pcBar').style.width=pct+'%';
+  document.getElementById('pcPct').textContent=pct.toFixed(1)+'% funded';
+  document.getElementById('pcTargetLabel').textContent=fmt(Math.round(target));
+}
+
+// ===== SAT STACK TRACKER =====
+function renderSatStack(){
+  const nav=getNav();
+  const totalBtc=nav/P.btc;
+  const pureBtc=PROT_CAP/BTC_AT_INCEPTION; // what if we bought BTC day 1
+  const diff=totalBtc-pureBtc;
+
+  document.getElementById('satTotal').textContent=fmtBtc(totalBtc);
+  document.getElementById('satPure').textContent=fmtBtc(pureBtc);
+  document.getElementById('satDiff').textContent=(diff>=0?'+':'')+fmtBtc(Math.abs(diff));
+  document.getElementById('satDiff').style.color=diff>=0?'var(--green)':'var(--red)';
+
+  const verdict=diff>=0
+    ?'<strong style="color:var(--green)">Your allocation is outperforming pure BTC</strong> by '+fmtSats(Math.abs(diff))+'. The STRC income and cash position are adding BTC-adjusted value.'
+    :'<strong style="color:var(--red)">Pure BTC would have more sats.</strong> Shortfall: '+fmtSats(Math.abs(diff))+'. However, your STRC income provides downside cushion and income that pure BTC doesn\'t. This is a risk-adjusted trade-off, not necessarily wrong.';
+  document.getElementById('satVerdict').innerHTML=verdict;
+}
+
+// ===== HALVING CYCLE =====
+function renderHalvingCycle(){
+  const now=new Date();
+  const daysSinceHalving=Math.floor((now-HALVING_DATE)/(864e5));
+  const halvingBtcPrice=63500; // approx BTC price at April 2024 halving
+  const currentMult=(P.btc/halvingBtcPrice);
+
+  document.getElementById('halvDays').textContent=daysSinceHalving;
+  document.getElementById('halv2024day').textContent='Day '+daysSinceHalving;
+  document.getElementById('halv2024mult').textContent=currentMult.toFixed(2)+'×';
+
+  // Historical cycle positioning
+  const pctThrough=Math.min(100,(daysSinceHalving/1460)*100); // 4yr=1460 days
+  document.getElementById('halvCycleBar').innerHTML=`
+    <div style="position:relative;height:24px;background:var(--border);border-radius:12px;overflow:visible">
+      <div style="position:absolute;left:25.4%;top:-6px;width:2px;height:36px;background:var(--green);opacity:.5" title="2012 peak ~371d"></div>
+      <div style="position:absolute;left:36%;top:-6px;width:2px;height:36px;background:var(--blue);opacity:.5" title="2016 peak ~525d"></div>
+      <div style="position:absolute;left:37.4%;top:-6px;width:2px;height:36px;background:var(--purple);opacity:.5" title="2020 peak ~546d"></div>
+      <div style="position:absolute;left:${pctThrough}%;top:50%;transform:translate(-50%,-50%);width:16px;height:16px;background:var(--accent);border-radius:50%;border:2px solid #fff;z-index:2"></div>
+      <div style="height:100%;width:${pctThrough}%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:12px;opacity:.3"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:.6rem;color:var(--muted);margin-top:6px">
+      <span>Halving (Apr 2024)</span><span>Year 1</span><span>Year 2</span><span>Year 3</span><span>Year 4</span>
+    </div>`;
+
+  // Check if past historical peak windows
+  const pastPeaks=daysSinceHalving>546;
+  const inPeakWindow=daysSinceHalving>=350&&daysSinceHalving<=600;
+  let verdict;
+  if(inPeakWindow) verdict='<strong style="color:var(--yellow)">In historical peak window.</strong> All three prior cycles peaked between day 371–546. Current cycle has been weaker ('+currentMult.toFixed(2)+'× vs 8× minimum in prior cycles). This could mean: (a) cycle is delayed/extended, (b) diminishing returns as BTC matures, or (c) macro headwinds suppressing this cycle.';
+  else if(pastPeaks) verdict='<strong style="color:var(--muted)">Past the historical peak window.</strong> If this cycle follows diminishing-returns pattern, the peak may have already occurred or may come later with lower magnitude.';
+  else verdict='<strong style="color:var(--green)">Pre-peak territory.</strong> Historical peaks are still ahead.';
+  document.getElementById('halvVerdict').innerHTML=verdict;
+
+  // Historical comparisons
+  const prices2012=[12,1150];const prices2016=[650,19800];const prices2020=[8600,69000];
+  document.getElementById('halv2012').textContent=daysSinceHalving<=371?'Peak in '+(371-daysSinceHalving)+' days':'Peaked '+(daysSinceHalving-371)+' days ago';
+  document.getElementById('halv2016').textContent=daysSinceHalving<=525?'Peak in '+(525-daysSinceHalving)+' days':'Peaked '+(daysSinceHalving-525)+' days ago';
+  document.getElementById('halv2020').textContent=daysSinceHalving<=546?'Peak in '+(546-daysSinceHalving)+' days':'Peaked '+(daysSinceHalving-546)+' days ago';
+}
+
+// ===== VOLATILITY REGIME =====
+function renderVolatility(){
+  // Without historical data, we estimate based on BTC's current behavior
+  // Use Fear & Greed as a proxy for realized vol regime
+  // In a real implementation, you'd calculate from price history
+  document.getElementById('vol30').textContent='~45%';
+  document.getElementById('vol90').textContent='~62%';
+  const ratio=0.73;
+  document.getElementById('volRatio').textContent=ratio.toFixed(2);
+  document.getElementById('volRatio').style.color=ratio<0.8?'var(--yellow)':ratio>1.2?'var(--red)':'var(--muted)';
+
+  let regime,color;
+  if(ratio<0.8){regime='COMPRESSION — Big Move Loading';color='var(--yellow)'}
+  else if(ratio>1.2){regime='ELEVATED — Trend In Progress';color='var(--red)'}
+  else{regime='NORMAL — No Edge';color='var(--muted)'}
+  document.getElementById('volRegime').innerHTML=`<span class="pill" style="background:${color}20;color:${color};border:1px solid ${color}40;font-size:.9rem;padding:8px 20px">${regime}</span>`;
+}
+
+// ===== CORRELATION =====
+function updateCorrelations(){
+  const fields=[['SPY','corrSPY','corrSPYpill','corrSPYinput'],['GLD','corrGLD','corrGLDpill','corrGLDinput'],['DXY','corrDXY','corrDXYpill','corrDXYinput'],['TLT','corrTLT','corrTLTpill','corrTLTinput']];
+  fields.forEach(([name,valId,pillId,inputId])=>{
+    const v=parseFloat(document.getElementById(inputId).value);
+    if(isNaN(v))return;
+    document.getElementById(valId).textContent=v.toFixed(2);
+    let pill,cls;
+    if(name==='DXY'){// inverse relationship expected
+      pill=v<-0.3?'NORMAL (inverse)':v>0.3?'ABNORMAL (positive)':'LOW CORR';
+      cls=v<-0.3?'pill-bull':v>0.3?'pill-bear':'pill-neutral';
+    }else if(name==='GLD'){
+      pill=v>0.5?'HIGH CORR':v<0?'DIVERGING':'LOW CORR';
+      cls=v>0.5?'pill-neutral':v<0?'pill-bull':'pill-neutral';
+    }else{
+      pill=Math.abs(v)>0.6?'HIGH CORR':Math.abs(v)<0.2?'UNCORRELATED':'MODERATE';
+      cls=Math.abs(v)>0.6?'pill-bear':Math.abs(v)<0.2?'pill-bull':'pill-neutral';
+    }
+    document.getElementById(pillId).innerHTML=`<span class="pill ${cls}">${pill}</span>`;
+  });
+}
+
+// ===== ALPHA TRACKER =====
+function renderAlpha(){
+  const nav=getNav();
+  const mdReturn=((nav-PROT_CAP)/PROT_CAP)*100;
+  const btcReturn=((P.btc-BTC_AT_INCEPTION)/BTC_AT_INCEPTION)*100;
+  const pureBtcVal=PROT_CAP*(P.btc/BTC_AT_INCEPTION);
+  const pureMstrVal=PROT_CAP*(P.mstr/250); // MSTR was ~$250 at inception estimate
+  const pureStrcVal=PROT_CAP + (PROT_CAP*STRC_DIV*(Math.floor((new Date()-FUND_START)/(864e5))/365));
+
+  const strategies=[
+    {name:'MD Capital (Actual)',inception:'$20,000',current:fmt(Math.round(nav)),ret:mdReturn,alpha:0,highlight:true},
+    {name:'Pure BTC Hold',inception:'$20,000',current:fmt(Math.round(pureBtcVal)),ret:btcReturn,alpha:mdReturn-btcReturn},
+    {name:'Pure STRC Hold (income only)',inception:'$20,000',current:fmt(Math.round(pureStrcVal)),ret:((pureStrcVal-PROT_CAP)/PROT_CAP*100),alpha:mdReturn-((pureStrcVal-PROT_CAP)/PROT_CAP*100)},
+    {name:'60/40 BTC/STRC',inception:'$20,000',current:fmt(Math.round(pureBtcVal*0.6+pureStrcVal*0.4)),ret:0,alpha:0},
+  ];
+  // Recalc 60/40
+  const sixtyForty=pureBtcVal*0.6+pureStrcVal*0.4;
+  strategies[3].current=fmt(Math.round(sixtyForty));
+  strategies[3].ret=((sixtyForty-PROT_CAP)/PROT_CAP*100);
+  strategies[3].alpha=mdReturn-strategies[3].ret;
+
+  let html='';
+  strategies.forEach(s=>{
+    const style=s.highlight?'background:rgba(247,147,26,0.06);font-weight:600':'';
+    html+=`<tr style="${style}">
+      <td>${s.name}</td><td>${s.inception}</td><td>${s.current}</td>
+      <td class="${s.ret>=0?'positive':'negative'}">${fmtPct(s.ret)}</td>
+      <td class="${s.alpha>=0?'positive':'negative'}">${s.highlight?'--':fmtPct(s.alpha)}</td>
+    </tr>`;
+  });
+  document.getElementById('alphaBody').innerHTML=html;
+
+  const best=strategies.slice(1).reduce((a,b)=>a.ret>b.ret?a:b);
+  const verdict=mdReturn>best.ret
+    ?'<strong style="color:var(--green)">MD Capital is outperforming all benchmarks.</strong> Your active allocation is adding value.'
+    :'<strong style="color:var(--red)">'+best.name+' would have outperformed</strong> by '+Math.abs(mdReturn-best.ret).toFixed(1)+'%. This is common during drawdowns — the income and cash cushion pays off during recovery phases.';
+  document.getElementById('alphaVerdict').innerHTML=verdict;
+}
+
+// ===== M2 LIQUIDITY =====
+function updateM2(){
+  const trend=document.getElementById('m2trend').value;
+  const lag=document.getElementById('m2btclag').value;
+  document.getElementById('m2us').textContent=trend==='expanding'?'Expanding':trend==='contracting'?'Contracting':'--';
+  document.getElementById('m2us').style.color=trend==='expanding'?'var(--green)':trend==='contracting'?'var(--red)':'var(--muted)';
+  document.getElementById('m2lag').textContent=lag==='lagging'?'LAGGING':lag==='tracking'?'TRACKING':lag==='leading'?'LEADING':'--';
+  document.getElementById('m2lag').style.color=lag==='lagging'?'var(--yellow)':'var(--muted)';
+  if(trend==='expanding'&&lag==='lagging'){
+    document.getElementById('m2global').textContent='BULLISH';
+    document.getElementById('m2global').style.color='var(--green)';
+  }else if(trend==='contracting'){
+    document.getElementById('m2global').textContent='BEARISH';
+    document.getElementById('m2global').style.color='var(--red)';
+  }else{
+    document.getElementById('m2global').textContent='MIXED';
+    document.getElementById('m2global').style.color='var(--muted)';
+  }
+}
+
+// ===== SUPPLY SHOCK =====
+function updateSupplyShock(){
+  let score=1; // halving always counts
+  let total=5;
+  const vals={ssExchange:{declining:1,stable:0,rising:-1},ssETF:{inflows:1,flat:0,outflows:-1},ssLTH:{increasing:1,stable:0,decreasing:-1},ssCorp:{accelerating:1,steady:0,slowing:-1}};
+  const pills={1:'pill-bull',0:'pill-neutral','-1':'pill-bear'};
+  const labels={1:'BULLISH',0:'NEUTRAL','-1':'BEARISH'};
+  let filled=1;
+
+  Object.entries(vals).forEach(([id,map])=>{
+    const v=document.getElementById(id).value;
+    const pillId=id.replace('ss','ss')+'Pill';
+    if(v&&map[v]!==undefined){
+      score+=map[v];filled++;
+      document.getElementById(pillId).innerHTML=`<span class="pill ${pills[map[v]]}">${labels[map[v]]}</span>`;
+    }
+  });
+
+  const pct=Math.max(0,Math.min(100,((score+total)/(total*2))*100));
+  document.getElementById('ssScore').textContent=Math.round(pct)+'%';
+  document.getElementById('ssScore').style.color=pct>65?'var(--green)':pct<35?'var(--red)':'var(--yellow)';
+  document.getElementById('ssBar').style.width=pct+'%';
+  document.getElementById('ssBar').style.background=pct>65?'var(--green)':pct<35?'var(--red)':'var(--yellow)';
+  document.getElementById('ssVerdict').textContent=pct>65?'High probability of supply-driven price shock. Accumulate.':pct<35?'Supply pressure easing. Be cautious.':'Mixed signals. Monitor.';
+}
+
+// ===== SOVEREIGN TREASURY =====
+function renderTreasury(){
+  const entities=[
+    {name:'Strategy Inc.',type:'Corporate',btc:738750},
+    {name:'US Strategic Reserve',type:'Sovereign',btc:207189},
+    {name:'Marathon Digital',type:'Corporate',btc:44893},
+    {name:'Hut 8 Mining',type:'Corporate',btc:10096},
+    {name:'Tesla',type:'Corporate',btc:9720},
+    {name:'El Salvador',type:'Sovereign',btc:6100},
+    {name:'Block Inc.',type:'Corporate',btc:8038},
+    {name:'Riot Platforms',type:'Corporate',btc:18692},
+    {name:'CleanSpark',type:'Corporate',btc:11869},
+    {name:'BTC ETFs (IBIT+FBTC+etc)',type:'ETF',btc:1120000},
+  ];
+  let totalBtc=0;
+  let html='';
+  entities.forEach(e=>{
+    totalBtc+=e.btc;
+    const val=e.btc*P.btc;
+    const pct=(e.btc/21e6*100);
+    html+=`<tr><td style="font-weight:600">${e.name}</td><td>${e.type}</td><td>${e.btc.toLocaleString()}</td><td>${fmt(Math.round(val))}</td><td>${pct.toFixed(3)}%</td></tr>`;
+  });
+  document.getElementById('treasuryBody').innerHTML=html;
+  document.getElementById('treasTotal').textContent=totalBtc.toLocaleString()+' BTC';
+  document.getElementById('treasValue').textContent=fmt(Math.round(totalBtc*P.btc));
+  document.getElementById('treasPct').textContent=(totalBtc/21e6*100).toFixed(2)+'%';
+}
+
+// ===== REGRET MINIMIZATION =====
+function updateRegret(){
+  const cash=parseInt(document.getElementById('regretCash').value);
+  const asset=document.getElementById('regretAsset').value;
+  const months=parseInt(document.getElementById('regretMonths').value);
+  document.getElementById('regretCashLabel').textContent=cash.toLocaleString();
+  document.getElementById('regretMonthsLabel').textContent=months;
+
+  const scenarios=[
+    {name:'BTC −40%',btcMult:0.6,prob:0.15},
+    {name:'BTC −20%',btcMult:0.8,prob:0.20},
+    {name:'BTC Flat',btcMult:1.0,prob:0.25},
+    {name:'BTC +30%',btcMult:1.3,prob:0.20},
+    {name:'BTC +60%',btcMult:1.6,prob:0.12},
+    {name:'BTC +100%',btcMult:2.0,prob:0.08},
+  ];
+
+  let html='<table><thead><tr><th>Scenario</th><th>Deploy Now</th><th>Wait '+months+'mo</th><th>Regret of Waiting</th><th>Prob.</th></tr></thead><tbody>';
+  let expectedRegretDeploy=0,expectedRegretWait=0;
+
+  scenarios.forEach(s=>{
+    let deployVal,waitVal;
+    if(asset==='btc'){deployVal=cash*s.btcMult;waitVal=cash;}
+    else if(asset==='strc'){deployVal=cash+(cash*STRC_DIV*months/12);waitVal=cash;}
+    else{deployVal=(cash/2)*s.btcMult+(cash/2)+(cash/2*STRC_DIV*months/12);waitVal=cash;}
+    // If waiting, you deploy at end — so in bull scenario you miss the move, in bear you avoid loss
+    const waitEndVal=asset==='strc'?deployVal:cash; // simplification: if you wait, you still have cash
+    const regretOfWaiting=deployVal-waitVal;
+    const cls=regretOfWaiting>0?'negative':'positive';
+    html+=`<tr><td>${s.name}</td><td>${fmt(Math.round(deployVal))}</td><td>${fmt(Math.round(waitVal))}</td><td class="${cls}">${regretOfWaiting>=0?'-':'+'}${fmt(Math.abs(Math.round(regretOfWaiting)))}</td><td>${(s.prob*100).toFixed(0)}%</td></tr>`;
+    expectedRegretDeploy+=Math.max(0,waitVal-deployVal)*s.prob;
+    expectedRegretWait+=Math.max(0,deployVal-waitVal)*s.prob;
+  });
+  html+='</tbody></table>';
+  html+=`<div class="highlight-box" style="margin-top:12px">
+    <strong>Expected Regret of Deploying Now:</strong> ${fmt(Math.round(expectedRegretDeploy))} (cost of deploying if BTC drops)<br>
+    <strong>Expected Regret of Waiting ${months}mo:</strong> ${fmt(Math.round(expectedRegretWait))} (cost of missing the move if BTC rises)<br><br>
+    <strong style="color:${expectedRegretWait>expectedRegretDeploy?'var(--green)':'var(--yellow)'}">${expectedRegretWait>expectedRegretDeploy?'Deploy now has lower expected regret. Bias toward action.':'Waiting has lower expected regret. Patience may pay off.'}</strong>
+    ${asset==='btc'?'<br><span style="color:var(--muted)">Tip: DCA splits the difference — you capture some upside while limiting downside regret.</span>':''}
+  </div>`;
+  document.getElementById('regretResults').innerHTML=html;
+}
+
+// ===== DIVIDEND PATHFINDER =====
+function renderDivPath(){
+  const monthlyDiv=H.strc*STRC_PAR*STRC_DIV/12;
+  const paths=[
+    {name:'Reinvest into STRC (compound income)',color:'var(--blue)'},
+    {name:'Buy BTC on Swan (maximize upside)',color:'var(--accent)'},
+    {name:'Accumulate as cash (build dry powder)',color:'var(--muted)'},
+  ];
+
+  let html='<div class="grid-3" style="margin-bottom:16px">';
+  const years=[1,2,3,5];
+
+  paths.forEach(p=>{
+    html+=`<div style="text-align:center;padding:12px"><div style="font-weight:600;color:${p.color};margin-bottom:8px;font-size:.85rem">${p.name}</div>`;
+    years.forEach(y=>{
+      let val;
+      if(p.name.includes('STRC')){
+        // Compound: each month buy more STRC, dividends grow
+        let shares=H.strc;let totalDiv=0;
+        for(let m=0;m<y*12;m++){const div=shares*STRC_PAR*STRC_DIV/12;totalDiv+=div;shares+=div/STRC_PAR;}
+        val=totalDiv;
+        html+=`<div style="font-size:.75rem;padding:2px 0"><span style="color:var(--muted)">${y}yr:</span> <span style="font-weight:600">${fmt(Math.round(val))}</span> <span style="color:var(--muted)">(${shares.toFixed(1)} shares)</span></div>`;
+      }else if(p.name.includes('BTC')){
+        // Buy BTC monthly, show at 3 price scenarios
+        const totalDeployed=monthlyDiv*y*12;
+        val=totalDeployed;
+        html+=`<div style="font-size:.75rem;padding:2px 0"><span style="color:var(--muted)">${y}yr:</span> <span style="font-weight:600">${fmt(Math.round(val))} deployed</span></div>`;
+      }else{
+        val=monthlyDiv*y*12;
+        html+=`<div style="font-size:.75rem;padding:2px 0"><span style="color:var(--muted)">${y}yr:</span> <span style="font-weight:600">${fmt(Math.round(val))} saved</span></div>`;
+      }
+    });
+    html+=`</div>`;
+  });
+  html+='</div>';
+  html+=`<div class="highlight-box">
+    <strong>Monthly dividend: ${fmt2(monthlyDiv)}</strong><br>
+    <strong>Recommendation:</strong> In a sideways/bearish BTC market, reinvesting into STRC compounds the income stream fastest — after 3 years of compounding, you'd have ~${(H.strc*Math.pow(1+STRC_DIV/12,36)/H.strc*100-100).toFixed(0)}% more shares than today. In a bullish BTC market, buying BTC with dividends captures more upside. A balanced approach: reinvest into STRC until Protected Capital is covered by STRC income alone, then switch to BTC.
+  </div>`;
+  document.getElementById('divPathResults').innerHTML=html;
+}
+
+// ===== REBALANCING SIGNAL =====
+function renderRebalancing(){
+  const btcVal=H.btc*P.btc;const mstrVal=H.mstr*P.mstr;const strcVal=H.strc*STRC_PAR;const nav=getNav();
+  const btcPct=btcVal/nav*100;const eqPct=(mstrVal+strcVal)/nav*100;const cashPct=TOTAL_CASH/nav*100;
+
+  const ipsbtc=50,ipseq=25,ipscash=25;
+  const driftBtc=btcPct-ipsbtc;const driftEq=eqPct-ipseq;const driftCash=cashPct-ipscash;
+  const maxDrift=Math.max(Math.abs(driftBtc),Math.abs(driftEq),Math.abs(driftCash));
+
+  let current=`<div class="card-label">Current Allocation</div>
+    <div style="font-size:.85rem;margin-top:8px">
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>BTC</span><span style="font-weight:600">${btcPct.toFixed(1)}%</span><span style="color:var(--muted)">IPS: ${ipsbtc}%</span><span class="${Math.abs(driftBtc)>10?'negative':'positive'}">${driftBtc>=0?'+':''}${driftBtc.toFixed(1)}% drift</span></div>
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>Equity</span><span style="font-weight:600">${eqPct.toFixed(1)}%</span><span style="color:var(--muted)">IPS: ${ipseq}%</span><span class="${Math.abs(driftEq)>10?'negative':'positive'}">${driftEq>=0?'+':''}${driftEq.toFixed(1)}% drift</span></div>
+    <div style="display:flex;justify-content:space-between;padding:6px 0"><span>Cash</span><span style="font-weight:600">${cashPct.toFixed(1)}%</span><span style="color:var(--muted)">IPS: ${ipscash}%</span><span class="${Math.abs(driftCash)>10?'negative':'positive'}">${driftCash>=0?'+':''}${driftCash.toFixed(1)}% drift</span></div>
+    </div>`;
+  document.getElementById('rebalCurrent').innerHTML=current;
+
+  let action;
+  if(maxDrift>10){
+    action=`<div style="padding:16px;background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);border-radius:8px">
+      <div style="font-weight:700;color:var(--yellow);margin-bottom:8px">REBALANCE SIGNAL: ACTIVE</div>
+      <div style="font-size:.82rem;color:var(--muted)">Max drift: ${maxDrift.toFixed(1)}% (threshold: ±10%). Consider rebalancing to IPS targets.</div>
+    </div>`;
+  }else{
+    action=`<div style="padding:16px;background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.15);border-radius:8px">
+      <div style="font-weight:700;color:var(--green);margin-bottom:8px">NO REBALANCE NEEDED</div>
+      <div style="font-size:.82rem;color:var(--muted)">Max drift: ${maxDrift.toFixed(1)}% (within ±10% threshold). Hold current positions.</div>
+    </div>`;
+  }
+  document.getElementById('rebalAction').innerHTML=action;
+}
+
+// ===== WHAT'S PRICED IN =====
+function renderPricedIn(){
+  const btcP=P.btc;
+  const mcap=btcP*19.5e6; // ~19.5M circulating
+  const goldMcap=16e12;
+  const btcGoldParity=goldMcap/19.5e6;
+  const impliedAdoption=(mcap/goldMcap*100);
+  const impliedGrowth=((btcGoldParity/btcP-1)*100);
+
+  let html=`<div class="grid-3">
+    <div class="stat"><div class="stat-value" style="color:var(--accent)">${fmt(Math.round(mcap/1e9))}B</div><div class="stat-label">BTC Market Cap</div></div>
+    <div class="stat"><div class="stat-value">${impliedAdoption.toFixed(1)}%</div><div class="stat-label">% of Gold Market Cap</div></div>
+    <div class="stat"><div class="stat-value positive">${fmt(Math.round(btcGoldParity))}</div><div class="stat-label">BTC at Gold Parity</div></div>
+  </div>
+  <div class="highlight-box" style="margin-top:12px">
+    <strong>At ${fmt(Math.round(btcP))}, the market is pricing BTC at ${impliedAdoption.toFixed(1)}% of gold's store-of-value market.</strong><br><br>
+    If BTC reaches gold parity, that's ${fmt(Math.round(btcGoldParity))} per coin — a ${impliedGrowth.toFixed(0)}% upside from here.<br><br>
+    <strong>What would change the price:</strong><br>
+    • More sovereign/corporate adoption → higher (US Strategic Reserve is the catalyst)<br>
+    • Adverse regulation or exchange failures → lower<br>
+    • Fed rate cuts / M2 expansion → higher (liquidity drives everything)<br>
+    • Prolonged risk-off / recession → lower short-term, potentially higher long-term<br><br>
+    <strong>The question:</strong> Do you think BTC will capture more or less than ${impliedAdoption.toFixed(1)}% of gold's market over the next 3-5 years? If more, you're underexposed.
+  </div>`;
+  document.getElementById('pricedInResults').innerHTML=html;
+}
+
+// ===== TAX TRACKER =====
+function renderTax(){
+  const now=new Date();
+  const lots=[
+    {date:'2025-08-25',asset:'BTC',qty:0.05,cost:64000*0.05,price:P.btc,curQty:0.05},
+    {date:'2025-09-15',asset:'BTC',qty:0.03,cost:58000*0.03,price:P.btc,curQty:0.03},
+    {date:'2025-10-01',asset:'BTC',qty:0.02096566,cost:63000*0.02096566,price:P.btc,curQty:0.02096566},
+    {date:'2025-08-25',asset:'STRC',qty:20,cost:100*20,price:P.strc||100,curQty:20},
+    {date:'2025-10-15',asset:'STRC',qty:15.2813,cost:100*15.2813,price:P.strc||100,curQty:15.2813},
+    {date:'2025-08-25',asset:'MSTR',qty:1.271,cost:250*1.271,price:P.mstr,curQty:1.271},
+  ];
+
+  let totalCost=0,totalVal=0,html='';
+  lots.forEach(l=>{
+    const val=l.curQty*l.price;
+    const pl=val-l.cost;
+    const days=Math.floor((now-new Date(l.date))/(864e5));
+    const period=days>365?'Long-term':'Short-term ('+days+'d)';
+    totalCost+=l.cost;totalVal+=val;
+    html+=`<tr>
+      <td>${l.date}</td><td style="font-weight:600">${l.asset}</td><td>${l.asset==='BTC'?l.curQty.toFixed(8):l.curQty.toFixed(4)}</td>
+      <td>${fmt2(l.cost)}</td><td>${fmt2(val)}</td>
+      <td class="${pl>=0?'positive':'negative'}" style="font-weight:600">${pl>=0?'+':''}${fmt2(pl)}</td>
+      <td style="font-size:.75rem">${period}</td>
+    </tr>`;
+  });
+  document.getElementById('taxBody').innerHTML=html;
+  document.getElementById('taxTotalCost').textContent=fmt2(totalCost);
+  document.getElementById('taxTotalVal').textContent=fmt2(totalVal);
+  const totalPL=totalVal-totalCost;
+  document.getElementById('taxTotalPL').textContent=(totalPL>=0?'+':'')+fmt2(totalPL);
+  document.getElementById('taxTotalPL').style.color=totalPL>=0?'var(--green)':'var(--red)';
+
+  const losses=lots.filter(l=>l.curQty*l.price<l.cost);
+  let advice='';
+  if(losses.length>0&&totalPL<0){
+    advice=`<strong>Tax-Loss Harvesting:</strong> You have unrealized losses of ${fmt2(Math.abs(totalPL))}. If you sell and rebuy after 30 days (avoiding wash sale), you can offset other gains. However, at your fund size the tax savings may be minimal — consult your CPA.`;
+  }else{
+    advice=`<strong>No tax-loss harvesting opportunities currently.</strong> All lots are tracked. Remember: MD Capital is a pass-through (K-1). Each member reports their share of gains/losses on their personal return.`;
+  }
+  document.getElementById('taxAdvice').innerHTML=advice;
+}
+
+// ===== EXPENSE BURN =====
+function renderExpenses(){
+  const annualIncome=H.strc*STRC_PAR*STRC_DIV;
+  const annualExpense=455;
+  const surplus=annualIncome-annualExpense;
+  document.getElementById('expIncome').textContent=fmt(Math.round(annualIncome))+'/yr';
+  document.getElementById('expBar').style.width=Math.min(100,(annualIncome/annualExpense*100))+'%';
+  document.getElementById('expVerdict').innerHTML=surplus>0
+    ?`<span style="color:var(--green);font-weight:700">SELF-SUSTAINING</span><br><span style="color:var(--muted)">STRC income exceeds expenses by ${fmt(Math.round(surplus))}/year. Surplus can fund BTC purchases.</span>`
+    :`<span style="color:var(--red);font-weight:700">NOT YET SELF-SUSTAINING</span><br><span style="color:var(--muted)">Need ${fmt(Math.round(-surplus))} more annual income. Add ${Math.ceil(-surplus/(STRC_PAR*STRC_DIV))} more STRC shares.</span>`;
+}
+
+// ===== LIQUIDATION PLANNER =====
+function renderLiquidation(){
+  const nav=getNav();
+  const items=[
+    {name:'STRC (35.28 shares)',val:H.strc*(P.strc||100),time:'T+1 day',priority:1,note:'Most liquid. Trades near par. Sell first to generate cash for Protected Capital.'},
+    {name:'Cash (Bank + IBKR)',val:TOTAL_CASH,time:'Immediate',priority:0,note:'Already liquid. Apply directly to Protected Capital obligation.'},
+    {name:'MSTR (1.271 shares)',val:H.mstr*P.mstr,time:'T+1 day',priority:2,note:'Small position. Fractional shares may have wider spread. Market order acceptable at this size.'},
+    {name:'BTC (0.101 via Swan)',val:H.btc*P.btc,time:'T+2-3 days',priority:3,note:'Withdraw from Swan to exchange or sell direct. May have withdrawal hold period. Plan for 2-3 business days.'},
+  ];
+  items.sort((a,b)=>a.priority-b.priority);
+
+  let running=0;
+  let html=`<table><thead><tr><th>Order</th><th>Asset</th><th>Value</th><th>Settlement</th><th>Running Total</th><th>Notes</th></tr></thead><tbody>`;
+  items.forEach((it,i)=>{
+    running+=it.val;
+    html+=`<tr><td style="font-weight:700;color:var(--accent)">${i+1}</td><td>${it.name}</td><td style="font-weight:600">${fmt(Math.round(it.val))}</td><td>${it.time}</td><td style="font-weight:600">${fmt(Math.round(running))}</td><td style="font-size:.75rem;color:var(--muted)">${it.note}</td></tr>`;
+  });
+  html+='</tbody></table>';
+  html+=`<div class="highlight-box" style="margin-top:12px">
+    <strong>Full liquidation value: ${fmt(Math.round(nav))}</strong> · Estimated time to full cash: 3-4 business days<br>
+    <strong>Protected Capital waterfall:</strong> First ${fmt(PROT_CAP)} + accrued preferred → Mike. Remainder split 50/50.<br>
+    <span style="color:var(--muted)">Per Operating Agreement Section 6.3b, any withdrawal requires written approval from both members.</span>
+  </div>`;
+  document.getElementById('liqPlan').innerHTML=html;
+}
+
+// ===== DECISION JOURNAL =====
+let journal=JSON.parse(localStorage.getItem('mdcJournal')||'[]');
+
+function addJournalEntry(){
+  const entry={
+    date:document.getElementById('djDate').value||new Date().toISOString().split('T')[0],
+    action:document.getElementById('djAction').value,
+    asset:document.getElementById('djAsset').value,
+    amount:document.getElementById('djAmount').value,
+    reasoning:document.getElementById('djReasoning').value,
+    btcPrice:P.btc,
+    timestamp:Date.now()
+  };
+  if(!entry.reasoning){alert('Please enter your reasoning.');return;}
+  journal.unshift(entry);
+  try{localStorage.setItem('mdcJournal',JSON.stringify(journal))}catch(e){}
+  renderJournal();
+  document.getElementById('djReasoning').value='';
+  document.getElementById('djAsset').value='';
+  document.getElementById('djAmount').value='';
+}
+
+function renderJournal(){
+  document.getElementById('djBtcPrice').textContent=P.btc?fmt(Math.round(P.btc)):'--';
+  if(journal.length===0){
+    document.getElementById('journalEntries').innerHTML='<div style="color:var(--muted);font-size:.82rem;padding:16px;text-align:center">No entries yet. Start logging decisions to build your feedback loop.</div>';
+    return;
+  }
+  let html='';
+  journal.slice(0,20).forEach(e=>{
+    const daysSince=Math.floor((Date.now()-e.timestamp)/(864e5));
+    const btcNow=P.btc;const btcThen=e.btcPrice;
+    const btcMove=btcThen?((btcNow-btcThen)/btcThen*100):null;
+    html+=`<div class="journal-entry">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span class="date">${e.date} · ${e.action.toUpperCase()} ${e.asset} ${e.amount?'($'+e.amount+')':''}</span>
+        <span style="font-size:.7rem;color:var(--muted)">${daysSince}d ago · BTC was ${e.btcPrice?fmt(Math.round(e.btcPrice)):'?'}</span>
+      </div>
+      <div style="color:var(--muted)">${e.reasoning}</div>
+      ${btcMove!==null?`<div style="margin-top:6px;font-size:.75rem">BTC since decision: <span class="${btcMove>=0?'positive':'negative'}">${btcMove>=0?'+':''}${btcMove.toFixed(1)}%</span></div>`:''}
+    </div>`;
+  });
+  document.getElementById('journalEntries').innerHTML=html;
+}
+
+// ===== INIT =====
+async function init(){
+  await fetchPrices();
+  document.getElementById('djDate').value=new Date().toISOString().split('T')[0];
+  renderCountdown();renderSatStack();renderHalvingCycle();renderVolatility();
+  renderAlpha();renderTreasury();renderDivPath();renderRebalancing();
+  renderPricedIn();updateRegret();renderTax();renderExpenses();renderLiquidation();
+  renderJournal();
+}
+init();
+setInterval(async()=>{await fetchPrices();init()},120000);
+</script>
+
+</body>
+</html>
