@@ -121,12 +121,6 @@ a{color:var(--accent);text-decoration:none}
   </div>
 </div>
 
-<!-- EMBEDDED DASHBOARD -->
-<div class="back-bar" id="back-bar">
-  <button onclick="backToPortal()">&#8592; Back to Portal</button>
-  <span id="dash-label"></span>
-</div>
-<iframe id="dashboard-frame" sandbox="allow-scripts allow-same-origin"></iframe>
 
 <script>
 /*
@@ -235,20 +229,11 @@ function logout() {
 }
 
 function openDashboard(file, label) {
-  document.getElementById('portal-content').style.display = 'none';
-  document.getElementById('back-bar').style.display = 'flex';
-  document.getElementById('dash-label').textContent = label;
-  const frame = document.getElementById('dashboard-frame');
-  frame.src = file;
-  frame.style.display = 'block';
-  frame.style.marginTop = '42px';
+  window.location.href = file;
 }
 
 function backToPortal() {
-  document.getElementById('dashboard-frame').style.display = 'none';
-  document.getElementById('dashboard-frame').src = '';
-  document.getElementById('back-bar').style.display = 'none';
-  document.getElementById('portal-content').style.display = 'block';
+  window.location.href = '/';
 }
 
 // Enter key support
