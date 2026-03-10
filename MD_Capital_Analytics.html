@@ -968,7 +968,7 @@ function renderLiquidation(){
   html+='</tbody></table>';
   html+=`<div class="highlight-box" style="margin-top:12px">
     <strong>Full liquidation value: ${fmt(Math.round(nav))}</strong> · Estimated time to full cash: 3-4 business days<br>
-    <strong>Protected Capital waterfall:</strong> First ${fmt(PROT_CAP)} + accrued preferred → Mike. Remainder split 50/50.<br>
+    <strong>Protected Capital waterfall:</strong> First ${fmt(PROT_CAP)} + accrued preferred → LP. Remainder split 50/50.<br>
     <span style="color:var(--muted)">Per Operating Agreement Section 6.3b, any withdrawal requires written approval from both members.</span>
   </div>`;
   document.getElementById('liqPlan').innerHTML=html;

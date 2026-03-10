@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+<script>if(Date.now()>parseInt(localStorage.getItem("md_session")||"0"))window.location.href="/";</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MD Capital — Live Dashboard [DEMO]</title>
+<title>MD Capital — Live Dashboard</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -105,15 +105,15 @@ a{color:var(--accent);text-decoration:none}
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 </head>
-<body><div id="demo-banner" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#f7931a,#e8851a,#f7931a);color:#000;text-align:center;padding:10px 20px;font-family:Inter,system-ui,sans-serif;font-size:.85rem;font-weight:600;letter-spacing:1px;box-shadow:0 2px 20px rgba(247,147,26,.3);">DEMO MODE — Sample data for illustration only<button onclick="document.getElementById('demo-banner').style.display='none'" style="background:rgba(0,0,0,.15);border:none;color:#000;padding:4px 12px;border-radius:4px;margin-left:16px;cursor:pointer;font-size:.75rem;font-weight:600;">Dismiss</button></div><div style="height:40px"></div>
+<body>
 
 <div class="header">
   <div>
     <h1><span>MD</span> Capital</h1>
     <div style="display:flex;gap:6px;margin-top:6px">
-      <a href="index.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--accent);border-radius:6px;color:var(--accent)">Portfolio</a>
-      <a href="MD_Capital_Signal_System_Demo.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;color:var(--muted);text-decoration:none">Signals & Thesis</a>
-      <a href="MD_Capital_Analytics_Demo.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;color:var(--muted);text-decoration:none">Analytics</a>
+      <a href="/MD_Capital_Dashboard.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--accent);border-radius:6px;color:var(--accent)">Portfolio</a>
+      <a href="/MD_Capital_Signal_System.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;color:var(--muted);text-decoration:none">Signals & Thesis</a>
+      <a href="/MD_Capital_Analytics.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;color:var(--muted);text-decoration:none">Analytics</a>
     </div>
   </div>
   <div class="header-right">
@@ -238,7 +238,7 @@ a{color:var(--accent);text-decoration:none}
       <div class="section-title">Capital Account & Distribution Waterfall</div>
       <div style="font-size:.85rem;margin-bottom:16px">
         <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
-          <span>Mike's Total Contributions</span><span style="font-weight:600">$20,000</span>
+          <span>LP Total Contributions</span><span style="font-weight:600">$20,000</span>
         </div>
         <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
           <span>Accrued Preferred Return (5% simple p.a.)</span><span style="font-weight:600" id="preferredReturn">--</span>
@@ -260,9 +260,9 @@ a{color:var(--accent);text-decoration:none}
     <div class="card">
       <div class="section-title">STRC Dividend Income</div>
       <div style="font-size:.85rem">
-        <div class="div-row"><span>Shares Held</span><span style="font-weight:600">250.0000</span></div>
+        <div class="div-row"><span>Shares Held</span><span style="font-weight:600">35.2813</span></div>
         <div class="div-row"><span>Avg Cost / Share</span><span style="font-weight:600">$98.79</span></div>
-        <div class="div-row"><span>Cost Basis</span><span style="font-weight:600">$24,697</span></div>
+        <div class="div-row"><span>Cost Basis</span><span style="font-weight:600">$3,486.00</span></div>
         <div class="div-row"><span>Annual Dividend Rate</span><span style="font-weight:600">11.50%</span></div>
         <div class="div-row"><span>Annual Income (est.)</span><span style="font-weight:600;color:var(--green)" id="annualDiv">--</span></div>
         <div class="div-row"><span>Monthly Income (est.)</span><span style="font-weight:600;color:var(--green)" id="monthlyDiv">--</span></div>
@@ -278,7 +278,7 @@ a{color:var(--accent);text-decoration:none}
     <div class="thesis-box">
       <strong>Core Thesis:</strong> Bitcoin is in a secular bull market driven by institutional adoption, sovereign accumulation, and monetary debasement. MD Capital captures this via a barbell strategy: direct BTC spot exposure (Swan) for pure upside + BTC-treasury equities (MSTR/STRC) for leveraged convexity and yield.<br><br>
       <strong>Edge:</strong> STRC provides ~11.5% yield anchored at $100 par, funded by Strategy's BTC-collateralized issuance engine. This generates income while maintaining BTC-correlated upside through the MSTR common equity position. The combination of spot BTC + high-yield preferred + common equity creates a full-stack BTC exposure with differentiated risk/return across the capital structure.<br><br>
-      <strong>Risk Framework:</strong> Max 2x leverage · No >30% single non-BTC position · Daily VaR ≤ 5% · Stress-tested for 50%+ BTC drawdowns · Protected Capital priority waterfall ensures Mike's $20k + 5% is repaid first.
+      <strong>Risk Framework:</strong> Max 2x leverage · No >30% single non-BTC position · Daily VaR ≤ 5% · Stress-tested for 50%+ BTC drawdowns · Protected Capital priority waterfall ensures LP's $20k + 5% is repaid first.
     </div>
   </div>
 
@@ -379,21 +379,21 @@ a{color:var(--accent);text-decoration:none}
 <script>
 // ===== CONFIGURATION =====
 const HOLDINGS = {
-  btc: { qty: 2.50000000, label: 'Bitcoin (Spot)', ticker: 'BTC', account: 'Swan', costBasis: 250000, avgCost: 101822.23 },
-  mstr: { qty: 15.000, label: 'Strategy Inc', ticker: 'MSTR', account: 'IBKR', costBasis: 2036, avgCost: 135.71 },
-  strc: { qty: 250.0000, label: 'Strategy Pref (STRC)', ticker: 'STRC', account: 'IBKR', costBasis: 24697, avgCost: 98.79 },
-  cash_bank: { qty: 25000, label: 'Cash (Bank)', ticker: 'USD', account: 'Bank' },
-  cash_ibkr: { qty: 12000, label: 'Cash (IBKR)', ticker: 'USD', account: 'IBKR' }
+  btc: { qty: 0.10312090, label: 'Bitcoin (Spot)', ticker: 'BTC', account: 'Swan', costBasis: 10500, avgCost: 101822.23 },
+  mstr: { qty: 1.271, label: 'Strategy Inc', ticker: 'MSTR', account: 'IBKR', costBasis: 172.49, avgCost: 135.71 },
+  strc: { qty: 35.2813, label: 'Strategy Pref (STRC)', ticker: 'STRC', account: 'IBKR', costBasis: 3486.00, avgCost: 98.79 },
+  cash_bank: { qty: 4112, label: 'Cash (Bank)', ticker: 'USD', account: 'Bank' },
+  cash_ibkr: { qty: 1730, label: 'Cash (IBKR)', ticker: 'USD', account: 'IBKR' }
 };
 const STRATEGY_BTC_HOLDINGS = 738750;
-const TOTAL_CONTRIBUTED = 250000; // Mike contributed $20k total (2 deposits)
-const PROTECTED_CAPITAL = 250000;
+const TOTAL_CONTRIBUTED = 20000; // LP contributed $20k total
+const PROTECTED_CAPITAL = 20000;
 const PREFERRED_RATE = 0.05;
 const FUND_START = new Date('2025-08-25');
 const STRC_DIV_RATE = 0.115;
 const STRC_PAR = 100;
 const SWAN_FEE_MONTHLY = 37.12;
-const TOTAL_COST_BASIS = 250000 + 24697 + 2036; // $14,158.49 deployed into positions
+const TOTAL_COST_BASIS = 10500 + 3486 + 172.49; // $14,158.49 deployed into positions
 
 // ===== STATE =====
 let prices = { btc: null, mstr: null, strc: null };
@@ -912,7 +912,7 @@ function renderNavProjection() {
 
       const mstrP = curMstr * Math.pow(btcP / curBtc, 1.5);
       const nav = (btcQty * btcP) + (HOLDINGS.mstr.qty * mstrP) + (strcQty * STRC_PAR) + Math.max(cash, 0);
-      const vs20 = nav >= 250000;
+      const vs20 = nav >= 20000;
       html += `<td style="font-weight:600;${vs20?'color:var(--green)':'color:var(--red)'}">${fmt(nav)}</td>`;
     });
     html += '</tr>';
@@ -966,7 +966,7 @@ function runMonteCarlo() {
 
   finalNavs.sort((a, b) => a - b);
 
-  const prob20k = finalNavs.filter(n => n >= 250000).length / N * 100;
+  const prob20k = finalNavs.filter(n => n >= 20000).length / N * 100;
   const prob25k = finalNavs.filter(n => n >= 25000).length / N * 100;
   const prob10k = finalNavs.filter(n => n < 10000).length / N * 100;
 
@@ -992,7 +992,7 @@ function runMonteCarlo() {
   trimmed.forEach(([bucket, count]) => {
     const pct = (count / maxCount * 100);
     const bVal = parseInt(bucket);
-    const color = bVal >= 250000 ? 'var(--green)' : bVal >= 125000 ? 'var(--accent)' : 'var(--red)';
+    const color = bVal >= 20000 ? 'var(--green)' : bVal >= 10000 ? 'var(--accent)' : 'var(--red)';
     distHtml += `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%">
       <div style="width:100%;background:${color};border-radius:2px 2px 0 0;height:${pct}%;min-height:1px;opacity:0.7"></div>
     </div>`;
