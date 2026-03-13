@@ -449,7 +449,7 @@ button.btn-outline{background:transparent;border:1px solid var(--accent);color:v
 
 <script>
 // ===== CONFIG =====
-const H = { btc: 0.10312090, mstr: 1.271, strc: 35.2813, cashBank: 4000, cashIBKR: 1700 };
+const H = { btc: 0.10312090, mstr: 1.271, strc: 47.2813, cashBank: 4112, cashIBKR: 526 };
 const TOTAL_CASH = H.cashBank + H.cashIBKR;
 const PROT_CAP = 20000;
 const PREF_RATE = 0.05;
@@ -461,9 +461,9 @@ const BTC_AT_INCEPTION = 64000; // BTC price at LLC formation Aug 25, 2025
 const BTC_AVG_COST = 101822.23; // weighted avg across all Swan purchases
 const BTC_COST_BASIS = 10500; // total USD deployed into BTC
 const MSTR_COST_BASIS = 172.49;
-const STRC_COST_BASIS = 3486.00;
+const STRC_COST_BASIS = 4690.00;
 const MSTR_AVG_COST = 135.71;
-const STRC_AVG_COST = 98.79;
+const STRC_AVG_COST = 99.20;
 
 // Swan purchase lots (date, btc qty, price, total USD)
 const BTC_LOTS = [
@@ -902,7 +902,7 @@ function renderTax(){
   const lots = BTC_LOTS.map(l => ({
     date: l.date, asset: 'BTC', qty: l.qty, cost: l.cost, price: P.btc, curQty: l.qty
   }));
-  lots.push({ date: '2025-10-20', asset: 'STRC', qty: 35.2813, cost: STRC_COST_BASIS, price: P.strc || 100, curQty: 35.2813 });
+  lots.push({ date: '2025-10-20', asset: 'STRC', qty: 47.2813, cost: STRC_COST_BASIS, price: P.strc || 100, curQty: 47.2813 });
   lots.push({ date: '2025-10-20', asset: 'MSTR', qty: 1.271, cost: MSTR_COST_BASIS, price: P.mstr, curQty: 1.271 });
 
   let totalCost=0,totalVal=0,html='';

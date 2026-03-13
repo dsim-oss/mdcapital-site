@@ -260,8 +260,8 @@ a{color:var(--accent);text-decoration:none}
     <div class="card">
       <div class="section-title">STRC Dividend Income</div>
       <div style="font-size:.85rem">
-        <div class="div-row"><span>Shares Held</span><span style="font-weight:600">35.2813</span></div>
-        <div class="div-row"><span>Avg Cost / Share</span><span style="font-weight:600">$98.79</span></div>
+        <div class="div-row"><span>Shares Held</span><span style="font-weight:600">47.2813</span></div>
+        <div class="div-row"><span>Avg Cost / Share</span><span style="font-weight:600">$99.20</span></div>
         <div class="div-row"><span>Cost Basis</span><span style="font-weight:600">$3,486.00</span></div>
         <div class="div-row"><span>Annual Dividend Rate</span><span style="font-weight:600">11.50%</span></div>
         <div class="div-row"><span>Annual Income (est.)</span><span style="font-weight:600;color:var(--green)" id="annualDiv">--</span></div>
@@ -306,7 +306,7 @@ a{color:var(--accent);text-decoration:none}
     <!-- DCA Simulator -->
     <div class="card" style="margin-bottom:16px">
       <div class="section-title">DCA Deployment Simulator</div>
-      <p style="font-size:.75rem;color:var(--muted);margin-bottom:16px">Model different ways to deploy the $5,700 cash across spot BTC (Swan) and STRC (IBKR). Adjust the sliders to see projected outcomes.</p>
+      <p style="font-size:.75rem;color:var(--muted);margin-bottom:16px">Model different ways to deploy the $4,638 cash across spot BTC (Swan) and STRC (IBKR). Adjust the sliders to see projected outcomes.</p>
       <div class="grid-2" style="margin-bottom:16px">
         <div>
           <div style="margin-bottom:16px">
@@ -381,9 +381,9 @@ a{color:var(--accent);text-decoration:none}
 const HOLDINGS = {
   btc: { qty: 0.10312090, label: 'Bitcoin (Spot)', ticker: 'BTC', account: 'Swan', costBasis: 10500, avgCost: 101822.23 },
   mstr: { qty: 1.271, label: 'Strategy Inc', ticker: 'MSTR', account: 'IBKR', costBasis: 172.49, avgCost: 135.71 },
-  strc: { qty: 35.2813, label: 'Strategy Pref (STRC)', ticker: 'STRC', account: 'IBKR', costBasis: 3486.00, avgCost: 98.79 },
+  strc: { qty: 47.2813, label: 'Strategy Pref (STRC)', ticker: 'STRC', account: 'IBKR', costBasis: 4690.00, avgCost: 99.20 },
   cash_bank: { qty: 4112, label: 'Cash (Bank)', ticker: 'USD', account: 'Bank' },
-  cash_ibkr: { qty: 1730, label: 'Cash (IBKR)', ticker: 'USD', account: 'IBKR' }
+  cash_ibkr: { qty: 526, label: 'Cash (IBKR)', ticker: 'USD', account: 'IBKR' }
 };
 const STRATEGY_BTC_HOLDINGS = 738750;
 const TOTAL_CONTRIBUTED = 20000; // LP contributed $20k total
@@ -393,7 +393,7 @@ const FUND_START = new Date('2025-08-25');
 const STRC_DIV_RATE = 0.115;
 const STRC_PAR = 100;
 const SWAN_FEE_MONTHLY = 37.12;
-const TOTAL_COST_BASIS = 10500 + 3486 + 172.49; // $14,158.49 deployed into positions
+const TOTAL_COST_BASIS = 10500 + 4690 + 172.49; // $15,362.49 deployed into positions
 
 // ===== STATE =====
 let prices = { btc: null, mstr: null, strc: null };

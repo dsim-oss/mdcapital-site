@@ -527,8 +527,8 @@ function computeSignals() {
   if (data.btc) {
     const btcVal = 0.10312090 * data.btc;
     const mstrVal = 1.271 * data.mstr;
-    const strcVal = 35.2813 * data.strc;
-    const cashVal = 5700;
+    const strcVal = 47.2813 * data.strc;
+    const cashVal = 4638;
     const totalNav = btcVal + mstrVal + strcVal + cashVal;
 
     // STRC concentration
@@ -548,12 +548,12 @@ function computeSignals() {
     // Stress test
     const stressBtc = data.btc * 0.5;
     const stressMstr = data.mstr * 0.6; // MSTR drops more than BTC typically
-    const stressNav = (0.10312090 * stressBtc) + (1.271 * stressMstr) + (35.2813 * 100) + 5842; // STRC stays near par + cash
+    const stressNav = (0.10312090 * stressBtc) + (1.271 * stressMstr) + (47.2813 * 100) + 4638; // STRC stays near par + cash
     document.getElementById('stressTest').innerHTML = `
       <strong>Scenario: BTC drops 50% to $${(stressBtc).toLocaleString()}</strong><br>
       Estimated portfolio NAV: <span style="color:var(--red);font-weight:700">$${stressNav.toLocaleString(undefined,{maximumFractionDigits:0})}</span><br>
-      BTC position: $${(0.10312090*stressBtc).toLocaleString(undefined,{maximumFractionDigits:0})} · MSTR: $${(1.271*stressMstr).toLocaleString(undefined,{maximumFractionDigits:0})} · STRC: $${(35.2813*100).toLocaleString()} (par stable) · Cash: $5,842<br>
-      <span style="color:var(--muted)">STRC dividends continue at ~$33.81/mo regardless of BTC price. Protected Capital shortfall would be $${(20000 - stressNav).toLocaleString(undefined,{maximumFractionDigits:0})} if immediately liquidated.</span>
+      BTC position: $${(0.10312090*stressBtc).toLocaleString(undefined,{maximumFractionDigits:0})} · MSTR: $${(1.271*stressMstr).toLocaleString(undefined,{maximumFractionDigits:0})} · STRC: $${(47.2813*100).toLocaleString()} (par stable) · Cash: $4,638<br>
+      <span style="color:var(--muted)">STRC dividends continue at ~$45.31/mo regardless of BTC price. Protected Capital shortfall would be $${(20000 - stressNav).toLocaleString(undefined,{maximumFractionDigits:0})} if immediately liquidated.</span>
     `;
   }
 }
