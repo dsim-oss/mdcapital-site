@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(Date.now()>parseInt(localStorage.getItem("md_session")||"0"))window.location.href="/";</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MD Capital — Social Sentiment</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e17;--card:#111827;--border:#1e293b;--accent:#f7931a;--green:#10b981;
+  --red:#ef4444;--text:#e2e8f0;--muted:#94a3b8;--blue:#3b82f6;--purple:#8b5cf6;
+  --bull:#10b981;--bear:#ef4444;--neutral:#94a3b8;
+}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#111827 0%,var(--bg) 100%)}
+.header h1{font-size:1.5rem;font-weight:700;letter-spacing:-0.5px}
+.header h1 span{color:var(--accent)}
+.header-right{display:flex;align-items:center;gap:16px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.last-update{font-size:.75rem;color:var(--muted)}
+
+/* Layout */
+.container{max-width:1440px;margin:0 auto;padding:24px 32px}
+.grid-top{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.grid-main{display:grid;grid-template-columns:2fr 1fr;gap:24px;margin-bottom:24px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.grid-feeds{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0.3}
+
+/* Section headers */
+.section-title{font-size:1.1rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.section-title::before{content:'';width:3px;height:18px;background:var(--accent);border-radius:2px}
+
+/* Sentiment gauge */
+.gauge-container{text-align:center;padding:16px 0}
+.gauge-ring{position:relative;width:140px;height:140px;margin:0 auto 12px}
+.gauge-ring svg{transform:rotate(-90deg)}
+.gauge-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.gauge-pct{font-size:2rem;font-weight:700}
+.gauge-text{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.gauge-ticker{font-size:1.2rem;font-weight:700;margin-bottom:4px;letter-spacing:-0.5px}
+.gauge-subtitle{font-size:.75rem;color:var(--muted)}
+.gauge-meta{display:flex;justify-content:center;gap:16px;margin-top:8px;font-size:.75rem}
+
+/* Sentiment bar */
+.sent-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;margin:8px 0}
+.sent-bull{background:var(--bull)}
+.sent-bear{background:var(--bear)}
+.sent-bar-labels{display:flex;justify-content:space-between;font-size:.7rem}
+
+/* Message feed */
+.feed-container{max-height:420px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.feed-container::-webkit-scrollbar{width:4px}
+.feed-container::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.feed-msg{padding:12px 0;border-bottom:1px solid var(--border);font-size:.82rem;line-height:1.5}
+.feed-msg:last-child{border-bottom:none}
+.feed-meta{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.feed-user{font-weight:600;color:var(--accent);font-size:.78rem}
+.feed-time{font-size:.65rem;color:var(--muted)}
+.feed-badge{font-size:.6rem;padding:2px 6px;border-radius:10px;font-weight:600;text-transform:uppercase}
+.badge-bull{background:rgba(16,185,129,0.15);color:var(--bull);border:1px solid rgba(16,185,129,0.3)}
+.badge-bear{background:rgba(239,68,68,0.1);color:var(--bear);border:1px solid rgba(239,68,68,0.2)}
+.feed-body{color:var(--text);word-break:break-word}
+.feed-body a{color:var(--blue)}
+
+/* Twitter embed override */
+.twitter-col{min-height:500px}
+.twitter-col iframe{border-radius:8px!important}
+
+/* Trend sparkline */
+.trend-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.82rem}
+.trend-row:last-child{border-bottom:none}
+.trend-ticker{font-weight:700;width:60px;color:var(--accent)}
+.trend-spark{flex:1;height:24px}
+.trend-val{width:60px;text-align:right;font-weight:600}
+
+/* Summary cards */
+.summary-val{font-size:2rem;font-weight:700;margin:8px 0}
+.summary-label{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+
+/* Loading */
+.loading{color:var(--muted);font-style:italic;font-size:.8rem}
+.error-msg{color:var(--red);font-size:.8rem;font-style:italic}
+
+/* Tabs */
+.tab-bar{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:12px}
+.tab-btn{padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--muted);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s}
+.tab-btn:hover{border-color:var(--accent);color:var(--text)}
+.tab-btn.active{background:rgba(247,147,26,0.1);border-color:var(--accent);color:var(--accent)}
+
+/* Footer */
+.footer{text-align:center;padding:32px;color:var(--muted);font-size:.7rem;border-top:1px solid var(--border);margin-top:40px}
+
+/* Responsive */
+@media(max-width:1024px){
+  .grid-top{grid-template-columns:1fr}
+  .grid-main,.grid-2{grid-template-columns:1fr}
+  .grid-3,.grid-feeds{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .container{padding:16px}
+  .header{padding:16px;flex-direction:column;gap:12px}
+}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1><span>MD</span> Capital</h1>
+    <div style="display:flex;gap:6px;margin-top:6px">
+      <a href="/MD_Capital_Dashboard.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;color:var(--muted);text-decoration:none">Portfolio</a>
+      <a href="/MD_Capital_Signal_System.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;color:var(--muted);text-decoration:none">Signals & Thesis</a>
+      <a href="/MD_Capital_Analytics.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;color:var(--muted);text-decoration:none">Analytics</a>
+      <a href="/MD_Capital_Sentiment.html" style="font-size:.72rem;padding:4px 12px;border:1px solid var(--accent);border-radius:6px;color:var(--accent)">Sentiment</a>
+    </div>
+  </div>
+  <div class="header-right">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="status-dot" id="statusDot"></div>
+      <span class="last-update" id="lastUpdate">Connecting...</span>
+    </div>
+    <button onclick="refreshAll()" style="background:var(--accent);color:#000;border:none;padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer">Refresh</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Sentiment Overview -->
+  <div class="section-title" style="font-size:1.3rem;margin-bottom:20px">Social Sentiment Radar</div>
+
+  <!-- Gauges: Bull/Bear ratio per ticker -->
+  <div class="grid-3" style="margin-bottom:24px">
+    <div class="card">
+      <div class="gauge-container">
+        <div class="gauge-ticker" style="color:var(--blue)">$STRC</div>
+        <div class="gauge-subtitle">Stratos Preferred — Stocktwits</div>
+        <div class="gauge-ring" id="gaugeSTRC"><div class="gauge-label"><div class="gauge-pct" id="strcBullPct">--</div><div class="gauge-text" id="strcSentLabel">Loading</div></div></div>
+        <div class="sent-bar"><div class="sent-bull" id="strcBullBar" style="width:50%"></div><div class="sent-bear" id="strcBearBar" style="width:50%"></div></div>
+        <div class="sent-bar-labels"><span style="color:var(--bull)" id="strcBullCount">-- Bullish</span><span style="color:var(--bear)" id="strcBearCount">-- Bearish</span></div>
+        <div class="gauge-meta"><span id="strcMsgCount">-- messages</span><span id="strcWatchers">-- watchers</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="gauge-container">
+        <div class="gauge-ticker" style="color:var(--accent)">$MSTR</div>
+        <div class="gauge-subtitle">Strategy Inc — Stocktwits</div>
+        <div class="gauge-ring" id="gaugeMSTR"><div class="gauge-label"><div class="gauge-pct" id="mstrBullPct">--</div><div class="gauge-text" id="mstrSentLabel">Loading</div></div></div>
+        <div class="sent-bar"><div class="sent-bull" id="mstrBullBar" style="width:50%"></div><div class="sent-bear" id="mstrBearBar" style="width:50%"></div></div>
+        <div class="sent-bar-labels"><span style="color:var(--bull)" id="mstrBullCount">-- Bullish</span><span style="color:var(--bear)" id="mstrBearCount">-- Bearish</span></div>
+        <div class="gauge-meta"><span id="mstrMsgCount">-- messages</span><span id="mstrWatchers">-- watchers</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="gauge-container">
+        <div class="gauge-ticker" style="color:var(--green)">$IBIT</div>
+        <div class="gauge-subtitle">iShares Bitcoin ETF — Stocktwits</div>
+        <div class="gauge-ring" id="gaugeIBIT"><div class="gauge-label"><div class="gauge-pct" id="ibitBullPct">--</div><div class="gauge-text" id="ibitSentLabel">Loading</div></div></div>
+        <div class="sent-bar"><div class="sent-bull" id="ibitBullBar" style="width:50%"></div><div class="sent-bear" id="ibitBearBar" style="width:50%"></div></div>
+        <div class="sent-bar-labels"><span style="color:var(--bull)" id="ibitBullCount">-- Bullish</span><span style="color:var(--bear)" id="ibitBearCount">-- Bearish</span></div>
+        <div class="gauge-meta"><span id="ibitMsgCount">-- messages</span><span id="ibitWatchers">-- watchers</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Context row: Fear&Greed + BTC Social Volume + Composite Score -->
+  <div class="grid-3" style="margin-bottom:24px">
+    <div class="card" style="text-align:center">
+      <div class="summary-label">Fear & Greed Index</div>
+      <div class="summary-val" id="fgValue">--</div>
+      <div id="fgClassification" style="font-size:.85rem;color:var(--muted)">Loading...</div>
+      <div id="fgSignal" style="margin-top:8px;font-size:.75rem;font-style:italic;color:var(--muted)"></div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="summary-label">BTC Social Dominance</div>
+      <div class="summary-val" id="btcSocialDom">--</div>
+      <div style="font-size:.85rem;color:var(--muted)" id="btcSocialSub">CryptoCompare social signals</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="summary-label">Composite Sentiment</div>
+      <div class="summary-val" id="compositeSent">--</div>
+      <div style="font-size:.85rem;color:var(--muted)" id="compositeLabel">Weighted avg across all sources</div>
+    </div>
+  </div>
+
+  <!-- Tab bar for feed sections -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('stocktwits')">Stocktwits Feeds</button>
+    <button class="tab-btn" onclick="switchTab('twitter')">X / Twitter Live</button>
+    <button class="tab-btn" onclick="switchTab('reddit')">Reddit</button>
+  </div>
+
+  <!-- Stocktwits feeds -->
+  <div id="tab-stocktwits">
+    <div class="grid-feeds">
+      <div class="card">
+        <div class="section-title">$STRC Feed</div>
+        <div class="feed-container" id="feedSTRC"><div class="loading">Fetching Stocktwits...</div></div>
+      </div>
+      <div class="card">
+        <div class="section-title">$MSTR Feed</div>
+        <div class="feed-container" id="feedMSTR"><div class="loading">Fetching Stocktwits...</div></div>
+      </div>
+      <div class="card">
+        <div class="section-title">$IBIT Feed</div>
+        <div class="feed-container" id="feedIBIT"><div class="loading">Fetching Stocktwits...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Twitter/X embeds -->
+  <div id="tab-twitter" style="display:none">
+    <div class="grid-feeds">
+      <div class="card twitter-col">
+        <div class="section-title">$STRC on X</div>
+        <div id="twitterSTRC">
+          <a class="twitter-timeline" data-theme="dark" data-chrome="noheader nofooter noborders transparent" data-height="500"
+             href="https://twitter.com/search?q=%24STRC%20-filter%3Areplies&src=typed_query&f=live">$STRC Tweets</a>
+        </div>
+      </div>
+      <div class="card twitter-col">
+        <div class="section-title">$MSTR on X</div>
+        <div id="twitterMSTR">
+          <a class="twitter-timeline" data-theme="dark" data-chrome="noheader nofooter noborders transparent" data-height="500"
+             href="https://twitter.com/search?q=%24MSTR%20-filter%3Areplies&src=typed_query&f=live">$MSTR Tweets</a>
+        </div>
+      </div>
+      <div class="card twitter-col">
+        <div class="section-title">$BTC / $IBIT on X</div>
+        <div id="twitterBTC">
+          <a class="twitter-timeline" data-theme="dark" data-chrome="noheader nofooter noborders transparent" data-height="500"
+             href="https://twitter.com/search?q=%24BTC%20OR%20%24IBIT%20-filter%3Areplies&src=typed_query&f=live">$BTC / $IBIT Tweets</a>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:.7rem;color:var(--muted);text-align:center;margin-top:-12px;margin-bottom:16px">
+      If embeds don't load, your browser may be blocking Twitter widgets. Open directly:
+      <a href="https://twitter.com/search?q=%24STRC&f=live" target="_blank">$STRC</a> ·
+      <a href="https://twitter.com/search?q=%24MSTR&f=live" target="_blank">$MSTR</a> ·
+      <a href="https://twitter.com/search?q=%24BTC%20OR%20%24IBIT&f=live" target="_blank">$BTC/$IBIT</a>
+    </div>
+  </div>
+
+  <!-- Reddit -->
+  <div id="tab-reddit" style="display:none">
+    <div class="grid-2">
+      <div class="card">
+        <div class="section-title">r/MSTR — Latest Posts</div>
+        <div class="feed-container" id="feedRedditMSTR"><div class="loading">Fetching Reddit...</div></div>
+      </div>
+      <div class="card">
+        <div class="section-title">r/Bitcoin — MSTR/STRC Mentions</div>
+        <div class="feed-container" id="feedRedditBTC"><div class="loading">Fetching Reddit...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sentiment History (tracked locally) -->
+  <div class="card" style="margin-bottom:24px">
+    <div class="section-title">Sentiment History (Session)</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:12px">Bull% tracked each refresh. Data resets on page reload — for persistent tracking, consider a backend or browser extension.</p>
+    <div id="sentimentHistory" style="display:flex;align-items:flex-end;gap:2px;height:100px;padding:0 4px">
+      <div class="loading">Accumulating data points...</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);padding:4px 0">
+      <span>Oldest</span><span>Latest →</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  MD Capital LLC · Illinois Series LLC · For internal use only · Not investment advice<br>
+  Sentiment data from Stocktwits, Reddit, CryptoCompare · Twitter/X embeds via widgets.js · Refreshes every 90 seconds
+</div>
+
+<script>
+// ===== CONFIG =====
+const TICKERS = ['STRC', 'MSTR', 'IBIT'];
+const el = (id) => document.getElementById(id);
+let sentimentLog = []; // session-level history
+
+// ===== UTILITIES =====
+function timeAgo(dateStr) {
+  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  return Math.floor(diff/86400) + 'd ago';
+}
+
+function escapeHtml(text) {
+  const d = document.createElement('div');
+  d.textContent = text;
+  return d.innerHTML;
+}
+
+function drawGaugeRing(containerId, bullPct) {
+  const container = el(containerId);
+  if (!container) return;
+  const svg = container.querySelector('svg');
+  if (svg) svg.remove();
+
+  const size = 140, stroke = 10, radius = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const bullArc = (bullPct / 100) * circumference;
+  const bearArc = circumference - bullArc;
+
+  const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svgEl.setAttribute('width', size);
+  svgEl.setAttribute('height', size);
+  svgEl.style.transform = 'rotate(-90deg)';
+
+  // Bear arc (background)
+  const bearCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  bearCircle.setAttribute('cx', size/2); bearCircle.setAttribute('cy', size/2);
+  bearCircle.setAttribute('r', radius);
+  bearCircle.setAttribute('fill', 'none');
+  bearCircle.setAttribute('stroke', 'rgba(239,68,68,0.25)');
+  bearCircle.setAttribute('stroke-width', stroke);
+  svgEl.appendChild(bearCircle);
+
+  // Bull arc
+  const bullCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  bullCircle.setAttribute('cx', size/2); bullCircle.setAttribute('cy', size/2);
+  bullCircle.setAttribute('r', radius);
+  bullCircle.setAttribute('fill', 'none');
+  bullCircle.setAttribute('stroke', bullPct >= 60 ? '#10b981' : bullPct >= 40 ? '#f7931a' : '#ef4444');
+  bullCircle.setAttribute('stroke-width', stroke);
+  bullCircle.setAttribute('stroke-dasharray', `${bullArc} ${bearArc}`);
+  bullCircle.setAttribute('stroke-linecap', 'round');
+  svgEl.appendChild(bullCircle);
+
+  container.insertBefore(svgEl, container.firstChild);
+}
+
+// ===== STOCKTWITS API =====
+async function fetchStocktwits(symbol) {
+  const lower = symbol.toLowerCase();
+  try {
+    // Try direct fetch first
+    const r = await fetch(`https://api.stocktwits.com/api/2/streams/symbol/${symbol}.json`);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d = await r.json();
+    return d;
+  } catch(e) {
+    // Try CORS proxy fallback
+    try {
+      const r = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://api.stocktwits.com/api/2/streams/symbol/${symbol}.json`)}`);
+      if (!r.ok) throw new Error(`Proxy HTTP ${r.status}`);
+      const d = await r.json();
+      return d;
+    } catch(e2) {
+      console.warn(`Stocktwits ${symbol} failed:`, e2);
+      return null;
+    }
+  }
+}
+
+function renderStocktwitsGauge(symbol, data) {
+  const lower = symbol.toLowerCase();
+  const prefix = symbol === 'STRC' ? 'strc' : symbol === 'MSTR' ? 'mstr' : 'ibit';
+
+  if (!data || !data.messages) {
+    el(`${prefix}BullPct`).textContent = 'N/A';
+    el(`${prefix}SentLabel`).textContent = 'API Error';
+    return { bullPct: 50 };
+  }
+
+  // Count sentiment from messages
+  let bulls = 0, bears = 0;
+  data.messages.forEach(m => {
+    if (m.entities && m.entities.sentiment) {
+      if (m.entities.sentiment.basic === 'Bullish') bulls++;
+      if (m.entities.sentiment.basic === 'Bearish') bears++;
+    }
+  });
+
+  const total = bulls + bears;
+  const bullPct = total > 0 ? Math.round((bulls / total) * 100) : 50;
+  const bearPct = 100 - bullPct;
+  const sentLabel = bullPct >= 70 ? 'Very Bullish' : bullPct >= 55 ? 'Bullish' : bullPct >= 45 ? 'Neutral' : bullPct >= 30 ? 'Bearish' : 'Very Bearish';
+
+  el(`${prefix}BullPct`).textContent = bullPct + '%';
+  el(`${prefix}BullPct`).style.color = bullPct >= 55 ? 'var(--bull)' : bullPct <= 45 ? 'var(--bear)' : 'var(--accent)';
+  el(`${prefix}SentLabel`).textContent = sentLabel;
+  el(`${prefix}BullBar`).style.width = bullPct + '%';
+  el(`${prefix}BearBar`).style.width = bearPct + '%';
+  el(`${prefix}BullCount`).textContent = bulls + ' Bullish';
+  el(`${prefix}BearCount`).textContent = bears + ' Bearish';
+  el(`${prefix}MsgCount`).textContent = data.messages.length + ' messages';
+
+  // Watchers
+  if (data.symbol && data.symbol.watchlist_count) {
+    el(`${prefix}Watchers`).textContent = data.symbol.watchlist_count.toLocaleString() + ' watchers';
+  }
+
+  drawGaugeRing(`gauge${symbol}`, bullPct);
+  return { bullPct, bulls, bears, total: data.messages.length };
+}
+
+function renderStocktwitsFeed(symbol, data) {
+  const prefix = symbol === 'STRC' ? 'STRC' : symbol === 'MSTR' ? 'MSTR' : 'IBIT';
+  const feedEl = el(`feed${prefix}`);
+
+  if (!data || !data.messages || data.messages.length === 0) {
+    feedEl.innerHTML = `<div class="error-msg">No messages available for $${symbol}. The Stocktwits API may be rate-limited — try refreshing in a moment.</div>`;
+    return;
+  }
+
+  let html = '';
+  data.messages.forEach(msg => {
+    const sentiment = msg.entities && msg.entities.sentiment ? msg.entities.sentiment.basic : null;
+    const badgeClass = sentiment === 'Bullish' ? 'badge-bull' : sentiment === 'Bearish' ? 'badge-bear' : '';
+    const badgeText = sentiment ? sentiment : '';
+    const time = timeAgo(msg.created_at);
+    const user = msg.user ? msg.user.username : 'anon';
+    const body = msg.body || '';
+
+    // Linkify cashtags and URLs
+    const linked = escapeHtml(body)
+      .replace(/\$([A-Z]{1,6})/g, '<a href="https://stocktwits.com/symbol/$1" target="_blank" style="color:var(--accent)">$$$1</a>')
+      .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+
+    html += `<div class="feed-msg">
+      <div class="feed-meta">
+        <span class="feed-user">@${escapeHtml(user)}</span>
+        ${badgeText ? `<span class="feed-badge ${badgeClass}">${badgeText}</span>` : ''}
+        <span class="feed-time">${time}</span>
+      </div>
+      <div class="feed-body">${linked}</div>
+    </div>`;
+  });
+
+  feedEl.innerHTML = html;
+}
+
+// ===== FEAR & GREED =====
+async function fetchFearGreed() {
+  try {
+    const r = await fetch('https://api.alternative.me/fng/?limit=1');
+    const d = await r.json();
+    const fg = d.data[0];
+    const val = parseInt(fg.value);
+    el('fgValue').textContent = val;
+    el('fgValue').style.color = val <= 25 ? 'var(--red)' : val <= 45 ? 'var(--accent)' : val <= 55 ? 'var(--text)' : val <= 75 ? 'var(--green)' : 'var(--green)';
+    el('fgClassification').textContent = fg.value_classification;
+    el('fgSignal').textContent = val <= 25 ? 'Extreme Fear — historically a buying opportunity' :
+                                  val <= 40 ? 'Fear — potential accumulation zone' :
+                                  val <= 60 ? 'Neutral — no strong signal' :
+                                  val <= 75 ? 'Greed — stay alert for reversals' :
+                                  'Extreme Greed — consider taking profits';
+    return val;
+  } catch(e) {
+    el('fgValue').textContent = 'N/A';
+    el('fgClassification').textContent = 'API unavailable';
+    return 50;
+  }
+}
+
+// ===== BTC SOCIAL METRICS =====
+async function fetchBtcSocial() {
+  try {
+    const r = await fetch('https://min-api.cryptocompare.com/data/social/coin/latest?coinId=1182');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    const social = d.Data;
+
+    // Reddit subscribers + active
+    let redditSubs = 0;
+    let twitterFollowers = 0;
+
+    if (social.Reddit) {
+      redditSubs = social.Reddit.subscribers || 0;
+    }
+    if (social.Twitter) {
+      twitterFollowers = social.Twitter.followers || 0;
+    }
+
+    const totalPoints = (social.General ? social.General.Points || 0 : 0);
+    if (totalPoints > 0) {
+      el('btcSocialDom').textContent = (totalPoints / 1000).toFixed(0) + 'k';
+      el('btcSocialSub').textContent = `Social points · ${(redditSubs/1000).toFixed(0)}k Reddit · ${(twitterFollowers/1000).toFixed(0)}k Twitter`;
+    } else {
+      el('btcSocialDom').textContent = redditSubs > 0 ? (redditSubs/1e6).toFixed(1) + 'M' : '--';
+      el('btcSocialSub').textContent = 'Reddit subscribers';
+    }
+  } catch(e) {
+    console.warn('BTC social fetch failed:', e);
+    el('btcSocialDom').textContent = '--';
+    el('btcSocialSub').textContent = 'CryptoCompare unavailable';
+  }
+}
+
+// ===== REDDIT =====
+async function fetchReddit(subreddit, query, targetId, limit = 15) {
+  const feedEl = el(targetId);
+  try {
+    const url = query
+      ? `https://www.reddit.com/r/${subreddit}/search.json?q=${encodeURIComponent(query)}&restrict_sr=1&sort=new&limit=${limit}`
+      : `https://www.reddit.com/r/${subreddit}/new.json?limit=${limit}`;
+    const r = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+
+    if (!d.data || !d.data.children || d.data.children.length === 0) {
+      feedEl.innerHTML = `<div class="error-msg">No recent posts found.</div>`;
+      return;
+    }
+
+    let html = '';
+    d.data.children.forEach(post => {
+      const p = post.data;
+      const time = timeAgo(new Date(p.created_utc * 1000).toISOString());
+      const score = p.score || 0;
+      const scoreColor = score > 10 ? 'var(--green)' : score > 0 ? 'var(--text)' : 'var(--red)';
+      html += `<div class="feed-msg">
+        <div class="feed-meta">
+          <span class="feed-user">u/${escapeHtml(p.author)}</span>
+          <span style="color:${scoreColor};font-size:.7rem;font-weight:600">↑${score}</span>
+          <span class="feed-time">${time}</span>
+          <span style="font-size:.65rem;color:var(--muted)">${p.num_comments} comments</span>
+        </div>
+        <div class="feed-body"><a href="https://reddit.com${p.permalink}" target="_blank" style="color:var(--blue)">${escapeHtml(p.title)}</a></div>
+      </div>`;
+    });
+    feedEl.innerHTML = html;
+  } catch(e) {
+    console.warn(`Reddit ${subreddit} failed:`, e);
+    feedEl.innerHTML = `<div class="error-msg">Reddit API unavailable — may be rate-limited. <a href="https://reddit.com/r/${subreddit}" target="_blank" style="color:var(--blue)">Open in browser →</a></div>`;
+  }
+}
+
+// ===== COMPOSITE SCORE =====
+function updateComposite(sentiments, fgValue) {
+  // Weighted average: Stocktwits bull% (60% weight) + inverted Fear&Greed mapped to bull% (40% weight)
+  let stBull = [];
+  sentiments.forEach(s => { if (s && s.bullPct !== undefined) stBull.push(s.bullPct); });
+  const avgStBull = stBull.length > 0 ? stBull.reduce((a,b) => a+b, 0) / stBull.length : 50;
+  const fgBull = fgValue; // F&G already 0-100 where 100=greed=bullish
+
+  const composite = Math.round(avgStBull * 0.6 + fgBull * 0.4);
+  el('compositeSent').textContent = composite + '%';
+  el('compositeSent').style.color = composite >= 60 ? 'var(--green)' : composite <= 40 ? 'var(--red)' : 'var(--accent)';
+
+  const label = composite >= 75 ? 'Strongly Bullish' : composite >= 60 ? 'Bullish' : composite >= 45 ? 'Neutral' : composite >= 30 ? 'Bearish' : 'Strongly Bearish';
+  el('compositeLabel').textContent = label + ' — weighted Stocktwits (60%) + Fear&Greed (40%)';
+
+  // Log for history
+  sentimentLog.push({ time: Date.now(), composite, strc: sentiments[0]?.bullPct, mstr: sentiments[1]?.bullPct, ibit: sentiments[2]?.bullPct });
+  renderSentimentHistory();
+}
+
+function renderSentimentHistory() {
+  if (sentimentLog.length < 2) {
+    el('sentimentHistory').innerHTML = '<div class="loading">Accumulating data points... (' + sentimentLog.length + '/2 refreshes)</div>';
+    return;
+  }
+
+  const max = 100;
+  let html = '';
+  const points = sentimentLog.slice(-50); // last 50 data points
+  points.forEach((p, i) => {
+    const height = Math.max(p.composite, 5);
+    const color = p.composite >= 60 ? 'var(--green)' : p.composite <= 40 ? 'var(--red)' : 'var(--accent)';
+    const time = new Date(p.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    html += `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%" title="${time}: ${p.composite}% composite">
+      <div style="width:100%;background:${color};border-radius:2px 2px 0 0;height:${height}%;min-height:2px;opacity:0.8;transition:height .3s"></div>
+    </div>`;
+  });
+  el('sentimentHistory').innerHTML = html;
+}
+
+// ===== TAB SWITCHING =====
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+  el('tab-' + tab).style.display = 'block';
+  event.target.classList.add('active');
+
+  // Load Twitter widgets if switching to that tab for first time
+  if (tab === 'twitter' && !window._twitterLoaded) {
+    window._twitterLoaded = true;
+    loadTwitterWidgets();
+  }
+}
+
+function loadTwitterWidgets() {
+  if (window.twttr) {
+    window.twttr.widgets.load();
+    return;
+  }
+  const s = document.createElement('script');
+  s.src = 'https://platform.twitter.com/widgets.js';
+  s.async = true;
+  s.onload = () => { if (window.twttr) window.twttr.widgets.load(); };
+  document.head.appendChild(s);
+}
+
+// ===== MAIN REFRESH =====
+async function refreshAll() {
+  el('lastUpdate').textContent = 'Refreshing...';
+  el('statusDot').style.background = 'var(--accent)';
+
+  // Parallel fetch all data
+  const [strcData, mstrData, ibitData, fgVal] = await Promise.all([
+    fetchStocktwits('STRC'),
+    fetchStocktwits('MSTR'),
+    fetchStocktwits('IBIT'),
+    fetchFearGreed()
+  ]);
+
+  // Render gauges
+  const strcSent = renderStocktwitsGauge('STRC', strcData);
+  const mstrSent = renderStocktwitsGauge('MSTR', mstrData);
+  const ibitSent = renderStocktwitsGauge('IBIT', ibitData);
+
+  // Render feeds
+  renderStocktwitsFeed('STRC', strcData);
+  renderStocktwitsFeed('MSTR', mstrData);
+  renderStocktwitsFeed('IBIT', ibitData);
+
+  // BTC social + composite
+  await fetchBtcSocial();
+  updateComposite([strcSent, mstrSent, ibitSent], fgVal);
+
+  // Reddit (non-blocking)
+  fetchReddit('MSTR_Stock', null, 'feedRedditMSTR');
+  fetchReddit('Bitcoin', 'MSTR OR STRC OR Strategy', 'feedRedditBTC');
+
+  el('lastUpdate').textContent = 'Updated ' + new Date().toLocaleTimeString();
+  el('statusDot').style.background = 'var(--green)';
+}
+
+// ===== INIT =====
+refreshAll();
+setInterval(refreshAll, 90000); // Refresh every 90s (Stocktwits rate limit friendly)
+</script>
+
+</body>
+</html>
