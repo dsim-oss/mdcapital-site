@@ -239,7 +239,7 @@ a{color:var(--accent);text-decoration:none}
       <div class="section-title">Capital Account & Distribution Waterfall</div>
       <div style="font-size:.85rem;margin-bottom:16px">
         <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
-          <span>LP Total Contributions</span><span style="font-weight:600">$20,000</span>
+          <span>Mike's Total Contributions</span><span style="font-weight:600">$20,000</span>
         </div>
         <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
           <span>Accrued Preferred Return (5% simple p.a.)</span><span style="font-weight:600" id="preferredReturn">--</span>
@@ -279,7 +279,7 @@ a{color:var(--accent);text-decoration:none}
     <div class="thesis-box">
       <strong>Core Thesis:</strong> Bitcoin is in a secular bull market driven by institutional adoption, sovereign accumulation, and monetary debasement. MD Capital captures this via a barbell strategy: direct BTC spot exposure (Swan) for pure upside + BTC-treasury equities (MSTR/STRC) for leveraged convexity and yield.<br><br>
       <strong>Edge:</strong> STRC provides ~11.5% yield anchored at $100 par, funded by Strategy's BTC-collateralized issuance engine. This generates income while maintaining BTC-correlated upside through the MSTR common equity position. The combination of spot BTC + high-yield preferred + common equity creates a full-stack BTC exposure with differentiated risk/return across the capital structure.<br><br>
-      <strong>Risk Framework:</strong> Max 2x leverage · No >30% single non-BTC position · Daily VaR ≤ 5% · Stress-tested for 50%+ BTC drawdowns · Protected Capital priority waterfall ensures LP's $20k + 5% is repaid first.
+      <strong>Risk Framework:</strong> Max 2x leverage · No >30% single non-BTC position · Daily VaR ≤ 5% · Stress-tested for 50%+ BTC drawdowns · Protected Capital priority waterfall ensures Mike's $20k + 5% is repaid first.
     </div>
   </div>
 
@@ -307,7 +307,7 @@ a{color:var(--accent);text-decoration:none}
     <!-- DCA Simulator -->
     <div class="card" style="margin-bottom:16px">
       <div class="section-title">DCA Deployment Simulator</div>
-      <p style="font-size:.75rem;color:var(--muted);margin-bottom:16px">Model different ways to deploy the $4,638 cash across spot BTC (Swan) and STRC (IBKR). Adjust the sliders to see projected outcomes.</p>
+      <p style="font-size:.75rem;color:var(--muted);margin-bottom:16px">Model different ways to deploy the $4,088 cash across spot BTC (Swan) and STRC (IBKR). Adjust the sliders to see projected outcomes.</p>
       <div class="grid-2" style="margin-bottom:16px">
         <div>
           <div style="margin-bottom:16px">
@@ -380,21 +380,21 @@ a{color:var(--accent);text-decoration:none}
 <script>
 // ===== CONFIGURATION =====
 const HOLDINGS = {
-  btc: { qty: 0.10312090, label: 'Bitcoin (Spot)', ticker: 'BTC', account: 'Swan', costBasis: 10500, avgCost: 101822.23 },
+  btc: { qty: 0.10522488, label: 'Bitcoin (Spot)', ticker: 'BTC', account: 'Swan', costBasis: 10650, avgCost: 101202.00 },
   mstr: { qty: 1.271, label: 'Strategy Inc', ticker: 'MSTR', account: 'IBKR', costBasis: 172.49, avgCost: 135.71 },
-  strc: { qty: 47.2813, label: 'Strategy Pref (STRC)', ticker: 'STRC', account: 'IBKR', costBasis: 4690.00, avgCost: 99.20 },
-  cash_bank: { qty: 4112, label: 'Cash (Bank)', ticker: 'USD', account: 'Bank' },
-  cash_ibkr: { qty: 526, label: 'Cash (IBKR)', ticker: 'USD', account: 'IBKR' }
+  strc: { qty: 51.2813, label: 'Strategy Pref (STRC)', ticker: 'STRC', account: 'IBKR', costBasis: 5088.00, avgCost: 99.22 },
+  cash_bank: { qty: 3962, label: 'Cash (Bank)', ticker: 'USD', account: 'Bank' },
+  cash_ibkr: { qty: 125.54, label: 'Cash (IBKR)', ticker: 'USD', account: 'IBKR' }
 };
-const STRATEGY_BTC_HOLDINGS = 738750;
-const TOTAL_CONTRIBUTED = 20000; // LP contributed $20k total
+const STRATEGY_BTC_HOLDINGS = 761068;
+const TOTAL_CONTRIBUTED = 20000; // Mike contributed $20k total (2 deposits)
 const PROTECTED_CAPITAL = 20000;
 const PREFERRED_RATE = 0.05;
 const FUND_START = new Date('2025-08-25');
 const STRC_DIV_RATE = 0.115;
 const STRC_PAR = 100;
 const SWAN_FEE_MONTHLY = 37.12;
-const TOTAL_COST_BASIS = 10500 + 4690 + 172.49; // $15,362.49 deployed into positions
+const TOTAL_COST_BASIS = 10650 + 5088 + 172.49; // $15,910.49 deployed into positions
 
 // ===== STATE =====
 let prices = { btc: null, mstr: null, strc: null };
