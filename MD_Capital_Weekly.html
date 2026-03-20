@@ -8,8 +8,8 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#050a12;--card:#0c1220;--card2:#111a2e;--border:#1a2540;--accent:#f7931a;--green:#22c55e;
-  --red:#ef4444;--text:#f1f5f9;--muted:#64748b;--blue:#3b82f6;--purple:#a78bfa;
+  --bg:#0d0d0f;--card:#161619;--card2:#1c1c20;--border:#2a2a2e;--accent:#c9a84c;--green:#22c55e;
+  --red:#ef4444;--text:#f1f5f9;--muted:#71717a;--blue:#3b82f6;--purple:#a78bfa;
 }
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
 a{color:var(--accent);text-decoration:none}
@@ -19,7 +19,7 @@ a{color:var(--accent);text-decoration:none}
 .header h1{font-size:1.3rem;font-weight:700;letter-spacing:-0.5px}
 .header h1 span{color:var(--accent)}
 .nav-links{display:flex;gap:4px;margin-top:6px}
-.nav-link{font-size:.7rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;color:var(--muted);transition:all .2s}
+.nav-link{font-size:.7rem;padding:4px 12px;border:1px solid var(--border);border-radius:20px;color:var(--muted);transition:all .2s}
 .nav-link:hover,.nav-link.active{border-color:var(--accent);color:var(--accent)}
 
 /* Letter layout */
@@ -56,7 +56,7 @@ a{color:var(--accent);text-decoration:none}
 /* Holdings strip */
 .holdings-strip{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:32px 0}
 .holdings-strip-header{padding:16px 20px;border-bottom:1px solid var(--border);font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600}
-.holding-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:14px 20px;border-bottom:1px solid rgba(26,37,64,0.4);font-size:.85rem;align-items:center}
+.holding-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:14px 20px;border-bottom:1px solid rgba(42,42,46,0.5);font-size:.85rem;align-items:center}
 .holding-row:last-child{border-bottom:none}
 .holding-ticker{font-weight:700;color:var(--accent)}
 .holding-account{font-size:.65rem;color:var(--muted);margin-top:2px}
@@ -67,8 +67,8 @@ a{color:var(--accent);text-decoration:none}
 .signal-row{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0}
 .signal-pill{padding:8px 18px;border-radius:24px;font-size:.75rem;font-weight:600;display:inline-flex;align-items:center;gap:6px}
 .pill-green{background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.2)}
-.pill-amber{background:rgba(247,147,26,0.1);color:var(--accent);border:1px solid rgba(247,147,26,0.2)}
-.pill-neutral{background:rgba(100,116,139,0.08);color:var(--muted);border:1px solid rgba(100,116,139,0.15)}
+.pill-amber{background:rgba(201,168,76,0.1);color:var(--accent);border:1px solid rgba(201,168,76,0.2)}
+.pill-neutral{background:rgba(113,113,122,0.08);color:var(--muted);border:1px solid rgba(113,113,122,0.15)}
 .pill-dot{width:6px;height:6px;border-radius:50%}
 
 /* Callout box */
@@ -236,7 +236,7 @@ a{color:var(--accent);text-decoration:none}
       <div class="holding-val">$4,088</div>
       <div class="holding-pct">24.3%</div>
     </div>
-    <div class="holding-row" style="background:rgba(247,147,26,0.03);font-weight:700">
+    <div class="holding-row" style="background:rgba(201,168,76,0.05);font-weight:700">
       <div>Total NAV</div>
       <div></div>
       <div class="holding-val" style="color:var(--accent)">$16,822</div>
