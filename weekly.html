@@ -3,20 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MD Capital — Weekly Investor Letter | March 27, 2026</title>
+  <title>MD Capital — Weekly Letter | March 27, 2026</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
     :root {
       --bg: #08080e;
       --surface: #0f0f18;
-      --surface2: #14141f;
       --border: #1c1c2e;
       --text: #ddddf0;
-      --muted: #6060808;
-      --muted2: #7070a0;
+      --muted: #7070a0;
       --accent: #f7931a;
-      --accent2: #7c3aed;
       --green: #22c55e;
       --red: #ef4444;
       --yellow: #eab308;
@@ -30,137 +27,126 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding: 0 0 80px;
+      padding-bottom: 80px;
     }
 
-    /* ─── Masthead ─── */
+    /* ── Masthead ── */
     .masthead {
       background: linear-gradient(135deg, #0f0f1a 0%, #111126 100%);
       border-bottom: 1px solid var(--border);
-      padding: 52px 48px 40px;
+      padding: 40px 24px 32px;
       position: relative;
       overflow: hidden;
     }
     .masthead::before {
       content: '';
       position: absolute;
-      top: -80px; right: -80px;
-      width: 320px; height: 320px;
+      top: -60px; right: -60px;
+      width: 260px; height: 260px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(247,147,26,0.06) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(247,147,26,0.07) 0%, transparent 70%);
+      pointer-events: none;
     }
     .masthead-inner {
-      max-width: 860px;
+      max-width: 720px;
       margin: 0 auto;
       position: relative;
     }
     .fund-mark {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--accent);
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
     .fund-mark::before {
       content: '';
       display: inline-block;
-      width: 24px;
-      height: 2px;
+      width: 20px; height: 2px;
       background: var(--accent);
     }
     .masthead h1 {
       font-family: 'Playfair Display', Georgia, serif;
-      font-size: 38px;
+      font-size: clamp(26px, 5vw, 38px);
       font-weight: 700;
-      color: #ffffff;
+      color: #fff;
       letter-spacing: -0.02em;
       line-height: 1.15;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
     .masthead .subtitle {
-      font-size: 15px;
-      color: var(--muted2);
-      margin-bottom: 28px;
-    }
-    .masthead-meta {
-      display: flex;
-      gap: 32px;
-      font-size: 12px;
-      color: var(--muted2);
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-    }
-    .masthead-meta span strong {
-      color: var(--text);
-      display: block;
       font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 2px;
+      color: var(--muted);
+      margin-bottom: 24px;
     }
 
-    /* ─── Body ─── */
-    .body {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 48px 48px;
-    }
-
-    /* ─── Stat row ─── */
-    .stat-row {
+    /* BTC metrics strip */
+    .btc-strip {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 48px;
-    }
-    .stat {
-      background: var(--surface);
-      border: 1px solid var(--border);
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--border);
       border-radius: 10px;
-      padding: 16px 18px;
+      overflow: hidden;
+      margin-top: 24px;
+      border: 1px solid var(--border);
     }
-    .stat .s-label {
-      font-size: 10px;
+    @media (min-width: 520px) {
+      .btc-strip { grid-template-columns: repeat(4, 1fr); }
+    }
+    .btc-cell {
+      background: rgba(15,15,24,0.9);
+      padding: 14px 16px;
+    }
+    .btc-cell .lbl {
+      font-size: 9px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--muted2);
-      margin-bottom: 8px;
+      color: var(--muted);
+      margin-bottom: 6px;
     }
-    .stat .s-value {
+    .btc-cell .val {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 20px;
+      font-size: 16px;
       font-weight: 500;
       color: var(--text);
     }
-    .stat .s-delta {
+    .btc-cell .delta {
       font-size: 11px;
-      margin-top: 4px;
+      margin-top: 3px;
     }
-    .s-delta.neg { color: var(--red); }
-    .s-delta.pos { color: var(--green); }
-    .s-delta.neu { color: var(--muted2); }
+    .neg { color: var(--red); }
+    .pos { color: var(--green); }
+    .warn { color: var(--yellow); }
 
-    /* ─── Section headers ─── */
+    /* ── Body ── */
+    .body {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    /* ── Section header ── */
     .section-header {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-      margin-top: 44px;
+      gap: 10px;
+      margin-top: 40px;
+      margin-bottom: 18px;
     }
     .section-header .num {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
+      font-size: 10px;
       color: var(--accent);
-      min-width: 24px;
     }
     .section-header h2 {
       font-family: 'Playfair Display', serif;
-      font-size: 22px;
+      font-size: clamp(18px, 4vw, 22px);
       font-weight: 600;
       color: var(--text);
       letter-spacing: -0.01em;
@@ -172,165 +158,152 @@
       background: var(--border);
     }
 
-    /* ─── Prose ─── */
+    /* ── Prose ── */
     .prose {
       font-size: 15px;
       line-height: 1.85;
-      color: #b8b8d8;
+      color: #b0b0d0;
     }
-    .prose p + p {
-      margin-top: 16px;
-    }
-    .prose strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-    .prose .highlight {
-      color: var(--accent);
-      font-weight: 600;
-    }
-    .prose .mstr-color {
-      color: #a78bfa;
-      font-weight: 600;
-    }
-    .prose .btc-color {
-      color: var(--accent);
-      font-weight: 600;
-    }
+    .prose p + p { margin-top: 16px; }
+    .prose strong { color: var(--text); font-weight: 600; }
 
-    /* ─── Data table ─── */
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 24px 0;
-      font-size: 13px;
-    }
-    .data-table th {
-      text-align: left;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted2);
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-    }
-    .data-table td {
-      padding: 11px 14px;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      color: var(--text);
-    }
-    .data-table tr:last-child td { border-bottom: none; }
-    .data-table td.mono { font-family: 'JetBrains Mono', monospace; }
-    .data-table td.neg { color: var(--red); font-family: 'JetBrains Mono', monospace; }
-    .data-table td.pos { color: var(--green); font-family: 'JetBrains Mono', monospace; }
-    .data-table td.warn { color: var(--yellow); font-family: 'JetBrains Mono', monospace; }
-
-    /* ─── Macro events ─── */
-    .event-list { margin: 20px 0; }
+    /* ── Event list ── */
+    .event-list { margin-top: 4px; }
     .event-item {
       display: flex;
-      gap: 16px;
+      gap: 14px;
       padding: 16px 0;
       border-bottom: 1px solid var(--border);
     }
     .event-item:last-child { border-bottom: none; }
     .event-icon {
-      width: 36px;
-      height: 36px;
+      width: 34px; height: 34px;
       border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
       flex-shrink: 0;
-      margin-top: 2px;
+      margin-top: 1px;
     }
-    .event-icon.red { background: rgba(239,68,68,0.12); }
-    .event-icon.orange { background: rgba(247,147,26,0.12); }
-    .event-icon.blue { background: rgba(96,165,250,0.1); }
-    .event-icon.purple { background: rgba(124,58,237,0.12); }
+    .ic-red    { background: rgba(239,68,68,0.12); }
+    .ic-blue   { background: rgba(96,165,250,0.1); }
+    .ic-orange { background: rgba(247,147,26,0.12); }
+    .ic-purple { background: rgba(124,58,237,0.12); }
     .event-body h4 {
       font-size: 14px;
       font-weight: 600;
       color: var(--text);
       margin-bottom: 5px;
+      line-height: 1.4;
     }
     .event-body p {
       font-size: 13px;
-      color: #8888aa;
+      color: #7878a0;
       line-height: 1.65;
     }
 
-    /* ─── Signal summary box ─── */
-    .signal-summary {
+    /* ── Signal box ── */
+    .signal-box {
       background: var(--surface);
       border: 1px solid var(--border);
       border-left: 3px solid var(--accent);
       border-radius: 0 10px 10px 0;
-      padding: 22px 26px;
-      margin: 24px 0;
+      padding: 20px 22px;
+      margin-top: 20px;
     }
-    .signal-summary h3 {
-      font-size: 13px;
+    .signal-box h3 {
+      font-size: 10px;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--accent);
       margin-bottom: 14px;
     }
-    .signal-row {
+    .sig-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 0;
+      padding: 9px 0;
       border-bottom: 1px solid rgba(255,255,255,0.04);
-      font-size: 13px;
+      gap: 12px;
     }
-    .signal-row:last-child { border-bottom: none; }
-    .signal-row .s-name { color: #8888aa; }
-    .signal-row .s-status {
+    .sig-row:last-child { border-bottom: none; }
+    .sig-row .sname {
+      font-size: 13px;
+      color: #8888aa;
+      line-height: 1.4;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 10px;
       font-weight: 700;
-      font-size: 11px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       padding: 3px 10px;
       border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
-    .firing { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
-    .watch { background: rgba(234,179,8,0.1); color: var(--yellow); border: 1px solid rgba(234,179,8,0.25); }
-    .clear { background: rgba(34,197,94,0.08); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+    .b-fire { background: rgba(239,68,68,0.12); color: var(--red);    border: 1px solid rgba(239,68,68,0.25); }
+    .b-watch{ background: rgba(234,179,8,0.1);  color: var(--yellow); border: 1px solid rgba(234,179,8,0.25); }
+    .b-clear{ background: rgba(34,197,94,0.08); color: var(--green);  border: 1px solid rgba(34,197,94,0.2); }
 
-    /* ─── Closing ─── */
+    /* ── Context callout ── */
+    .callout {
+      background: rgba(247,147,26,0.05);
+      border: 1px solid rgba(247,147,26,0.15);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-top: 20px;
+      font-size: 14px;
+      line-height: 1.75;
+      color: #a0a0c8;
+    }
+    .callout strong { color: var(--text); }
+
+    /* ── Closing ── */
     .closing {
-      margin-top: 52px;
-      padding-top: 28px;
+      margin-top: 48px;
+      padding-top: 24px;
       border-top: 1px solid var(--border);
     }
-    .closing .sig-name {
+    .sig-name {
       font-family: 'Playfair Display', serif;
       font-size: 20px;
       color: var(--text);
-      margin-top: 18px;
-      margin-bottom: 4px;
+      margin-top: 14px;
+      margin-bottom: 3px;
     }
-    .closing .sig-title {
-      font-size: 12px;
-      color: var(--muted2);
-      letter-spacing: 0.05em;
+    .sig-title { font-size: 12px; color: var(--muted); }
+
+    /* ── Disclaimer ── */
+    .disclaimer {
+      margin-top: 36px;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.7;
+      opacity: 0.5;
     }
 
-    /* ─── Disclaimer ─── */
-    .disclaimer {
-      margin-top: 40px;
-      padding: 16px 20px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 11px;
-      color: var(--muted2);
-      line-height: 1.7;
-      opacity: 0.6;
+    /* ── Share button ── */
+    #share-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 24px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(247,147,26,0.3);
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s;
+      z-index: 100;
     }
   </style>
 </head>
@@ -342,44 +315,37 @@
       <div class="fund-mark">MD Capital LLC</div>
       <h1>Weekly Investor Letter</h1>
       <div class="subtitle">Week Ending Friday, March 27, 2026</div>
-      <div class="masthead-meta">
-        <span><strong>$16,120</strong>Estimated NAV</span>
-        <span><strong>−$3,880 (−19.4%)</strong>P&L vs. $20k Contributed</span>
-        <span><strong>$66,587</strong>BTC Price (Friday)</span>
-        <span><strong>13 / 100</strong>Fear &amp; Greed Index</span>
+
+      <div class="btc-strip">
+        <div class="btc-cell">
+          <div class="lbl">BTC Price</div>
+          <div class="val">$66,587</div>
+          <div class="delta neg">−6.6% on week</div>
+        </div>
+        <div class="btc-cell">
+          <div class="lbl">Fear &amp; Greed</div>
+          <div class="val" style="color:var(--red);">13 / 100</div>
+          <div class="delta neg">Extreme Fear</div>
+        </div>
+        <div class="btc-cell">
+          <div class="lbl">ETF Flows (MTD)</div>
+          <div class="val" style="color:var(--green);">+$1.53B</div>
+          <div class="delta pos">3 wks positive</div>
+        </div>
+        <div class="btc-cell">
+          <div class="lbl">BTC vs Month Open</div>
+          <div class="val">−3.1%</div>
+          <div class="delta warn">6th losing month?</div>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="body">
 
-    <!-- Snapshot -->
-    <div class="stat-row" style="margin-top:36px;">
-      <div class="stat">
-        <div class="s-label">Bitcoin</div>
-        <div class="s-value">$66,587</div>
-        <div class="s-delta neg">−6.6% on week</div>
-      </div>
-      <div class="stat">
-        <div class="s-label">MSTR</div>
-        <div class="s-value">~$125–134</div>
-        <div class="s-delta neg">−6% intraday Fri</div>
-      </div>
-      <div class="stat">
-        <div class="s-label">STRC</div>
-        <div class="s-value">$99.97</div>
-        <div class="s-delta neu">≈ $100 par</div>
-      </div>
-      <div class="stat">
-        <div class="s-label">S&amp;P 500</div>
-        <div class="s-value">6,477</div>
-        <div class="s-delta neg">−1.9% on week</div>
-      </div>
-    </div>
-
     <!-- Opening -->
-    <div class="prose">
-      <p>Mike, happy Friday. It has been a week defined by macro headwinds rather than crypto-specific weakness — and that distinction matters for how we think about what comes next. Bitcoin is down roughly 6.6% on the week, but the broader context paints this as a macro-driven repricing, not a structural deterioration. The Fear &amp; Greed Index has now sat in Extreme Fear territory for 46 consecutive days — the longest such streak since the FTX collapse in late 2022 — and history strongly favors patient holders in environments like this one.</p>
+    <div class="prose" style="margin-top: 8px;">
+      <p>Mike, happy Friday. It has been a week defined by macro headwinds rather than crypto-specific weakness — and that distinction matters for how we think about what comes next. Bitcoin is down roughly 6.6% on the week, but the broader context paints this as a macro-driven repricing, not a structural deterioration. The Fear &amp; Greed Index has now sat in Extreme Fear territory for <strong>46 consecutive days</strong> — the longest such streak since the FTX collapse in late 2022 — and history strongly favors patient holders in environments like this one.</p>
     </div>
 
     <!-- Section 1: Macro -->
@@ -390,158 +356,84 @@
 
     <div class="event-list">
       <div class="event-item">
-        <div class="event-icon red">🛢️</div>
+        <div class="event-icon ic-red">🛢️</div>
         <div class="event-body">
-          <h4>Iran Conflict &amp; Oil Shock — The Dominant Macro Story</h4>
-          <p>The US-Israel strikes on Iran that began February 28 have reshuffled the entire macro deck. Brent crude has surged more than 40% since the conflict started, trading near <strong>$104/barrel</strong> this week — and the partial disruption to flows through the Strait of Hormuz has the IEA calling this the largest supply disruption in the history of the global oil market. Markets whipsawed Monday (+1.15% on the S&amp;P) when Trump announced a temporary halt to strikes on Iranian energy infrastructure, then gave most of it back by Thursday. Elevated energy costs feed directly into inflation and complicate the Fed's path.</p>
+          <h4>Iran Conflict &amp; Oil Shock</h4>
+          <p>US-Israel strikes on Iran began February 28. Brent crude is up more than 40% since, trading near <strong>$104/barrel</strong> this week. The IEA calls this the largest supply disruption in oil market history. Markets whipsawed on Monday when Trump announced a temporary halt to strikes on Iranian energy infrastructure, then gave most of it back by Thursday. Elevated energy costs feed directly into inflation and complicate the Fed's path forward.</p>
         </div>
       </div>
       <div class="event-item">
-        <div class="event-icon blue">🏦</div>
+        <div class="event-icon ic-blue">🏦</div>
         <div class="event-body">
-          <h4>Federal Reserve: Rates on Hold, Inflation Forecast Raised</h4>
-          <p>The FOMC held rates unchanged at its March 18 meeting — the second consecutive hold of 2026. Their updated projections raised the 2026 inflation forecast to <strong>2.7%</strong> (from 2.5% in December) and still call for just <strong>one 25bp rate cut</strong> in 2026, with another in 2027. Real GDP is projected at 2.4% for 2026. The longer-run neutral rate was nudged up to 3.1%. In plain terms: higher-for-longer is now the baseline, and the oil shock makes early cuts even less likely. This is historically a net-positive environment for hard assets like Bitcoin.</p>
+          <h4>Fed: Rates on Hold, Inflation Forecast Raised</h4>
+          <p>The FOMC held rates at its March 18 meeting — second consecutive hold of 2026. Updated projections raised the 2026 inflation forecast to <strong>2.7%</strong> (up from 2.5%) and still pencil in just <strong>one 25bp cut</strong> for the full year. The longer-run neutral rate was nudged to 3.1%. Higher-for-longer is now the baseline, and the oil shock makes early cuts even less likely. Historically, this type of environment benefits hard assets with fixed supply.</p>
         </div>
       </div>
       <div class="event-item">
-        <div class="event-icon orange">📦</div>
+        <div class="event-icon ic-orange">📦</div>
         <div class="event-body">
-          <h4>Trump Tariffs: 10% Global Levy, USMCA Reprieve Extended</h4>
-          <p>The Supreme Court ruled 6–3 that IEEPA does not authorize presidential tariffs, forcing the administration to pivot to a 10% global tariff under Section 122 (effective Feb 24, 150-day window). Treasury Secretary Bessent signaled an increase to 15% likely coming "sometime this week." On Monday, markets briefly rallied when Trump extended the USMCA deadline — but the structural drag on corporate margins and consumer purchasing power remains. The tariffs represent the largest US tax increase as a share of GDP since 1993, with an estimated $1,500 annual cost per household.</p>
+          <h4>Trump Tariffs: 10% Global Levy</h4>
+          <p>The Supreme Court ruled IEEPA does not authorize presidential tariffs, forcing a pivot to a 10% global tariff under Section 122 (effective Feb 24, 150-day window). Treasury Secretary Bessent signaled an increase to 15% is likely coming. The tariffs represent the largest US tax increase as a share of GDP since 1993 — an estimated $1,500 per household annually — weighing on consumer spending and corporate margins.</p>
         </div>
       </div>
       <div class="event-item">
-        <div class="event-icon purple">📉</div>
+        <div class="event-icon ic-purple">📉</div>
         <div class="event-body">
-          <h4>Equities Slide — S&amp;P 500 Down 5.8% YTD</h4>
-          <p>The S&amp;P 500 fell 1.9% this week, closing Friday at 6,477. The index is now down 5.8% year-to-date, battered by the combination of tariff fears (February) and energy/geopolitical shock (March). The risk-off environment that has weighed on equities is the same force depressing Bitcoin sentiment — but BTC's correlation to equities in fear regimes has historically broken down on the recovery leg, with crypto outperforming once sentiment turns.</p>
+          <h4>Equities: S&amp;P 500 Down 5.8% YTD</h4>
+          <p>The S&amp;P 500 fell 1.9% this week, closing Friday at 6,477. The same risk-off forces depressing equities are weighing on Bitcoin sentiment — but BTC's correlation to stocks in fear regimes has historically broken down on the recovery leg, with crypto tending to outperform once sentiment turns.</p>
         </div>
       </div>
     </div>
 
-    <!-- Section 2: Portfolio -->
+    <!-- Section 2: BTC -->
     <div class="section-header">
       <span class="num">02</span>
-      <h2>Portfolio Performance</h2>
+      <h2>Bitcoin This Week</h2>
     </div>
 
     <div class="prose">
-      <p>Our portfolio ended the week at an estimated NAV of <strong>$16,120</strong>, down from approximately $16,720 at last week's close — a weekly decline of roughly $600, driven almost entirely by Bitcoin's spot price decline. MSTR's weakness also contributed a small amount. The cash and STRC positions held stable, with STRC recovering to near par ($99.97) after briefly dipping below $100.</p>
+      <p>Bitcoin opened the week near <strong>$71,300</strong> and closed Friday around <strong>$66,587</strong> — a drop of approximately $4,700, or 6.6%. The immediate catalyst was a $14 billion options expiry event on Friday that flushed overleveraged longs and broke through the psychologically important $68,000 support level. This is a mechanical move, not a fundamental one.</p>
+      <p>Zooming out: BTC is sitting roughly <strong>3.1% below its March 1 opening price</strong> with one week left in the month. If March closes red, it would mark six consecutive losing months — a streak that has historically been followed by sharp recoveries. Realized volatility has come down materially (from 80 to 50 annualized), and futures funding rates have dropped from 4.1% to 2.7%, suggesting leverage is being cleaned out of the market.</p>
+      <p>On the institutional side, <strong>US spot Bitcoin ETFs have posted three consecutive weeks of positive flows</strong>, with $340M net in the week of March 24 alone. BlackRock's IBIT and Fidelity's FBTC led with $215M and $95M respectively on March 24. This is the pattern that has preceded prior recoveries: smart money accumulating while retail sentiment is at its worst.</p>
+      <p>Strategy (formerly MicroStrategy) disclosed its <strong>largest Bitcoin purchase of 2026</strong> this week — 22,337 BTC added, funded through preferred share issuance. Their total holdings now stand at approximately <strong>762,000 BTC</strong>. The world's largest corporate Bitcoin holder is buying aggressively at these prices.</p>
     </div>
 
-    <table class="data-table" style="margin-top: 20px;">
-      <thead>
-        <tr>
-          <th>Asset</th>
-          <th>Quantity</th>
-          <th>Price</th>
-          <th>Value</th>
-          <th>% of NAV</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Bitcoin (BTC)</strong></td>
-          <td class="mono">0.10096566</td>
-          <td class="mono">$66,587</td>
-          <td class="mono">$6,723</td>
-          <td class="mono">41.7%</td>
-        </tr>
-        <tr>
-          <td><strong>STRC Preferred</strong></td>
-          <td class="mono">35.2813 sh</td>
-          <td class="mono">$99.97</td>
-          <td class="mono">$3,527</td>
-          <td class="mono">21.9%</td>
-        </tr>
-        <tr>
-          <td><strong>Cash (Bank + IBKR)</strong></td>
-          <td class="mono">—</td>
-          <td class="mono">—</td>
-          <td class="mono">$5,700</td>
-          <td class="mono">35.4%</td>
-        </tr>
-        <tr>
-          <td><strong>MSTR Common</strong></td>
-          <td class="mono">1.271 sh</td>
-          <td class="mono">$133.58</td>
-          <td class="mono">$170</td>
-          <td class="mono">1.1%</td>
-        </tr>
-        <tr style="background: rgba(255,255,255,0.02);">
-          <td><strong>Total NAV</strong></td>
-          <td></td>
-          <td></td>
-          <td class="mono"><strong>$16,120</strong></td>
-          <td class="mono">100%</td>
-        </tr>
-        <tr>
-          <td colspan="3" style="color: #8888aa; font-size:12px;">P&amp;L vs. $20,000 contributed capital</td>
-          <td class="neg">−$3,880</td>
-          <td class="neg">−19.4%</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="prose" style="margin-top: 16px;">
-      <p>The drawdown is real and we won't minimize it — but context matters. Our BTC cost basis is elevated relative to where spot has pulled back to, and the macro environment described above explains the majority of the move. <strong>Nothing in the fundamental thesis has changed.</strong> Bitcoin's scarcity, Strategy's ongoing accumulation (762,000 BTC now held), and institutional adoption via ETFs all remain intact. The STRC position continues to generate income via the 11.5% variable preferred dividend, which partially offsets spot price volatility.</p>
-    </div>
-
-    <!-- Section 3: Strategy Inc -->
+    <!-- Section 3: Signals -->
     <div class="section-header">
       <span class="num">03</span>
-      <h2>Strategy Inc (MSTR / STRC) Update</h2>
+      <h2>Market Signals</h2>
     </div>
 
-    <div class="prose">
-      <p>Strategy had a notable week. The company disclosed its <strong class="mstr-color">largest Bitcoin purchase of 2026</strong> — adding 22,337 BTC, funded primarily through STRC preferred share issuance. Their total holdings now stand at approximately <strong>762,000 BTC</strong>, a meaningful increase from the 738,750 figure in our prior analysis. At current prices, that represents a Bitcoin treasury worth roughly <strong>$50.7 billion</strong> against roughly 337.8 million diluted shares — implying an mNAV of ~$150 per share.</p>
-
-      <p>MSTR itself has been under pressure, with the stock trading in the <strong>$124–$134 range</strong> this week — oscillating between a mild discount and a meaningful one relative to underlying BTC value. At $124.85 (the reported intraday level on Friday), MSTR was trading at approximately <strong>−17% to mNAV</strong>, which approaches or crosses our −15% accumulation threshold. This warrants watching. We also note that a company director (Jarrod Patten) sold 700 shares on March 26 at $124.85 via an SEC-reported transaction — insider selling is always worth flagging, though at this scale it is likely routine.</p>
-
-      <p>On STRC: the preferred has recovered to <strong>$99.97</strong> — essentially back at par — after briefly dipping below $100 earlier in the month. This confirms that our income harvest window from below-par purchases was correctly identified and has now closed. The 11.5% variable dividend continues to accrue.</p>
+    <div class="signal-box">
+      <h3>Signal Status — March 27, 2026</h3>
+      <div class="sig-row">
+        <span class="sname">Fear &amp; Greed ≤ 20 · Accumulation zone<br><span style="font-size:11px;color:#555580;">Currently 13 — 46th straight day of extreme fear</span></span>
+        <span class="badge b-fire">🔴 Active</span>
+      </div>
+      <div class="sig-row">
+        <span class="sname">MSTR mNAV discount &lt; −15%<br><span style="font-size:11px;color:#555580;">At $124.85 intraday: −16.9% discount to BTC NAV</span></span>
+        <span class="badge b-watch">⚠️ Edge</span>
+      </div>
+      <div class="sig-row">
+        <span class="sname">STRC preferred below $100 par<br><span style="font-size:11px;color:#555580;">Recovered to $99.97 — window has closed</span></span>
+        <span class="badge b-clear">✓ Closed</span>
+      </div>
     </div>
 
-    <!-- Section 4: Signals -->
+    <div class="callout" style="margin-top: 16px;">
+      Historically, sustained Fear &amp; Greed readings below 15 have preceded a <strong>median 90-day return of +38.4%</strong> for Bitcoin. We are now on day 46 of this streak — the longest since FTX. The signal is clear.
+    </div>
+
+    <!-- Section 4: Outlook -->
     <div class="section-header">
       <span class="num">04</span>
-      <h2>Signal Dashboard</h2>
-    </div>
-
-    <div class="signal-summary">
-      <h3>Active Trigger Status — March 27, 2026</h3>
-      <div class="signal-row">
-        <span class="s-name">🟠 BTC Accumulation — Fear &amp; Greed ≤ 20 (currently 13)</span>
-        <span class="s-status firing">🔴 Firing</span>
-      </div>
-      <div class="signal-row">
-        <span class="s-name">🟣 MSTR Discount Accumulation — mNAV premium &lt; −15%</span>
-        <span class="s-status watch">⚠️ On Edge</span>
-      </div>
-      <div class="signal-row">
-        <span class="s-name">🔵 STRC Income Harvest — Price below $100 par</span>
-        <span class="s-status clear">✓ Closed</span>
-      </div>
+      <h2>Outlook</h2>
     </div>
 
     <div class="prose">
-      <p>The BTC accumulation signal has been firing for several weeks and remains active. The combination of extreme fear sentiment and the macro-driven price weakness is exactly the environment our strategy was designed to capitalize on. We have approximately <strong>$5,700 in deployable cash</strong> — split between the MD Capital bank account and IBKR buying power — which represents meaningful dry powder at this level.</p>
-      <p>The MSTR signal is on the edge: whether it officially fires depends on which closing price we use this Friday. Regardless, the discount to NAV has widened materially from where it was two months ago and is worth watching closely heading into next week.</p>
-    </div>
-
-    <!-- Section 5: Outlook -->
-    <div class="section-header">
-      <span class="num">05</span>
-      <h2>Outlook &amp; Positioning Thoughts</h2>
-    </div>
-
-    <div class="prose">
-      <p>The next 30 days will likely be shaped by two variables above all others: <strong>the trajectory of the Iran conflict</strong> and <strong>the Fed's willingness to pivot</strong> if oil-driven inflation forces it into a corner. In the bearish scenario, elevated oil sustains inflation above target, the Fed delays cuts further, and risk assets including BTC face continued pressure. In the bullish scenario, a diplomatic resolution reduces the oil shock, inflation expectations stabilize, and the pent-up demand from extreme-fear buyers drives a sharp recovery — potentially with Bitcoin leading.</p>
-
-      <p>US spot Bitcoin ETF inflows have remained positive for three consecutive weeks ($340M net in the week of March 24 alone), suggesting that institutional buyers are using this fear environment to accumulate. This is the pattern that preceded prior recoveries. Strategy's own continued purchasing — funded by its preferred equity machine — adds to the structural bid.</p>
-
-      <p>For MD Capital, the near-term priority is <strong>capital allocation discipline</strong>: our signals tell us when to buy, not just whether conditions are favorable. The BTC accumulation signal is firing clearly. If MSTR's discount crosses −15% cleanly, we have a second signal active simultaneously — a rare and historically opportune combination. We will revisit deployment options in next week's check-in.</p>
-
-      <p>Thank you for your continued trust and patience. This is not the environment anyone hoped for in Q1 2026 — but it is, if we stay the course, exactly where long-term Bitcoin allocators are built.</p>
+      <p>The next 30 days will be shaped primarily by two variables: the <strong>trajectory of the Iran conflict</strong> and the <strong>Fed's flexibility</strong> if oil-driven inflation forces its hand. In the bearish scenario, energy costs stay elevated, the Fed delays cuts further, and risk assets face continued pressure. In the bullish scenario, a diplomatic resolution reduces the oil shock, inflation expectations stabilize, and the pent-up demand from extreme-fear buyers drives a sharp recovery — with Bitcoin likely leading.</p>
+      <p>The data we watch most closely is leaning toward the bullish setup: institutional ETF inflows are holding, leverage is being cleaned out, and corporate accumulation (via Strategy) continues uninterrupted. <strong>The accumulation signal is firing. Patient capital is being rewarded with better entry prices each week.</strong> We will have more to share in next week's letter.</p>
+      <p>Thank you for your continued trust and patience. This is not the environment anyone hoped for in Q1 2026 — but it is exactly where long-term Bitcoin allocators are built.</p>
     </div>
 
     <!-- Closing -->
@@ -558,34 +450,25 @@
 
   </div>
 
-  <!-- Share bar -->
-  <div id="share-bar" style="position:fixed;bottom:24px;right:24px;z-index:100;">
-    <button onclick="copyLink()" id="share-btn" style="
-      display:flex;align-items:center;gap:8px;
-      background:#f7931a;color:#000;
-      border:none;border-radius:24px;
-      padding:10px 20px;font-size:13px;font-weight:700;
-      cursor:pointer;box-shadow:0 4px 20px rgba(247,147,26,0.35);
-      font-family:'Inter',sans-serif;letter-spacing:0.02em;
-      transition:all 0.2s;
-    ">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-      Share this letter
-    </button>
-  </div>
+  <!-- Share button -->
+  <button id="share-btn" onclick="copyLink()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    Share
+  </button>
+
   <script>
     function copyLink() {
-      const url = window.location.href;
-      navigator.clipboard.writeText(url).then(() => {
+      navigator.clipboard.writeText(window.location.href).then(() => {
         const btn = document.getElementById('share-btn');
-        btn.textContent = '✓ Link copied!';
+        btn.textContent = '✓ Copied!';
         btn.style.background = '#22c55e';
         setTimeout(() => {
-          btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share this letter';
+          btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share';
           btn.style.background = '#f7931a';
         }, 2500);
       });
     }
   </script>
+
 </body>
 </html>
