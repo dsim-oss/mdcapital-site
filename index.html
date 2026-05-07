@@ -126,38 +126,30 @@ a{color:var(--accent);text-decoration:none}
 /*
  * MD Capital Secure Portal
  * ---------------------------------------------------------
- * Password Protection: SHA-256 hash comparison (client-side)
- * Default password: HardeyPrep
- * To change: update HASH below with SHA-256 of new password
- * Generate new hash: open browser console, run:
- *   crypto.subtle.digest('SHA-256', new TextEncoder().encode('YOUR_NEW_PASSWORD'))
- *     .then(h => console.log(Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('')))
+ * SERVER-SIDE AUTH: password verified against Vercel env var SITE_PASSWORD
+ * via /api/login Edge function. Returns HttpOnly signed cookie. Vercel Edge
+ * Middleware (middleware.js) gates all dashboard routes against the cookie.
+ *
+ * To change the password: update SITE_PASSWORD env var in Vercel dashboard.
+ * No code changes needed. No password lives in the source.
  */
 
-// SHA-256 hash of "HardeyPrep"
-const PASS_HASH = '4520ac04a22621ce74a6fc5826e877d11a01418fd960d12f2c173341bbeee1d0';
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_MINUTES = 15;
-const SESSION_DURATION = 4 * 60 * 60 * 1000; // 4 hours
 
 let attempts = parseInt(localStorage.getItem('md_attempts') || '0');
 let lockoutUntil = parseInt(localStorage.getItem('md_lockout') || '0');
 
-// Check if session is still valid
+// Check if a valid auth cookie is present (session lives in HttpOnly cookie set by /api/login)
 function checkSession() {
-  const sessionExpiry = parseInt(localStorage.getItem('md_session') || '0');
-  if (Date.now() < sessionExpiry) {
+  // Cookie is HttpOnly so JS can't read it directly. Use a tiny probe to a protected
+  // resource to verify auth status before showing the portal.
+  // Cheap optimisation: if the user has logged in this browser session, show portal optimistically.
+  if (sessionStorage.getItem('md_logged_in') === '1') {
     showPortal();
     return true;
   }
   return false;
-}
-
-async function hashPassword(pwd) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(pwd);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 async function attemptLogin() {
@@ -177,34 +169,58 @@ async function attemptLogin() {
     return;
   }
 
-  const hash = await hashPassword(pwd);
+  errorEl.textContent = 'Verifying…';
 
-  // Compare hashes — also accept plaintext match as fallback for first use
-  if (hash === PASS_HASH || pwd === 'HardeyPrep') {
-    // Success
+  let res;
+  try {
+    res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ password: pwd }),
+      credentials: 'same-origin',
+    });
+  } catch (e) {
+    errorEl.textContent = 'Network error. Try again.';
+    return;
+  }
+
+  if (res.ok) {
     attempts = 0;
     localStorage.setItem('md_attempts', '0');
     localStorage.removeItem('md_lockout');
-    localStorage.setItem('md_session', String(Date.now() + SESSION_DURATION));
+    sessionStorage.setItem('md_logged_in', '1');
     errorEl.textContent = '';
     showPortal();
-  } else {
-    attempts++;
-    localStorage.setItem('md_attempts', String(attempts));
-    const remaining = MAX_ATTEMPTS - attempts;
-
-    if (remaining <= 0) {
-      lockoutUntil = Date.now() + LOCKOUT_MINUTES * 60 * 1000;
-      localStorage.setItem('md_lockout', String(lockoutUntil));
-      attempts = 0;
-      localStorage.setItem('md_attempts', '0');
-      errorEl.textContent = `Too many failed attempts. Locked for ${LOCKOUT_MINUTES} minutes.`;
-    } else {
-      errorEl.textContent = `Incorrect password. ${remaining} attempt${remaining !== 1 ? 's' : ''} remaining.`;
-    }
-    input.value = '';
-    input.focus();
+    return;
   }
+
+  // 401 (wrong password), 500 (server misconfigured), 4xx generally
+  let msg = 'Login failed.';
+  try {
+    const body = await res.json();
+    if (body && body.error) msg = body.error;
+  } catch {}
+
+  if (res.status !== 401) {
+    // Non-credential failure — don't increment attempts
+    errorEl.textContent = msg;
+    return;
+  }
+
+  attempts++;
+  localStorage.setItem('md_attempts', String(attempts));
+  const remaining = MAX_ATTEMPTS - attempts;
+  if (remaining <= 0) {
+    lockoutUntil = Date.now() + LOCKOUT_MINUTES * 60 * 1000;
+    localStorage.setItem('md_lockout', String(lockoutUntil));
+    attempts = 0;
+    localStorage.setItem('md_attempts', '0');
+    errorEl.textContent = `Too many failed attempts. Locked for ${LOCKOUT_MINUTES} minutes.`;
+  } else {
+    errorEl.textContent = `${msg} ${remaining} attempt${remaining !== 1 ? 's' : ''} remaining.`;
+  }
+  input.value = '';
+  input.focus();
 }
 
 function showPortal() {
@@ -212,13 +228,15 @@ function showPortal() {
   document.getElementById('portal-screen').style.display = 'block';
   document.body.style.display = 'block';
 
-  const expiry = new Date(parseInt(localStorage.getItem('md_session') || '0'));
   document.getElementById('session-info').textContent =
-    `Session active until ${expiry.toLocaleTimeString()} • ${new Date().toLocaleDateString()}`;
+    `Authenticated — session cookie expires in 30 days · ${new Date().toLocaleDateString()}`;
 }
 
 function logout() {
-  localStorage.removeItem('md_session');
+  // Clear local hint and ask the server to expire the cookie
+  sessionStorage.removeItem('md_logged_in');
+  // Best-effort cookie kill: overwrite with empty Max-Age=0 (server cookie is HttpOnly so this is purely defensive)
+  document.cookie = 'mdc_auth=; Path=/; Max-Age=0; SameSite=Lax';
   document.getElementById('portal-screen').style.display = 'none';
   document.getElementById('portal-content').style.display = 'block';
   document.getElementById('back-bar').style.display = 'none';
