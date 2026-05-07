@@ -38,7 +38,7 @@ a{color:var(--accent);text-decoration:none}
 .portal-welcome{text-align:center;margin-bottom:48px}
 .portal-welcome h2{font-size:1.6rem;font-weight:600;margin-bottom:8px}
 .portal-welcome p{color:var(--muted);font-size:.9rem}
-.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
 @media(max-width:768px){.dash-grid{grid-template-columns:1fr}}
 .dash-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 24px;text-align:center;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
 .dash-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.3;transition:opacity .3s}
@@ -115,6 +115,20 @@ a{color:var(--accent);text-decoration:none}
         <p>18 advanced features — market intel, decision center & operations</p>
         <span class="card-tag">18 Features</span>
       </div>
+
+      <div class="dash-card" onclick="openDashboard('/MD_Capital_Sentiment.html','Social Sentiment')">
+        <div class="dash-icon">&#128225;</div>
+        <h3>Sentiment Radar</h3>
+        <p>Stocktwits, Reddit, Fear & Greed, and social-market signal tracking</p>
+        <span class="card-tag">Social</span>
+      </div>
+
+      <div class="dash-card" onclick="openDashboard('/weekly.html','Weekly Letter')">
+        <div class="dash-icon">&#128221;</div>
+        <h3>Weekly Letter</h3>
+        <p>Latest investor letter, public share page, and current portfolio narrative</p>
+        <span class="card-tag">Shareable</span>
+      </div>
     </div>
 
     <div class="session-info" id="session-info"></div>
@@ -140,15 +154,39 @@ const LOCKOUT_MINUTES = 15;
 let attempts = parseInt(localStorage.getItem('md_attempts') || '0');
 let lockoutUntil = parseInt(localStorage.getItem('md_lockout') || '0');
 
+function getNextPath() {
+  const next = new URLSearchParams(window.location.search).get('next');
+  return next && next.startsWith('/') && !next.startsWith('//') ? next : '';
+}
+
 // Check if a valid auth cookie is present (session lives in HttpOnly cookie set by /api/login)
-function checkSession() {
+async function checkSession() {
   // Cookie is HttpOnly so JS can't read it directly. Use a tiny probe to a protected
   // resource to verify auth status before showing the portal.
   // Cheap optimisation: if the user has logged in this browser session, show portal optimistically.
   if (sessionStorage.getItem('md_logged_in') === '1') {
-    showPortal();
+    const next = getNextPath();
+    if (next) {
+      window.location.href = next;
+    } else {
+      showPortal();
+    }
     return true;
   }
+  try {
+    const res = await fetch('/api/auth-status', { credentials: 'same-origin' });
+    const status = await res.json();
+    if (status && status.cookie && status.cookie.verifies) {
+      sessionStorage.setItem('md_logged_in', '1');
+      const next = getNextPath();
+      if (next) {
+        window.location.href = next;
+      } else {
+        showPortal();
+      }
+      return true;
+    }
+  } catch {}
   return false;
 }
 
@@ -190,7 +228,12 @@ async function attemptLogin() {
     localStorage.removeItem('md_lockout');
     sessionStorage.setItem('md_logged_in', '1');
     errorEl.textContent = '';
-    showPortal();
+    const next = getNextPath();
+    if (next) {
+      window.location.href = next;
+    } else {
+      showPortal();
+    }
     return;
   }
 
@@ -239,8 +282,10 @@ function logout() {
   document.cookie = 'mdc_auth=; Path=/; Max-Age=0; SameSite=Lax';
   document.getElementById('portal-screen').style.display = 'none';
   document.getElementById('portal-content').style.display = 'block';
-  document.getElementById('back-bar').style.display = 'none';
-  document.getElementById('dashboard-frame').style.display = 'none';
+  const backBar = document.getElementById('back-bar');
+  const dashboardFrame = document.getElementById('dashboard-frame');
+  if (backBar) backBar.style.display = 'none';
+  if (dashboardFrame) dashboardFrame.style.display = 'none';
   document.getElementById('login-screen').style.display = 'block';
   document.getElementById('password-input').value = '';
   document.body.style.display = 'flex';
@@ -260,13 +305,15 @@ document.getElementById('password-input').addEventListener('keydown', (e) => {
 });
 
 // Check existing session on load
-if (!checkSession()) {
+(async () => {
+if (!(await checkSession())) {
   // Update lockout display
   if (Date.now() < lockoutUntil) {
     const mins = Math.ceil((lockoutUntil - Date.now()) / 60000);
     document.getElementById('error-msg').textContent = `Account locked. Try again in ${mins} minute${mins !== 1 ? 's' : ''}.`;
   }
 }
+})();
 </script>
 </body>
 </html>
