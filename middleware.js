@@ -1,34 +1,16 @@
-// Vercel Edge Middleware — server-side auth gate for MD Capital site
-// Protects all dashboard pages with an HMAC-signed cookie.
-// Public paths (no auth required): /, /weekly.html, /letters/*, /api/*, static assets.
+// Vercel Edge Middleware — server-side auth gate for MD Capital site.
+// Protected: /MD_Capital_*.html and /demo/*.
+// Public: everything else (/, /weekly.html, /letters/*, /api/*, static assets).
+//
+// Redirects to /?auth=<reason> when blocked so we can diagnose in the URL bar.
 
 export const config = {
-  matcher: [
-    // Run on every request EXCEPT the ones explicitly skipped via excluded prefixes.
-    // The path-level allow/deny logic is in the function below.
-    '/((?!_next/static|_next/image|favicon|robots\\.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?)$).*)',
-  ],
+  // Run on every request; we filter inside the function.
+  // Static assets (images, fonts) are excluded so we don't waste cycles.
+  matcher: '/((?!_next|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2|ttf|css|js|map)$).*)',
 };
 
-const PROTECTED_PATTERNS = [
-  /^\/MD_Capital_/i,
-  /^\/demo\//i,
-];
-
-const PUBLIC_PATHS = new Set([
-  '/',
-  '/index.html',
-  '/weekly.html',
-  '/robots.txt',
-  '/favicon.svg',
-]);
-
-function isPublicPath(pathname) {
-  if (PUBLIC_PATHS.has(pathname)) return true;
-  if (pathname.startsWith('/letters/')) return true;
-  if (pathname.startsWith('/api/')) return true;
-  return false;
-}
+const PROTECTED_PATTERNS = [/^\/MD_Capital_/i, /^\/demo\//i];
 
 function isProtectedPath(pathname) {
   return PROTECTED_PATTERNS.some((re) => re.test(pathname));
@@ -36,13 +18,14 @@ function isProtectedPath(pathname) {
 
 async function verifySignature(value, secret) {
   // Cookie format: <hex hmac>.<timestamp>
-  const parts = value.split('.');
-  if (parts.length !== 2) return false;
-  const [signature, timestamp] = parts;
+  const dot = value.lastIndexOf('.');
+  if (dot < 1) return { ok: false, reason: 'malformed_no_dot' };
+  const signature = value.slice(0, dot);
+  const timestamp = value.slice(dot + 1);
   const ts = parseInt(timestamp, 10);
-  if (!Number.isFinite(ts)) return false;
-  // 30-day expiry
-  if (Date.now() - ts > 1000 * 60 * 60 * 24 * 30) return false;
+  if (!Number.isFinite(ts)) return { ok: false, reason: 'malformed_ts' };
+  if (Date.now() - ts > 1000 * 60 * 60 * 24 * 30) return { ok: false, reason: 'expired' };
+
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey(
     'raw',
@@ -55,43 +38,42 @@ async function verifySignature(value, secret) {
   const expectedHex = Array.from(new Uint8Array(expectedBuf))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
-  // constant-time compare
-  if (expectedHex.length !== signature.length) return false;
+
+  if (expectedHex.length !== signature.length) return { ok: false, reason: 'sig_length' };
   let mismatch = 0;
   for (let i = 0; i < expectedHex.length; i++) {
     mismatch |= expectedHex.charCodeAt(i) ^ signature.charCodeAt(i);
   }
-  return mismatch === 0;
+  return { ok: mismatch === 0, reason: mismatch === 0 ? 'ok' : 'sig_mismatch' };
 }
 
 export default async function middleware(request) {
   const url = new URL(request.url);
   const pathname = url.pathname;
 
-  // Allow public paths through
-  if (isPublicPath(pathname)) return;
-
-  // Only enforce on explicitly protected paths; everything else passes through
+  // Only enforce on explicitly protected paths
   if (!isProtectedPath(pathname)) return;
 
   const secret = process.env.JWT_SECRET;
   if (!secret) {
-    // Misconfigured deployment — fail closed with a clear message
-    return new Response('Server auth misconfigured: JWT_SECRET not set on Vercel.', {
-      status: 500,
-    });
+    return Response.redirect(new URL('/?auth=no_secret', request.url), 302);
   }
 
-  // Read cookie
   const cookieHeader = request.headers.get('cookie') || '';
   const match = cookieHeader.match(/(?:^|;\s*)mdc_auth=([^;]+)/);
   if (!match) {
-    return Response.redirect(new URL('/?next=' + encodeURIComponent(pathname), request.url), 302);
+    return Response.redirect(
+      new URL('/?auth=no_cookie&next=' + encodeURIComponent(pathname), request.url),
+      302
+    );
   }
 
-  const ok = await verifySignature(decodeURIComponent(match[1]), secret);
-  if (!ok) {
-    return Response.redirect(new URL('/?next=' + encodeURIComponent(pathname), request.url), 302);
+  const result = await verifySignature(decodeURIComponent(match[1]), secret);
+  if (!result.ok) {
+    return Response.redirect(
+      new URL('/?auth=' + encodeURIComponent(result.reason) + '&next=' + encodeURIComponent(pathname), request.url),
+      302
+    );
   }
 
   // Authenticated — continue
