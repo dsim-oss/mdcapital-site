@@ -160,7 +160,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         <div class="highlight-box">
           <strong>Key Insight:</strong> Strategy Inc. has invented a new financial primitive — using equity and preferred stock issuance to accumulate Bitcoin, creating a self-reinforcing flywheel where capital markets access becomes a BTC acquisition engine.
         </div>
-        <p style="margin-top:12px">As of March 2026, Strategy holds ~738,750 BTC (~$50B+). Their capital structure offers three distinct instruments:</p>
+        <p style="margin-top:12px">As of May 2026, Strategy holds ~818,334 BTC (~$66B+). Their capital structure offers three distinct instruments:</p>
         <ul>
           <li><strong>MSTR (Common):</strong> Levered BTC upside with NAV premium/discount dynamics. Trades as a high-beta BTC proxy. Currently at a significant discount to NAV — a potential accumulation signal.</li>
           <li><strong>STRC (Perpetual Preferred):</strong> $100 par, 11.5% variable dividend, paid monthly. Designed to trade near par with income. Provides high yield income while maintaining BTC-correlated exposure through the issuer.</li>
@@ -303,8 +303,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 </div>
 
 <script>
-const STRATEGY_BTC = 738750;
-const MSTR_SHARES_DILUTED = 337800000;
+const STRATEGY_BTC = 818334;
+const MSTR_SHARES_DILUTED = 345000000;
 
 function showSection(id, btn) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -526,9 +526,9 @@ function computeSignals() {
 
   // Compliance
   if (data.btc) {
-    const btcVal = 0.10312090 * data.btc;
+    const btcVal = 0.10945583 * data.btc;
     const mstrVal = 1.271 * data.mstr;
-    const strcVal = 47.2813 * data.strc;
+    const strcVal = 67.5808 * data.strc;
     const cashVal = 4638;
     const totalNav = btcVal + mstrVal + strcVal + cashVal;
 
@@ -549,11 +549,11 @@ function computeSignals() {
     // Stress test
     const stressBtc = data.btc * 0.5;
     const stressMstr = data.mstr * 0.6; // MSTR drops more than BTC typically
-    const stressNav = (0.10312090 * stressBtc) + (1.271 * stressMstr) + (47.2813 * 100) + 4638; // STRC stays near par + cash
+    const stressNav = (0.10945583 * stressBtc) + (3.271 * stressMstr) + (67.5808 * 100) + 1966; // STRC stays near par + cash
     document.getElementById('stressTest').innerHTML = `
       <strong>Scenario: BTC drops 50% to $${(stressBtc).toLocaleString()}</strong><br>
       Estimated portfolio NAV: <span style="color:var(--red);font-weight:700">$${stressNav.toLocaleString(undefined,{maximumFractionDigits:0})}</span><br>
-      BTC position: $${(0.10312090*stressBtc).toLocaleString(undefined,{maximumFractionDigits:0})} · MSTR: $${(1.271*stressMstr).toLocaleString(undefined,{maximumFractionDigits:0})} · STRC: $${(47.2813*100).toLocaleString()} (par stable) · Cash: $4,638<br>
+      BTC position: $${(0.10945583*stressBtc).toLocaleString(undefined,{maximumFractionDigits:0})} · MSTR: $${(3.271*stressMstr).toLocaleString(undefined,{maximumFractionDigits:0})} · STRC: $${(67.5808*100).toLocaleString()} (par stable) · Cash: $1,966<br>
       <span style="color:var(--muted)">STRC dividends continue at ~$45.31/mo regardless of BTC price. Protected Capital shortfall would be $${(20000 - stressNav).toLocaleString(undefined,{maximumFractionDigits:0})} if immediately liquidated.</span>
     `;
   }

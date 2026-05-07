@@ -282,14 +282,117 @@ a{color:var(--accent);text-decoration:none}
   <div class="crd" style="margin-bottom:0">
     <div class="section-title">STRC Dividend Income</div>
     <div class="info-g">
-      <div><div class="il">Shares Held</div><div class="iv">51.28</div></div>
+      <div><div class="il">Shares Held</div><div class="iv">67.58</div></div>
       <div><div class="il">Annual Income</div><div class="iv" id="annualDiv" style="color:var(--green)">--</div></div>
       <div><div class="il">Monthly Income</div><div class="iv" id="monthlyDiv" style="color:var(--green)">--</div></div>
-      <div><div class="il">Next Ex-Dividend</div><div class="iv" style="font-size:.95rem">Jun 12, 2026</div></div>
+      <div><div class="il">Next Ex-Dividend</div><div class="iv" style="font-size:.95rem">May 28, 2026</div></div>
     </div>
-    <span id="yieldOnCost" style="display:none">11.64%</span>
+    <span id="yieldOnCost" style="display:none">11.83%</span>
   </div>
 </div>
+
+<!-- ===== PERFORMANCE METRICS ===== -->
+<div style="margin-bottom:32px">
+  <div class="stitle">Performance Metrics &mdash; The Eleven</div>
+  <p style="font-size:.72rem;color:var(--muted);margin-bottom:14px">Two scoreboards run in parallel: BTC accumulation (the long-term wealth measure) and dollar income (the cash engine). The metrics below decompose the fund across both.</p>
+
+  <div class="m-grid">
+    <!-- BTC SCOREBOARD -->
+    <div class="m-card m-keystone">
+      <div class="m-tag">BTC scoreboard</div>
+      <div class="m-name">OC vs Time-Weighted BTC</div>
+      <div class="m-val" id="mOcGap">--</div>
+      <div class="m-sub" id="mOcGapSub">vs. alt-scenario BTC equiv if every IBKR dollar had bought BTC on its fill date</div>
+    </div>
+    <div class="m-card">
+      <div class="m-tag">BTC scoreboard</div>
+      <div class="m-name">Avg BTC Purchase Cost</div>
+      <div class="m-val" id="mAvgBtcCost">--</div>
+      <div class="m-sub" id="mAvgBtcCostSub">Swan blended basis vs spot</div>
+    </div>
+    <div class="m-card">
+      <div class="m-tag">BTC scoreboard</div>
+      <div class="m-name">BTC Stack &amp; Stacking Rate</div>
+      <div class="m-val" id="mBtcStack">--</div>
+      <div class="m-sub" id="mBtcStackSub">annualized accumulation pace</div>
+    </div>
+
+    <!-- INCOME SCOREBOARD -->
+    <div class="m-card">
+      <div class="m-tag">Income scoreboard</div>
+      <div class="m-name">Yield-on-Cost (STRC)</div>
+      <div class="m-val" id="mYoc">--</div>
+      <div class="m-sub" id="mYocSub">annual STRC dividend &divide; STRC trade cost basis</div>
+    </div>
+    <div class="m-card">
+      <div class="m-tag">Income scoreboard</div>
+      <div class="m-name">Portfolio Yield Throughput</div>
+      <div class="m-val" id="mPortYield">--</div>
+      <div class="m-sub" id="mPortYieldSub">annualized cash yield on total NAV</div>
+    </div>
+    <div class="m-card">
+      <div class="m-tag">Income scoreboard</div>
+      <div class="m-name">Cumulative Cash Income</div>
+      <div class="m-val" id="mCumIncome">--</div>
+      <div class="m-sub" id="mCumIncomeSub">total STRC distributions received since inception</div>
+    </div>
+
+    <!-- RISK / BREAKEVEN -->
+    <div class="m-card">
+      <div class="m-tag">Risk &amp; breakeven</div>
+      <div class="m-name">Strategy Breakeven (BTC)</div>
+      <div class="m-val" id="mBreakeven">--</div>
+      <div class="m-sub" id="mBreakevenSub">BTC price for total NAV = $20k contributed</div>
+    </div>
+
+    <!-- DISCIPLINE -->
+    <div class="m-card">
+      <div class="m-tag">Discipline</div>
+      <div class="m-name">Avg STRC Discount-to-Par</div>
+      <div class="m-val" id="mStrcDisc">--</div>
+      <div class="m-sub" id="mStrcDiscSub">avg STRC fill cost vs $100 par</div>
+    </div>
+    <div class="m-card">
+      <div class="m-tag">Discipline</div>
+      <div class="m-name">Capital Deployment Ratio</div>
+      <div class="m-val" id="mDeploy">--</div>
+      <div class="m-sub" id="mDeploySub">$ deployed in positions &divide; $ contributed</div>
+    </div>
+
+    <!-- COMPOSITION -->
+    <div class="m-card">
+      <div class="m-tag">Composition</div>
+      <div class="m-name">Sleeve Mix</div>
+      <div class="m-val" id="mMix" style="font-size:1.05rem;font-family:'Inter',sans-serif">--</div>
+      <div class="m-sub" id="mMixSub">BTC / STRC / Cash / MSTR vs balanced target</div>
+    </div>
+
+    <!-- SYNTHESIS -->
+    <div class="m-card m-synth">
+      <div class="m-tag">Synthesis</div>
+      <div class="m-name">OC Tolerance Utilization</div>
+      <div class="m-val" id="mTolerance">--</div>
+      <div class="m-sub" id="mToleranceSub">% of yield buffer consumed by OC drag (annualized)</div>
+    </div>
+  </div>
+</div>
+
+<style>
+.m-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+@media(max-width:900px){ .m-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:600px){ .m-grid { grid-template-columns:1fr; } }
+.m-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:14px 16px; transition:.2s; position:relative; overflow:hidden; }
+.m-card:hover { border-color:rgba(247,147,26,.4); transform:translateY(-2px); }
+.m-keystone { border-color:rgba(247,147,26,.4); background:linear-gradient(180deg,rgba(247,147,26,.04),var(--card)); }
+.m-synth { border-color:rgba(16,185,129,.3); background:linear-gradient(180deg,rgba(16,185,129,.04),var(--card)); }
+.m-tag { font-size:.55rem; letter-spacing:1.4px; text-transform:uppercase; color:var(--muted); font-weight:600; margin-bottom:6px; }
+.m-name { font-size:.78rem; color:var(--text); font-weight:600; margin-bottom:8px; }
+.m-val { font-size:1.6rem; font-weight:700; font-family:'IBM Plex Mono','Courier New',monospace; font-variant-numeric:tabular-nums; line-height:1.1; margin-bottom:6px; }
+.m-val.pos { color:var(--green); }
+.m-val.neg { color:var(--red); }
+.m-val.warn { color:var(--accent); }
+.m-sub { font-size:.66rem; color:var(--muted); line-height:1.4; }
+</style>
 
 <!-- ===== DIVIDER ===== -->
 <div class="tier-div"><span>Analytics</span></div>
@@ -331,7 +434,7 @@ a{color:var(--accent);text-decoration:none}
       <div id="mstrPremiumSignal" style="margin-top:6px"></div>
     </div>
     <div style="font-size:.82rem">
-      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(42,42,50,0.5)"><span style="color:var(--muted)">Strategy BTC</span><span id="stratBtc" style="font-weight:600">761,068 BTC</span></div>
+      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(42,42,50,0.5)"><span style="color:var(--muted)">Strategy BTC</span><span id="stratBtc" style="font-weight:600">818,334 BTC</span></div>
       <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(42,42,50,0.5)"><span style="color:var(--muted)">BTC NAV</span><span id="stratNav" style="font-weight:600">--</span></div>
       <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(42,42,50,0.5)"><span style="color:var(--muted)">MSTR Mkt Cap</span><span id="mstrMcap" style="font-weight:600">--</span></div>
       <div style="display:flex;justify-content:space-between;padding:7px 0"><span style="color:var(--muted)">Diluted Shares</span><span style="font-weight:600">~337.8M</span></div>
@@ -439,13 +542,13 @@ a{color:var(--accent);text-decoration:none}
 <script>
 // ===== CONFIGURATION =====
 const HOLDINGS = {
-  btc: { qty: 0.10522488, label: 'Bitcoin (Spot)', ticker: 'BTC', account: 'Swan', costBasis: 10650, avgCost: 101202.00 },
-  mstr: { qty: 1.271, label: 'Strategy Inc', ticker: 'MSTR', account: 'IBKR', costBasis: 172.49, avgCost: 135.71 },
-  strc: { qty: 51.2813, label: 'Strategy Pref (STRC)', ticker: 'STRC', account: 'IBKR', costBasis: 5088.00, avgCost: 99.22 },
-  cash_bank: { qty: 3962, label: 'Cash (Bank)', ticker: 'USD', account: 'Bank' },
-  cash_ibkr: { qty: 125.54, label: 'Cash (IBKR)', ticker: 'USD', account: 'IBKR' }
+  btc: { qty: 0.10945583, label: 'Bitcoin (Spot)', ticker: 'BTC', account: 'Swan', costBasis: 11024, avgCost: 100720.00 },
+  mstr: { qty: 3.271, label: 'Strategy Inc', ticker: 'MSTR', account: 'IBKR', costBasis: 428.00, avgCost: 130.85 },
+  strc: { qty: 67.5808, label: 'Strategy Pref (STRC)', ticker: 'STRC', account: 'IBKR', costBasis: 6698.32, avgCost: 99.12 },
+  cash_bank: { qty: 1875, label: 'Cash (Bank)', ticker: 'USD', account: 'Bank' },
+  cash_ibkr: { qty: 91, label: 'Cash (IBKR)', ticker: 'USD', account: 'IBKR' }
 };
-const STRATEGY_BTC_HOLDINGS = 761068;
+const STRATEGY_BTC_HOLDINGS = 818334;
 const TOTAL_CONTRIBUTED = 20000;
 const PROTECTED_CAPITAL = 20000;
 const PREFERRED_RATE = 0.05;
@@ -453,7 +556,15 @@ const FUND_START = new Date('2025-08-25');
 const STRC_DIV_RATE = 0.115;
 const STRC_PAR = 100;
 const SWAN_FEE_MONTHLY = 37.12;
-const TOTAL_COST_BASIS = 10650 + 5088 + 172.49;
+const TOTAL_COST_BASIS = 11024 + 6698.32 + 428.00;
+
+// ===== TIME-WEIGHTED OC METRIC INPUTS (locked from IBKR Activity Statement + Swan transfer log) =====
+const ALT_BTC_ACCUMULATED = 0.20320;       // BTC count we'd have today if STRC/MSTR money had bought BTC at fill dates
+const SWAN_DEPLOYED = 11024;               // total $ Swan-deployed (incl ~$74 Swan fees)
+const IBKR_STRC_TRADE_DEPLOYED = 6566.47;  // $ deployed in STRC trades only (excludes DRIPs)
+const IBKR_MSTR_DEPLOYED = 428.00;         // $ deployed in MSTR
+const STRC_AVG_TRADE_COST = 99.40;         // avg cost per STRC sh on trades (excl DRIPs)
+const CUMULATIVE_DIVIDENDS = 131.85;       // total STRC distributions received YTD (all DRIP-reinvested)
 
 // ===== STATE =====
 let prices = { btc: null, mstr: null, strc: null };
@@ -654,6 +765,9 @@ function render() {
   el('annualDiv').textContent = fmt(annualDiv);
   el('monthlyDiv').textContent = fmt(annualDiv / 12);
 
+  // Performance Metrics — The Eleven
+  if (prices.btc) renderMetrics(totalNav, btcVal, mstrVal, strcVal, cashVal, annualDiv);
+
   // MAs
   if (prices.btc && !window._maFetched) { window._maFetched = true; fetchBtcMovingAverages(prices.btc); }
 
@@ -708,6 +822,93 @@ async function fetchBtcMovingAverages(currentPrice) {
     const t = bull+bear;
     el('maSummary').textContent = bull===t ? 'Above ALL MAs — uptrend' : bear===t ? 'Below ALL MAs — downtrend' : `${bull}/${t} bullish · ${bear}/${t} bearish`;
   } catch(e) { el('maSummary').textContent = 'MA error: ' + e.message; }
+}
+
+// ===== PERFORMANCE METRICS — THE ELEVEN =====
+function renderMetrics(totalNav, btcVal, mstrVal, strcVal, cashVal, annualDiv) {
+  const spotBtc = prices.btc;
+  const totalCash = HOLDINGS.cash_bank.qty + HOLDINGS.cash_ibkr.qty;
+
+  // 1. OC vs Time-Weighted BTC
+  const actualBtcEquiv = totalNav / spotBtc;
+  const altBtcEquiv = ALT_BTC_ACCUMULATED + (totalCash / spotBtc);
+  const ocGap = (actualBtcEquiv / altBtcEquiv - 1) * 100;
+  const ocCls = ocGap >= 0 ? 'pos' : ocGap > -5 ? 'warn' : 'neg';
+  el('mOcGap').textContent = (ocGap >= 0 ? '+' : '') + ocGap.toFixed(2) + '%';
+  el('mOcGap').className = 'm-val ' + ocCls;
+  el('mOcGapSub').innerHTML = `${actualBtcEquiv.toFixed(4)} BTC actual vs ${altBtcEquiv.toFixed(4)} BTC alt · time-weighted from per-fill BTC prices`;
+
+  // 2. Avg BTC Purchase Cost
+  const avgBtcCost = SWAN_DEPLOYED / HOLDINGS.btc.qty;
+  const vsSpot = ((spotBtc - avgBtcCost) / avgBtcCost * 100);
+  const acCls = vsSpot >= 0 ? 'pos' : 'neg';
+  el('mAvgBtcCost').textContent = '$' + avgBtcCost.toLocaleString('en-US',{maximumFractionDigits:0}) + '/BTC';
+  el('mAvgBtcCostSub').innerHTML = `Spot $${spotBtc.toLocaleString('en-US',{maximumFractionDigits:0})} · <span class="${acCls === 'pos' ? '' : ''}" style="color:var(--${vsSpot>=0?'green':'red'})">${vsSpot>=0?'+':''}${vsSpot.toFixed(1)}%</span> vs blended cost`;
+
+  // 3. BTC Stack + Stacking Rate
+  const monthsElapsed = (Date.now() - FUND_START.getTime()) / (1000 * 60 * 60 * 24 * 30.44);
+  const annualStackingRate = HOLDINGS.btc.qty * 12 / monthsElapsed;
+  el('mBtcStack').textContent = HOLDINGS.btc.qty.toFixed(5) + ' BTC';
+  el('mBtcStackSub').innerHTML = `Stacking pace: <strong>${annualStackingRate.toFixed(3)} BTC/yr</strong> · ~${(1/annualStackingRate).toFixed(1)} years to 1 BTC at current rate`;
+
+  // 4. Yield-on-Cost (STRC)
+  const yoc = (annualDiv / IBKR_STRC_TRADE_DEPLOYED) * 100;
+  el('mYoc').textContent = yoc.toFixed(2) + '%';
+  el('mYoc').className = 'm-val pos';
+  el('mYocSub').innerHTML = `$${annualDiv.toFixed(0)}/yr cash on $${IBKR_STRC_TRADE_DEPLOYED.toLocaleString('en-US',{maximumFractionDigits:0})} cost · ${(yoc - STRC_DIV_RATE*100).toFixed(2)} pp above 11.5% headline`;
+
+  // 5. Portfolio Yield Throughput
+  const portYield = (annualDiv / totalNav) * 100;
+  el('mPortYield').textContent = portYield.toFixed(2) + '%';
+  el('mPortYield').className = 'm-val pos';
+  el('mPortYieldSub').innerHTML = `$${annualDiv.toFixed(0)}/yr on $${totalNav.toLocaleString('en-US',{maximumFractionDigits:0})} NAV · vs T-bills ~4.5%, S&amp;P div ~1.4%`;
+
+  // 6. Cumulative Cash Income
+  el('mCumIncome').textContent = '$' + CUMULATIVE_DIVIDENDS.toFixed(2);
+  el('mCumIncome').className = 'm-val pos';
+  el('mCumIncomeSub').innerHTML = `5 STRC distributions reinvested via DRIP · next ~$${(annualDiv/12).toFixed(2)} on May 28`;
+
+  // 7. Strategy Breakeven (BTC price)
+  // Solve: BTC_qty × X + MSTR_qty × MSTR(X) + STRC$ + cash = 20000
+  // MSTR scales linearly with BTC at current ratio
+  const remaining = TOTAL_CONTRIBUTED - strcVal - totalCash;
+  const mstrPerBtc = HOLDINGS.mstr.qty * (prices.mstr / spotBtc); // current MSTR-per-BTC ratio
+  const breakevenBtc = remaining / (HOLDINGS.btc.qty + mstrPerBtc);
+  const breakevenDelta = ((breakevenBtc - spotBtc) / spotBtc * 100);
+  el('mBreakeven').textContent = '$' + breakevenBtc.toLocaleString('en-US',{maximumFractionDigits:0});
+  el('mBreakevenSub').innerHTML = `BTC needs <span style="color:var(--accent)">${breakevenDelta>=0?'+':''}${breakevenDelta.toFixed(1)}%</span> from spot for total NAV = $20k contributed`;
+
+  // 8. Avg STRC Discount-to-Par
+  const strcDisc = (STRC_AVG_TRADE_COST / STRC_PAR - 1) * 100;
+  el('mStrcDisc').textContent = (strcDisc >= 0 ? '+' : '') + strcDisc.toFixed(2) + '%';
+  el('mStrcDisc').className = 'm-val ' + (strcDisc <= 0 ? 'pos' : 'neg');
+  el('mStrcDiscSub').innerHTML = `Avg STRC trade fill $${STRC_AVG_TRADE_COST.toFixed(2)} vs $100 par · discipline check`;
+
+  // 9. Capital Deployment Ratio
+  const deployRatio = ((totalNav - totalCash) / TOTAL_CONTRIBUTED) * 100;
+  const drCls = deployRatio >= 90 ? 'pos' : deployRatio >= 80 ? 'warn' : 'neg';
+  el('mDeploy').textContent = deployRatio.toFixed(1) + '%';
+  el('mDeploy').className = 'm-val ' + drCls;
+  el('mDeploySub').innerHTML = `$${(totalNav - totalCash).toLocaleString('en-US',{maximumFractionDigits:0})} deployed · $${totalCash.toLocaleString('en-US',{maximumFractionDigits:0})} sitting cash · target 90%+`;
+
+  // 10. Sleeve Mix
+  const btcW = (btcVal / totalNav) * 100;
+  const mstrW = (mstrVal / totalNav) * 100;
+  const strcW = (strcVal / totalNav) * 100;
+  const cashW = (cashVal / totalNav) * 100;
+  el('mMix').innerHTML = `<span style="color:var(--accent)">${btcW.toFixed(0)}%</span> · <span style="color:var(--blue,#3b82f6)">${strcW.toFixed(0)}%</span> · <span style="color:var(--muted)">${cashW.toFixed(0)}%</span> · <span style="color:#a855f7">${mstrW.toFixed(0)}%</span>`;
+  el('mMixSub').innerHTML = `BTC / STRC / Cash / MSTR · target ~50/35/5/10`;
+
+  // 11. OC Tolerance Utilization
+  const yearsElapsed = monthsElapsed / 12;
+  const annualizedDrag = Math.abs(ocGap) / yearsElapsed;
+  const utilization = (annualizedDrag / (STRC_DIV_RATE * 100)) * 100;
+  let tolCls = 'pos', tolNote = 'comfortable — yield comfortably covering drag';
+  if (utilization > 80) { tolCls = 'neg'; tolNote = 'CRITICAL — yield buffer nearly gone, structural rebalance needed'; }
+  else if (utilization > 50) { tolCls = 'warn'; tolNote = 'WATCH — trigger Option E (yield-to-BTC rotation)'; }
+  el('mTolerance').textContent = utilization.toFixed(1) + '%';
+  el('mTolerance').className = 'm-val ' + tolCls;
+  el('mToleranceSub').innerHTML = `Annualized drag ${annualizedDrag.toFixed(2)}% &divide; 11.5% STRC yield · ${tolNote}`;
 }
 
 // ===== FORECASTING =====

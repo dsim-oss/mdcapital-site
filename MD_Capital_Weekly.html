@@ -1,281 +1,689 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>if(Date.now()>parseInt(localStorage.getItem("md_session")||"0"))window.location.href="/";</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MD Capital — Weekly Letter</title>
+<title>MD Capital — Weekly Investor Letter — 2026-05-05</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0d0d0f;--card:#161619;--card2:#1c1c20;--border:#2a2a2e;--accent:#c9a84c;--green:#22c55e;
-  --red:#ef4444;--text:#f1f5f9;--muted:#71717a;--blue:#3b82f6;--purple:#a78bfa;
-}
-body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
-a{color:var(--accent);text-decoration:none}
-
-/* Header */
-.header{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid var(--border);background:var(--card)}
-.header h1{font-size:1.3rem;font-weight:700;letter-spacing:-0.5px}
-.header h1 span{color:var(--accent)}
-.nav-links{display:flex;gap:4px;margin-top:6px}
-.nav-link{font-size:.7rem;padding:4px 12px;border:1px solid var(--border);border-radius:20px;color:var(--muted);transition:all .2s}
-.nav-link:hover,.nav-link.active{border-color:var(--accent);color:var(--accent)}
-
-/* Letter layout */
-.letter-container{max-width:720px;margin:0 auto;padding:48px 32px 80px}
-
-/* Date & Edition */
-.letter-edition{font-size:.65rem;text-transform:uppercase;letter-spacing:2px;color:var(--accent);font-weight:600;margin-bottom:8px}
-.letter-date{font-size:.75rem;color:var(--muted);margin-bottom:40px}
-
-/* Title */
-.letter-title{font-family:'Playfair Display',Georgia,'Times New Roman',serif;font-size:2.8rem;font-weight:700;line-height:1.15;letter-spacing:-1px;margin-bottom:16px}
-.letter-subtitle{font-size:1.05rem;color:var(--muted);line-height:1.5;margin-bottom:48px;font-weight:400}
-
-/* Divider */
-.divider{width:40px;height:2px;background:var(--accent);margin:40px 0}
-.divider-full{height:1px;background:linear-gradient(90deg,var(--accent),var(--border),transparent);margin:40px 0}
-
-/* Body text */
-.letter-body{font-size:.95rem;line-height:1.85;color:#cbd5e1;letter-spacing:0.01em}
-.letter-body p{margin-bottom:20px}
-.letter-body strong{color:var(--text);font-weight:600}
-
-/* Section headers */
-.section-head{font-size:.65rem;text-transform:uppercase;letter-spacing:2px;color:var(--accent);font-weight:600;margin-bottom:16px;margin-top:48px}
-
-/* Stats row */
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:12px;overflow:hidden;margin:32px 0}
-.stat-cell{background:var(--card);padding:24px 20px;text-align:center}
-.stat-label{font-size:.6rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:6px;font-weight:500}
-.stat-value{font-size:1.6rem;font-weight:700;letter-spacing:-0.5px}
-.stat-change{font-size:.75rem;margin-top:4px;font-weight:500}
-.stat-sub{font-size:.7rem;color:var(--muted);margin-top:2px}
-
-/* Holdings strip */
-.holdings-strip{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:32px 0}
-.holdings-strip-header{padding:16px 20px;border-bottom:1px solid var(--border);font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600}
-.holding-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:14px 20px;border-bottom:1px solid rgba(42,42,46,0.5);font-size:.85rem;align-items:center}
-.holding-row:last-child{border-bottom:none}
-.holding-ticker{font-weight:700;color:var(--accent)}
-.holding-account{font-size:.65rem;color:var(--muted);margin-top:2px}
-.holding-val{font-weight:600;text-align:right}
-.holding-pct{text-align:right;font-weight:500}
-
-/* Signal pills */
-.signal-row{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0}
-.signal-pill{padding:8px 18px;border-radius:24px;font-size:.75rem;font-weight:600;display:inline-flex;align-items:center;gap:6px}
-.pill-green{background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.2)}
-.pill-amber{background:rgba(201,168,76,0.1);color:var(--accent);border:1px solid rgba(201,168,76,0.2)}
-.pill-neutral{background:rgba(113,113,122,0.08);color:var(--muted);border:1px solid rgba(113,113,122,0.15)}
-.pill-dot{width:6px;height:6px;border-radius:50%}
-
-/* Callout box */
-.callout{background:linear-gradient(135deg,var(--card) 0%,var(--card2) 100%);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 12px 12px 0;padding:24px;margin:32px 0;font-size:.88rem;line-height:1.7;color:#cbd5e1}
-.callout-title{font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:8px}
-
-/* Signature */
-.signature{margin-top:56px;padding-top:32px;border-top:1px solid var(--border)}
-.sig-name{font-family:'Playfair Display',Georgia,serif;font-size:1.3rem;font-weight:600;margin-bottom:4px}
-.sig-title{font-size:.75rem;color:var(--muted)}
-
-/* Footer */
-.footer{text-align:center;padding:32px;color:var(--muted);font-size:.6rem;border-top:1px solid var(--border);margin-top:0;letter-spacing:0.3px;max-width:720px;margin:0 auto}
-
-/* Archive nav */
-.archive-nav{display:flex;justify-content:space-between;align-items:center;padding:20px 0;margin-bottom:32px;border-bottom:1px solid var(--border)}
-.archive-nav a{font-size:.75rem;color:var(--muted);transition:color .2s}
-.archive-nav a:hover{color:var(--accent)}
-.archive-current{font-size:.7rem;color:var(--muted)}
-
-.positive{color:var(--green)}.negative{color:var(--red)}
-
-/* Responsive */
-@media(max-width:640px){
-  .letter-container{padding:32px 20px 60px}
-  .letter-title{font-size:2rem}
-  .stats-row{grid-template-columns:1fr}
-  .stat-value{font-size:1.3rem}
-  .holding-row{grid-template-columns:1fr 1fr;gap:8px}
-}
+  :root {
+    --ink: #111;
+    --muted: #6b6b6b;
+    --rule: #e5e5e5;
+    --accent: #b87333;
+    --good: #1a7f37;
+    --bad: #b42318;
+    --bg: #fcfcfa;
+    --card: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 800px; margin: 0 auto; padding: 56px 44px 80px; }
+  header.doc { border-bottom: 2px solid var(--ink); padding-bottom: 18px; margin-bottom: 32px; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-size: 34px; line-height: 1.15; margin: 0 0 10px; font-weight: 600; letter-spacing: -0.01em; }
+  .meta { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 18px; }
+  .salutation { font-family: Georgia, "Times New Roman", serif; font-size: 18px; margin: 0 0 14px; }
+  .lede { font-size: 17px; line-height: 1.65; margin-bottom: 8px; }
+  .section-num { font-family: Georgia, "Times New Roman", serif; font-size: 13px; color: var(--accent); letter-spacing: 0.18em; margin: 40px 0 4px; font-weight: 600; }
+  h2 { font-family: Georgia, "Times New Roman", serif; font-size: 22px; margin: 0 0 14px; font-weight: 600; border-bottom: 1px solid var(--rule); padding-bottom: 8px; }
+  h3 { font-size: 13px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--muted); margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  table.nav, table.trades { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; margin: 6px 0 4px; }
+  table.nav th, table.nav td, table.trades th, table.trades td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--rule); font-size: 14px; }
+  table.nav th, table.trades th { font-weight: 600; color: var(--muted); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+  table.nav td.num, table.nav th.num, table.trades td.num, table.trades th.num { text-align: right; }
+  table.nav tr.total td { font-weight: 700; border-top: 2px solid var(--ink); border-bottom: none; }
+  .kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0 18px; }
+  .kpi { border: 1px solid var(--rule); border-radius: 6px; padding: 12px 14px; background: var(--card); }
+  .kpi .label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .kpi .value { font-size: 22px; font-family: Georgia, "Times New Roman", serif; font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .kpi .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .neg { color: var(--bad); }
+  .pos { color: var(--good); }
+  .signals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 8px 0 4px; }
+  .signal { border: 1px solid var(--rule); border-left-width: 4px; border-radius: 4px; padding: 10px 12px; background: var(--card); }
+  .signal.fired { border-left-color: var(--accent); }
+  .signal.quiet { border-left-color: var(--rule); }
+  .signal .tag { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
+  .signal.fired .tag { color: var(--accent); }
+  .signal.quiet .tag { color: var(--muted); }
+  .signal .name { font-weight: 600; margin-top: 2px; font-size: 14px; }
+  .signal .detail { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  ul.clean { padding-left: 18px; margin: 6px 0 14px; }
+  ul.clean li { margin-bottom: 8px; }
+  blockquote.doctrine { margin: 16px 0; padding: 12px 18px; border-left: 3px solid var(--accent); background: var(--card); color: var(--ink); font-style: italic; font-size: 14px; }
+  .signature { margin-top: 40px; }
+  .signature .closing { margin-bottom: 18px; }
+  .signature .name { font-family: Georgia, "Times New Roman", serif; font-size: 18px; font-weight: 600; }
+  .signature .title { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  footer.doc { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--rule); font-size: 11px; color: var(--muted); line-height: 1.55; }
+  small.note { display: block; font-size: 12px; color: var(--muted); margin-top: 6px; }
+  @media (max-width: 600px) { .wrap { padding: 32px 20px 60px; } .kpi-row, .signals { grid-template-columns: 1fr; } h1 { font-size: 26px; } }
+  @media print { body { background: #fff; } .wrap { padding: 0; max-width: 100%; } .kpi, .signal, blockquote.doctrine { background: #fff; } }
 </style>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 </head>
 <body>
+<div class="wrap">
 
-<div class="header">
-  <div>
-    <h1><span>MD</span> Capital</h1>
-    <div class="nav-links">
-      <a href="/MD_Capital_Dashboard.html" class="nav-link">Portfolio</a>
-      <a href="/MD_Capital_Signal_System.html" class="nav-link">Signals & Thesis</a>
-      <a href="/MD_Capital_Analytics.html" class="nav-link">Analytics</a>
-      <a href="/MD_Capital_Sentiment.html" class="nav-link">Sentiment</a>
-      <a href="/MD_Capital_Weekly.html" class="nav-link active">Weekly Letter</a>
-    </div>
+<header class="doc">
+  <div class="eyebrow">MD Capital LLC &middot; Weekly Investor Letter</div>
+  <h1>Week of April 27 &ndash; May 5, 2026</h1>
+  <div class="meta">
+    <span>Issued: Tuesday, 2026-05-05 (in lieu of Friday 2026-05-01)</span>
+    <span>To: Mike &amp; MD Capital Investors</span>
+    <span>Benchmark: BTC, time-weighted</span>
+  </div>
+</header>
+
+<p class="salutation">Mike and the MD Capital investors,</p>
+
+<p class="lede">
+  This letter is going out four sessions late and replaces the opportunity-cost
+  number we have been reporting since inception with one we can actually defend.
+  Bitcoin punched through <strong>$81,000</strong> for the first time since
+  January, sentiment swung back from greed to fear without a single policy
+  headline, Strategy paused weekly Bitcoin purchases ahead of this morning&rsquo;s
+  Q1 earnings, the STRC variable rate held at <strong>11.5% for a third
+  consecutive month</strong>, and our STRC sleeve paid the April distribution of
+  $57.49, reinvested via DRIP into 0.5756 additional shares on May 1. The
+  methodology fix: we replaced the static &ldquo;0.2000 BTC at $100,040&rdquo;
+  baseline with a <strong>time-weighted opportunity-cost calculation</strong>
+  that uses the actual BTC spot price on each of the 21 IBKR fill dates. Done
+  properly, the fund closes today at <strong>$18,177</strong>, holding
+  <strong>0.2247 BTC of equivalent value</strong> against a corrected
+  opportunity-cost equivalent of <strong>0.2275 BTC</strong> &mdash; the fund
+  is currently <strong>1.2% behind opportunity cost in BTC terms</strong>. That
+  is a meaningful change from the +15.6% prior letters reported. The number is
+  lower because we built most of the STRC position in the February 2026 BTC
+  crash and March bottom &mdash; exactly when buying spot BTC instead would
+  have accumulated the most coin. STRC has stayed flat near par; BTC has
+  rallied since. The income leg cost us, on the BTC scoreboard, in the rally.
+  That&rsquo;s the honest accounting.
+</p>
+
+<h2 style="margin-top:32px;">NAV Snapshot &mdash; 2026-05-05, Intraday</h2>
+
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="label">Total NAV</div>
+    <div class="value">$18,177</div>
+    <div class="sub">vs. $20,000 contributed</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Return vs. Contribution</div>
+    <div class="value neg">&minus;9.1%</div>
+    <div class="sub">&minus;$1,823 mark-to-market</div>
+  </div>
+  <div class="kpi">
+    <div class="label">vs. Time-Weighted BTC OC</div>
+    <div class="value neg">&minus;1.2%</div>
+    <div class="sub">0.2247 BTC actual vs. 0.2275 BTC alternative</div>
   </div>
 </div>
 
-<div class="letter-container">
+<table class="nav">
+  <thead>
+    <tr>
+      <th>Position</th>
+      <th>Venue</th>
+      <th class="num">Units</th>
+      <th class="num">Price</th>
+      <th class="num">Market Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Bitcoin (BTC)</td>
+      <td>Swan</td>
+      <td class="num">0.10945583</td>
+      <td class="num">$80,895</td>
+      <td class="num">$8,855</td>
+    </tr>
+    <tr>
+      <td>Strategy (MSTR)</td>
+      <td>IBKR</td>
+      <td class="num">3.271</td>
+      <td class="num">$183.80</td>
+      <td class="num">$601</td>
+    </tr>
+    <tr>
+      <td>Strategy Pref. (STRC)</td>
+      <td>IBKR</td>
+      <td class="num">67.5808</td>
+      <td class="num">$99.95</td>
+      <td class="num">$6,755</td>
+    </tr>
+    <tr>
+      <td>Cash (IBKR)</td>
+      <td>IBKR</td>
+      <td class="num">&mdash;</td>
+      <td class="num">&mdash;</td>
+      <td class="num">$91</td>
+    </tr>
+    <tr>
+      <td>Cash (Bank)</td>
+      <td>Operating</td>
+      <td class="num">&mdash;</td>
+      <td class="num">&mdash;</td>
+      <td class="num">$1,875</td>
+    </tr>
+    <tr class="total">
+      <td colspan="4">Total NAV</td>
+      <td class="num">$18,177</td>
+    </tr>
+  </tbody>
+</table>
+<small class="note">Position quantities reconciled to the IBKR Activity Statement transaction-by-transaction (21 fills from 11/20/2025 through 5/1/2026, including 5 dividend-reinvestment fills). STRC position now includes the 0.5756 sh DRIP-purchased on 5/1/2026 from the April monthly distribution of $57.49 (60 sh of record &times; $100 par &times; 11.5% &divide; 12). Bank cash is the reconciled operating-account balance; IBKR cash is the residual after deploying $7,013 of the $7,104 lifetime IBKR transfer. Live BTC, MSTR, and STRC prices are public market intraday through 2026-05-05.</small>
 
-  <!-- Archive navigation -->
-  <div class="archive-nav">
-    <span style="font-size:.75rem;color:var(--muted)">← Previous weeks coming soon</span>
-    <span class="archive-current">Latest Issue</span>
+<h3>Week-over-Week Roll Forward</h3>
+<table class="nav">
+  <thead>
+    <tr>
+      <th>Snapshot</th>
+      <th class="num">USD NAV</th>
+      <th class="num">Reference BTC</th>
+      <th class="num">NAV in BTC</th>
+      <th class="num">vs. Time-Weighted OC</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Last Friday, 2026-04-24</td>
+      <td class="num">$17,838</td>
+      <td class="num">$78,317</td>
+      <td class="num">0.2278 BTC</td>
+      <td class="num neg">&minus;0.2%</td>
+    </tr>
+    <tr class="total">
+      <td>Today, 2026-05-05</td>
+      <td class="num">$18,177</td>
+      <td class="num">$80,895</td>
+      <td class="num">0.2247 BTC</td>
+      <td class="num neg">&minus;1.2%</td>
+    </tr>
+  </tbody>
+</table>
+<small class="note">Week-over-week: USD NAV +$339 (+1.9%), driven by the MSTR mark-up ($176.00 to $183.80) and the $57.49 STRC distribution. BTC-denominated NAV &minus;0.0031 BTC (&minus;1.4%) and the OC outperformance gap widened from &minus;0.2% to &minus;1.2%. Mechanical: BTC ran 3.3% on the week against a portfolio that holds STRC and cash sleeves which don&rsquo;t track BTC. The 4/24 OC figure has been restated against the time-weighted methodology applied here.</small>
+
+<!-- Methodology -->
+<div class="section-num">00</div>
+<h2>Methodology Note &mdash; Time-Weighted Opportunity Cost</h2>
+<p>
+  Prior letters reported the BTC scoreboard against a static
+  &ldquo;0.2000 BTC at $100,040&rdquo; baseline derived by dividing the full
+  $20,000 contribution by Swan&rsquo;s lifetime average BTC basis. That math
+  treats every dollar &mdash; including dollars actually deployed into MSTR
+  and STRC at IBKR &mdash; as if it could have been bought at Swan&rsquo;s
+  blended average. It cannot. The MSTR and STRC dollars were deployed on
+  specific trade dates when BTC was at specific spot prices, mostly during
+  the February 2026 crash and the March bottom when BTC was at $66,000 to
+  $72,000. The right comparison is to what BTC could have been bought on
+  those same dates instead.
+</p>
+<p>
+  We rebuilt the calculation against the IBKR Activity Statement, fill by fill.
+  The summary table is below; full detail (date, asset, qty, fill price,
+  BTC@date, BTC alternative for each of 21 IBKR fills) is in the fund&rsquo;s
+  internal records.
+</p>
+
+<table class="trades">
+  <thead>
+    <tr>
+      <th>Tranche</th>
+      <th class="num">$ Deployed</th>
+      <th class="num">Wtd Avg BTC@Fill</th>
+      <th class="num">BTC Alternative</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Swan BTC purchases (18 lots, 10/20/25 &ndash; 4/16/26)</td>
+      <td class="num">$11,024</td>
+      <td class="num">$100,040</td>
+      <td class="num">0.10946 (actual)</td>
+    </tr>
+    <tr>
+      <td>STRC at IBKR (16 trade fills, 11/20/25 &ndash; 4/16/26)</td>
+      <td class="num">$6,566</td>
+      <td class="num">~$74,500</td>
+      <td class="num">0.08805</td>
+    </tr>
+    <tr>
+      <td>MSTR at IBKR (4 fills, 12/2/25 &ndash; 4/6/26)</td>
+      <td class="num">$425</td>
+      <td class="num">~$74,600</td>
+      <td class="num">0.00569</td>
+    </tr>
+    <tr class="total">
+      <td>Total alt-scenario BTC accumulated</td>
+      <td class="num">$18,015</td>
+      <td class="num">&mdash;</td>
+      <td class="num">0.20320</td>
+    </tr>
+    <tr>
+      <td>Cash never deployed (IBKR + Bank)</td>
+      <td class="num">$1,966</td>
+      <td class="num">at today&rsquo;s $80,895</td>
+      <td class="num">0.02431</td>
+    </tr>
+    <tr class="total">
+      <td>Total alt-scenario BTC equivalent today</td>
+      <td class="num">$19,981</td>
+      <td class="num">&mdash;</td>
+      <td class="num">0.22751</td>
+    </tr>
+  </tbody>
+</table>
+<small class="note">Per-fill BTC prices sourced from the Analytics dashboard for Swan-anchored dates, daily briefings for April fill dates, and public daily-close estimates for the December 2025 / February 2026 IBKR fill dates. Sensitivity: shifting the per-fill BTC assumptions by &plusmn;5% moves the corrected OC outperformance between approximately &minus;0.4% and &minus;2.0%. The directional finding &mdash; that the fund is slightly behind opportunity cost &mdash; is robust under any reasonable assumption.</small>
+
+<p style="margin-top:14px;">
+  The corrected scoreboard reads <strong>0.2247 BTC actual vs. 0.2275 BTC
+  alternative &mdash; &minus;1.2% in BTC</strong>. The intuition is the
+  inverse of last week&rsquo;s framing. Yes, roughly 55% of capital was
+  deployed at Swan in October&ndash;November 2025 when BTC was $107,000&ndash;$111,000,
+  and BTC has drawn down to $80,895 since &mdash; but the IBKR sleeve was
+  built almost entirely during the Q1 2026 BTC weakness and the early-April
+  recovery, with weighted-average BTC at the IBKR fill dates of approximately
+  $74,500. Buying STRC for $6,566 across that window meant we did not buy
+  approximately 0.088 BTC that we could have. STRC&rsquo;s flat-to-par price
+  trajectory has not made up the gap; the MSTR sleeve&rsquo;s rally has only
+  partly offset it. The fund is behind opportunity cost. Honest answer.
+</p>
+
+<h3>Comparable Benchmarks &mdash; 2026 YTD Context</h3>
+<table class="nav">
+  <thead>
+    <tr>
+      <th>Instrument</th>
+      <th class="num">Approx. YTD 2026</th>
+      <th>Note</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Bitcoin (spot)</td>
+      <td class="num neg">~&minus;15%</td>
+      <td>$95k year-start to $80,895; +3.3% on the week, highest print since January</td>
+    </tr>
+    <tr>
+      <td>Strategy (MSTR)</td>
+      <td class="num pos">~+5%</td>
+      <td>Re-rated through the BlackRock-passing disclosure; $176 to $183.80 on the week</td>
+    </tr>
+    <tr>
+      <td>S&amp;P 500</td>
+      <td class="num pos">~+3%</td>
+      <td>Broad equities firm into FOMC week</td>
+    </tr>
+    <tr>
+      <td>Gold (spot)</td>
+      <td class="num pos">~+13%</td>
+      <td>Continued bid as inflation hedge</td>
+    </tr>
+    <tr class="total">
+      <td>MD Capital LLC</td>
+      <td class="num neg">&minus;9.1%</td>
+      <td>USD terms / <span class="neg">&minus;1.2% vs. time-weighted BTC OC</span></td>
+    </tr>
+  </tbody>
+</table>
+<small class="note">Benchmark figures are approximate YTD-through-2026-05-05 from public market data; to be tightened against settled close at month-end.</small>
+
+<!-- 01 -->
+<div class="section-num">01</div>
+<h2>Macro Environment</h2>
+<p>
+  This was the inverse of the prior week&rsquo;s tape. Two weeks ago Bitcoin broke
+  $78,000 and sentiment ran from extreme fear to greed in five sessions on no fresh
+  news. This week the news did not show up either, but the direction reversed: BTC
+  printed a new local high at $81,000-plus and the Fear &amp; Greed index walked back
+  down from a 71 handle into the high-40s. Our 7-day sentiment delta is roughly
+  <strong>negative 23 points</strong>, putting the index back in the &ldquo;fear&rdquo;
+  band even as price made a higher high. That is an unusual print.
+</p>
+<p>
+  The cleanest read of the divergence is positioning: the rally that ran through
+  the prior two weeks was thinly held, the new buyers were fast money, and the move
+  through $80k flushed out conviction rather than building it. ETF flows confirmed
+  the picture &mdash; the iShares Bitcoin ETF saw a $352M outflow session midweek,
+  the largest single-day reversal since February. We are not in a regime change. We
+  are in a tape that is still trying to figure out whether $80k is a ceiling or a floor.
+</p>
+<p>
+  Two scheduled events will resolve a meaningful share of that ambiguity: the
+  <strong>FOMC rate decision on May 6&ndash;7</strong> and the <strong>April CPI
+  release on May 13</strong>. Neither has a policy surprise priced in; either one,
+  if it surprises in either direction, repricies the BTC and equity risk premia.
+  The doctrine&rsquo;s response is unchanged. We do not pre-position for binary
+  events. We watch the print, and if the tape obliges with a sub-30 F&amp;G read or
+  a sub-$70k retest, the framework deploys.
+</p>
+
+<!-- 02 -->
+<div class="section-num">02</div>
+<h2>Bitcoin This Week</h2>
+<p>
+  Spot BTC traded a range of approximately <strong>$76,316 to $81,200</strong>,
+  closing today at $80,895 intraday. The breakout above $80k is the first since
+  the November 2025 cycle peak unwound and is the clean technical event of the
+  week. The Fear &amp; Greed index slid from <strong>71 (greed) seven sessions ago
+  to 48 (fear) today</strong> &mdash; the kind of move where price action and
+  sentiment desynchronize, which historically precedes either continuation on
+  fresh fundamental news or a sharp mean-reversion. We don&rsquo;t need to call it.
+  The triggers will tell us when to act.
+</p>
+<p>
+  ETF flow composition is the more useful tell. Strong intake through the prior
+  weeks gave way to mid-week outflows that have not reversed. The 30-day rolling
+  ETF inflow series is still positive, but the slope has flattened. On-chain
+  composition remains constructive &mdash; long-term holder coins continue to
+  outweigh short-term holder coins, perp funding rates are positive but not
+  extreme &mdash; and the spot price is trading where it should be given the
+  treasury-buyer backdrop. None of this changes our framework. The accumulation
+  signal does not fire on rallies; it fires on fear, and fear at 48 doesn&rsquo;t
+  qualify.
+</p>
+
+<!-- 03 -->
+<div class="section-num">03</div>
+<h2>Featured: STRC Holds 11.5% &mdash; The First Real Stress Test</h2>
+<p>
+  The most-important institutional development of the week, in our book, is not a
+  Strategy 8-K. It is a non-event: <strong>Strategy elected to keep the STRC variable
+  rate at 11.5% for the May payment cycle, the third consecutive month at that
+  level</strong>. The reason this matters is mechanical. STRC&rsquo;s rate-setting
+  mechanism is calibrated against the prior month&rsquo;s volume-weighted average
+  price; April&rsquo;s VWAP was $99.76, sitting just under par. The instrument has
+  now closed below $100 every session since April 15 &mdash; nineteen consecutive
+  trading days through today. Despite that persistent sub-par print, the issuer
+  chose not to step the rate down.
+</p>
+<p>
+  This is the first real-world stress test of the STRC pricing mechanism since
+  inception. The signal we read is straightforward: Strategy is treating the
+  preferred-stock dividend coverage as a strategic priority and is willing to
+  hold the rate constant rather than telegraph weakness on the highest-yielding
+  capital tier in the stack. For our position, that means the
+  <strong>11.5% annualized yield</strong> we wrote into the original thesis is
+  intact, the STRC sub-par window remains a credible accumulation trigger, and
+  the income leg of the portfolio is doing exactly what it was designed to do
+  on the income side &mdash; even as the corrected OC math (above) shows the
+  same income leg cost us BTC accumulation in the rally.
+</p>
+<p>
+  In the same week, Ondo Finance announced a tokenized version of STRC on its
+  rails, advertising the 11.5% monthly yield to on-chain treasuries and DeFi
+  pools. We do not own tokenized STRC and have no current plan to. The relevance
+  is that it widens the natural buyer base for the underlying instrument, which
+  is constructive for the par-defense mechanic over time. Strategy now has a
+  preferred-stock product with three distribution channels &mdash; traditional
+  brokerage, IBKR-style retail, and tokenized DeFi &mdash; against a single
+  dividend obligation. That is a structural tailwind for STRC liquidity and, by
+  extension, for the integrity of our 11.5% yield assumption.
+</p>
+<p>
+  And this morning, before the cash open, <strong>Strategy reports Q1 earnings</strong>.
+  Saylor confirmed last week that the firm paused weekly BTC purchases into the
+  print, an unusual operational move and a small data point that the disclosure
+  cadence may step into a different regime post-earnings. We will read the print
+  cold and update the MSTR-NAV math against any fresh diluted-share count.
+</p>
+
+<!-- 04 -->
+<div class="section-num">04</div>
+<h2>Market Signals</h2>
+<div class="signals">
+  <div class="signal quiet">
+    <div class="tag">Quiet</div>
+    <div class="name">BTC Accumulation</div>
+    <div class="detail">F&amp;G 48 today &middot; trigger &le; 20 (last fired 4/14 at 14)</div>
   </div>
-
-  <!-- Edition & Date -->
-  <div class="letter-edition">Weekly Investor Letter · Issue #1</div>
-  <div class="letter-date">Week of March 14 – 20, 2026</div>
-
-  <!-- Title -->
-  <div class="letter-title">Extreme Fear, Quiet Accumulation</div>
-  <div class="letter-subtitle">Bitcoin holds $70K while the Fear & Greed Index crashes to 11. Whale wallets are buying. Strategy adds another 22,337 BTC. We're leaning in.</div>
-
-  <div class="divider"></div>
-
-  <!-- Week in Numbers -->
-  <div class="section-head">The Week in Numbers</div>
-
-  <div class="stats-row">
-    <div class="stat-cell">
-      <div class="stat-label">Bitcoin</div>
-      <div class="stat-value">$70,800</div>
-      <div class="stat-change positive">+1.3% this week</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-label">Fear & Greed</div>
-      <div class="stat-value" style="color:var(--green)">11</div>
-      <div class="stat-sub">Extreme Fear</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-label">Fund NAV</div>
-      <div class="stat-value">$16,822</div>
-      <div class="stat-change negative">-15.9% vs contributed</div>
-    </div>
+  <div class="signal quiet">
+    <div class="tag">Quiet</div>
+    <div class="name">MSTR Discount to NAV</div>
+    <div class="detail">MSTR $183.80 vs. NAV/sh ~$192 &middot; <strong>~&minus;4.2%</strong> (trigger &lt; &minus;15%)</div>
   </div>
-
-  <div class="stats-row">
-    <div class="stat-cell">
-      <div class="stat-label">MSTR</div>
-      <div class="stat-value">$138.24</div>
-      <div class="stat-change negative">-2.8%</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-label">STRC</div>
-      <div class="stat-value">$99.60</div>
-      <div class="stat-sub">Below $100 par</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-label">MSTR NAV Discount</div>
-      <div class="stat-value" style="color:var(--green)">-13.3%</div>
-      <div class="stat-sub">Approaching -15% trigger</div>
-    </div>
+  <div class="signal fired">
+    <div class="tag">Fired</div>
+    <div class="name">STRC Below Par</div>
+    <div class="detail">$99.95 today &middot; below par 19 consecutive sessions &middot; trigger &lt; $100.00</div>
   </div>
+</div>
+<small class="note">MSTR NAV/share derived from Strategy&rsquo;s 818,334 BTC treasury at spot $80,895 ($66.20B), divided by an estimated ~345M diluted shares pending the Q1 share-count refresh from this morning&rsquo;s earnings filing.</small>
 
-  <!-- Market Commentary -->
-  <div class="section-head">Market Context</div>
+<!-- 05 -->
+<div class="section-num">05</div>
+<h2>Fund Activity</h2>
+<p>
+  No discretionary trades were executed in the period. The only book event was the
+  <strong>April 30 STRC distribution of $57.49</strong>, which was reinvested via
+  IBKR&rsquo;s DRIP program on May 1 into <strong>0.5756 additional STRC shares
+  at $99.88</strong>. The reinvestment is reflected in the position table above;
+  STRC sleeve quantity moved from 67.0052 to 67.5808 sh.
+</p>
 
-  <div class="letter-body">
-    <p>This was a week of contradictions. Bitcoin reclaimed $70,000 with a quiet +1.3% bounce, yet the Fear & Greed Index collapsed from 23 to <strong>11</strong> — its lowest reading since the July 2025 washout. That kind of divergence between price stability and sentiment panic historically signals one thing: smart money is accumulating while retail runs scared.</p>
+<table class="trades">
+  <thead>
+    <tr>
+      <th>Action</th>
+      <th>Venue</th>
+      <th>Date</th>
+      <th class="num">Units</th>
+      <th class="num">Fill / Price</th>
+      <th class="num">Capital In/Out</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>STRC monthly distribution received (60 sh of record)</td>
+      <td>IBKR</td>
+      <td>2026-04-30</td>
+      <td class="num">&mdash;</td>
+      <td class="num">11.5% APR &divide; 12</td>
+      <td class="num pos">+$57.49</td>
+    </tr>
+    <tr>
+      <td>STRC dividend reinvested (DRIP)</td>
+      <td>IBKR (IBDRIPUS)</td>
+      <td>2026-05-01</td>
+      <td class="num">0.5756</td>
+      <td class="num">$99.88</td>
+      <td class="num neg">&minus;$57.49</td>
+    </tr>
+    <tr>
+      <td colspan="5"><em>No discretionary buys or sells.</em></td>
+      <td class="num">$0.00</td>
+    </tr>
+    <tr class="total">
+      <td colspan="5">Net Cash Flow This Period</td>
+      <td class="num">$0.00</td>
+    </tr>
+  </tbody>
+</table>
 
-    <p>The on-chain data backs this up. Whale wallets holding more than 1,000 BTC showed <strong>net inflows of 8,400 BTC over 48 hours</strong>, even as trading volume dipped below the 30-day average. This is textbook accumulation: low volume, stable price, extreme fear, large wallets quietly adding.</p>
+<h3>Why We Did Not Trade</h3>
+<p>
+  Two reasons, both familiar from last week&rsquo;s letter, neither resolved.
+</p>
+<ul class="clean">
+  <li><strong>Bank-to-IBKR transfer is still pending.</strong> We flagged this as
+    the operational priority for the week of April 27 and it did not happen. With
+    $91 of IBKR buying power on hand, the MSTR discount briefly opened to
+    &minus;14.4% on April 30 &mdash; one point shy of trigger &mdash; and we
+    were positioned to capture exactly zero of it. With $1,875 in the operating
+    account and only $91 in IBKR, the realistic transfer this week is approximately
+    <strong>$500&ndash;$750</strong>, leaving the bulk of the bank reserve
+    intact for a Swan-side BTC tranche if a sub-$70k retest materializes.</li>
+  <li><strong>The STRC sub-par window stayed thin.</strong> STRC traded between
+    $99.21 and $99.95 every session. The signal was technically live throughout,
+    but the discount to par sat at $0.05 to $0.79 &mdash; not a price worth
+    chasing with the only buying power on hand, when an MSTR discount window
+    might re-open and you&rsquo;d want the dry powder for that. The corrected OC
+    math (above) reinforces this: STRC purchases above $99 add modest BTC
+    accumulation in the alt scenario; we don&rsquo;t need to chase narrow
+    sub-par windows.</li>
+</ul>
 
-    <p>Meanwhile, Strategy (formerly MicroStrategy) continued its aggressive treasury build, purchasing <strong>22,337 BTC last week for ~$1.57 billion</strong> at an average price of $70,194. That brings their total holdings to 761,068 BTC — funded primarily through $1.18B in STRC preferred share sales. They're on pace to hold 1 million BTC by year-end.</p>
+<blockquote class="doctrine">
+  When in doubt, do less. Document before execute. The benchmark is BTC, not
+  dollars. Size to the signal, not the headline. No leverage on spot BTC, ever.
+</blockquote>
 
-    <p>A quieter but significant milestone: <strong>Bitcoin's circulating supply crossed 20 million BTC</strong> around March 10. Only 1 million coins remain to be mined over the next ~114 years. The supply squeeze narrative is no longer forward-looking — it's here.</p>
-  </div>
+<!-- 06 -->
+<div class="section-num">06</div>
+<h2>Outlook Into Next Week</h2>
+<ul class="clean">
+  <li><strong>Bank-to-IBKR transfer &mdash; this week.</strong> Two consecutive
+    Friday letters have flagged this and two consecutive Friday letters have had
+    to explain why we missed an actionable discount window because we lacked
+    buying power. Target sizing: <strong>$500&ndash;$750</strong> from the
+    operating account into IBKR, leaving roughly $1,125&ndash;$1,375 of bank
+    reserve intact for a Swan-side BTC tranche on a sub-$70k retest.</li>
+  <li><strong>Strategy Q1 earnings &mdash; today, May 5, before the open.</strong>
+    First confirmed look at the post-ATM diluted share count, the Q1 BTC yield
+    figure, the STRC issuance pace, and any forward guidance on the BTC purchase
+    cadence Saylor paused last week.</li>
+  <li><strong>FOMC rate decision &mdash; May 6&ndash;7.</strong> No policy
+    surprise priced in. Surprise either way repricies risk premia.</li>
+  <li><strong>April CPI &mdash; May 13.</strong> Inflation-path read; cooler
+    print supports the rally; hotter print could re-open the BTC accumulation
+    window we are sitting outside.</li>
+  <li><strong>STRC May distribution &mdash; payable end of May.</strong> Rate
+    held at 11.5%, position 67.5808 sh of record at the next ex-date, expected
+    cash distribution approximately <strong>$64.78</strong> (67.5808 sh &times;
+    $100 par &times; 11.5% &divide; 12), DRIP-reinvested on the payment date.</li>
+  <li><strong>Sleeve-mix question.</strong> The corrected OC reading puts the
+    fund 1.2% behind opportunity cost. That is small and recoverable if BTC
+    consolidates or pulls back &mdash; the income leg outperforms in those
+    regimes. It widens further if BTC keeps rallying without us. The decision
+    of whether to tilt the next deployment dollars toward Swan rather than IBKR
+    is a real one to make next week, with the bank-to-IBKR transfer either
+    enabling an MSTR re-open or being redirected to Swan if the BTC retest
+    arrives first.</li>
+</ul>
 
-  <!-- Active Signals -->
-  <div class="section-head">Signal Status</div>
+<h3>Upcoming Catalysts &mdash; Next 14 Days</h3>
+<table class="trades">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Event</th>
+      <th>Relevance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2026-05-05 (today)</td>
+      <td>Strategy Q1 earnings, pre-market</td>
+      <td>Refreshes MSTR-NAV signal math against current diluted share count.</td>
+    </tr>
+    <tr>
+      <td>2026-05-06 / 07</td>
+      <td>FOMC rate decision &amp; press conference</td>
+      <td>Rate-path input; surprise either direction repricies risk premia.</td>
+    </tr>
+    <tr>
+      <td>2026-05-13</td>
+      <td>April CPI release</td>
+      <td>Inflation-path read; key swing input on whether BTC accumulation signal can re-fire.</td>
+    </tr>
+    <tr>
+      <td>Mid-May (exp.)</td>
+      <td>Strategy 8-K (next BTC purchase disclosure)</td>
+      <td>First disclosure post-pause. Scale and funding mix is the diagnostic on whether the issuance cadence steps up or slows.</td>
+    </tr>
+    <tr>
+      <td>2026-05-30 (exp.)</td>
+      <td>STRC May monthly distribution payable</td>
+      <td>~$64.78 cash distribution at the unchanged 11.5% rate, DRIP-reinvested.</td>
+    </tr>
+  </tbody>
+</table>
+<small class="note">Calendar items are the dated tape we will be watching, not predictions of outcome. Dates marked &ldquo;exp.&rdquo; will be confirmed against official calendars.</small>
 
-  <div class="signal-row">
-    <div class="signal-pill pill-green"><div class="pill-dot" style="background:var(--green)"></div>BTC Accumulation Active</div>
-    <div class="signal-pill pill-green"><div class="pill-dot" style="background:var(--green)"></div>STRC Below Par</div>
-    <div class="signal-pill pill-amber"><div class="pill-dot" style="background:var(--accent)"></div>MSTR Discount: Monitor</div>
-  </div>
+<!-- 07 -->
+<div class="section-num">07</div>
+<h2>Risks We Are Watching</h2>
+<ul class="clean">
+  <li><strong>Operational drag is now a recurring risk.</strong> The
+    bank-to-IBKR transfer being unresolved into a third consecutive week
+    means the desk has been mechanically constrained from acting on two
+    discrete signal windows. Process risk, not market risk. Process risks
+    compound. The fix is operational, not analytical.</li>
+  <li><strong>The fund is now 1.2% behind opportunity cost in BTC.</strong>
+    With the corrected time-weighted methodology, we have crossed below the
+    OC line. The gap is small and explainable &mdash; we built the income leg
+    during the BTC weakness, exactly when buying spot BTC instead would have
+    accumulated more coin. The gap is also narrowable: a BTC pullback
+    materially closes it (because the cash and STRC sleeves don&rsquo;t draw
+    down with spot), and if we use the bank-to-IBKR transfer to add MSTR or
+    STRC at a deeper discount, those incremental dollars could deploy into
+    BTC instead via a Swan tranche on a sub-$70k retest. The choice of which
+    way to lean is the open strategic question for next week.</li>
+  <li><strong>BTC up-move risk.</strong> If BTC continues to grind higher
+    without a pullback, our OC underperformance widens. Each $5,000 BTC
+    higher costs us roughly 0.1 percentage points more on the OC scoreboard,
+    holding the cash and yield sleeves constant. We are in a regime where
+    the income leg is taxing the BTC scoreboard rather than supporting it.
+    This is the design tradeoff acting in the unfavorable direction.</li>
+  <li><strong>STRC rate-set risk shifts forward.</strong> The May rate-hold
+    at 11.5% is constructive. The June rate-set will be calibrated against
+    May&rsquo;s VWAP, currently shaping up sub-par on the same persistent
+    below-$100 print pattern. If Strategy steps the rate down to defend par,
+    our income leg yield assumption revises lower &mdash; and the OC math
+    gets worse, since the income offset to BTC opportunity-cost shrinks.</li>
+  <li><strong>Q1 earnings reset risk.</strong> Saylor pausing the weekly
+    purchase cadence ahead of the print is itself information. If the call
+    surfaces a guidance change, the MSTR sleeve repricies first and the STRC
+    sleeve second. The position size of the MSTR leg (3.271 sh, 3.3% of NAV)
+    caps the exposure.</li>
+</ul>
 
-  <div class="letter-body">
-    <p><strong>Two of three signals are firing.</strong> The Fear & Greed reading of 11 blew through our ≤20 accumulation trigger. Historical data across 23 instances since 2020 shows readings below 15 have preceded average 30-day forward returns of +12.4% for BTC. The STRC income harvest signal remains active at $99.60, below $100 par for the fourth consecutive session. The MSTR NAV discount deepened to -13.3%, approaching our -15% accumulation trigger.</p>
-  </div>
-
-  <div class="divider-full"></div>
-
-  <!-- Portfolio Update -->
-  <div class="section-head">Portfolio Holdings</div>
-
-  <div class="holdings-strip">
-    <div class="holdings-strip-header">Current Positions — March 20, 2026</div>
-    <div class="holding-row" style="color:var(--muted);font-size:.65rem;text-transform:uppercase;letter-spacing:1px;font-weight:500;padding:10px 20px">
-      <span>Asset</span><span style="text-align:right">Quantity</span><span style="text-align:right">Value</span><span style="text-align:right">Allocation</span>
-    </div>
-    <div class="holding-row">
-      <div><div class="holding-ticker">BTC</div><div class="holding-account">Swan Capital</div></div>
-      <div class="holding-val">0.10522488</div>
-      <div class="holding-val">$7,450</div>
-      <div class="holding-pct">44.3%</div>
-    </div>
-    <div class="holding-row">
-      <div><div class="holding-ticker">STRC</div><div class="holding-account">Interactive Brokers</div></div>
-      <div class="holding-val">51.2813 shares</div>
-      <div class="holding-val">$5,108</div>
-      <div class="holding-pct">30.4%</div>
-    </div>
-    <div class="holding-row">
-      <div><div class="holding-ticker">MSTR</div><div class="holding-account">Interactive Brokers</div></div>
-      <div class="holding-val">1.271 shares</div>
-      <div class="holding-val">$176</div>
-      <div class="holding-pct">1.0%</div>
-    </div>
-    <div class="holding-row">
-      <div><div class="holding-ticker" style="color:var(--muted)">USD</div><div class="holding-account">Bank + IBKR</div></div>
-      <div class="holding-val">—</div>
-      <div class="holding-val">$4,088</div>
-      <div class="holding-pct">24.3%</div>
-    </div>
-    <div class="holding-row" style="background:rgba(201,168,76,0.05);font-weight:700">
-      <div>Total NAV</div>
-      <div></div>
-      <div class="holding-val" style="color:var(--accent)">$16,822</div>
-      <div class="holding-pct">100%</div>
-    </div>
-  </div>
-
-  <div class="letter-body">
-    <p>We added to both BTC and STRC this week. Roughly $150 went into spot Bitcoin via Swan at ~$70,400, and we picked up 4 additional STRC shares via IBKR, bringing our preferred position to 51.28 shares. Annual dividend income from STRC now sits at approximately <strong>$590</strong>, or ~$49 per month.</p>
-  </div>
-
-  <!-- Strategy Outlook -->
-  <div class="section-head">Strategy & Outlook</div>
-
-  <div class="callout">
-    <div class="callout-title">This Week's Thesis</div>
-    Extreme fear with stable price is the definition of an accumulation window. We're not trying to time the bottom — we're buying into the fear because the structural case for Bitcoin hasn't changed: supply is shrinking, institutional demand is growing, and the monetary backdrop remains favorable. Our barbell strategy (spot BTC for upside + STRC for yield) lets us generate income while we wait.
-  </div>
-
-  <div class="letter-body">
-    <p>The current drawdown of -15.9% from contributed capital is uncomfortable but expected given BTC's correction from the $105K highs. Our portfolio is designed for this: the STRC dividend stream provides real cash flow regardless of price action, and the spot BTC position gives us full upside when the cycle turns.</p>
-
-    <p><strong>Looking ahead:</strong> We'll continue deploying cash into spot BTC via weekly purchases at Swan while the Fear & Greed Index stays in extreme fear territory. STRC accumulation pauses until IBKR is funded again. If the MSTR NAV discount crosses -15%, that becomes our next action item — but it would require wiring additional funds to IBKR.</p>
-
-    <p>The 12-month Monte Carlo simulation (10,000 runs, 60% annual BTC volatility, conservative 0% drift) puts the probability of full capital recovery at roughly 52-55%. Not a guarantee, but the distribution is positively skewed — the upside scenarios significantly outweigh the downside. Time and DCA are working in our favor.</p>
-  </div>
-
-  <!-- Sign-off -->
-  <div class="signature">
-    <div class="sig-name">Damir Simunac</div>
-    <div class="sig-title">Managing Member, MD Capital LLC</div>
-  </div>
-
+<div class="signature">
+  <p class="closing">
+    A late letter on a quiet desk, with two consequential corrections. First:
+    the IBKR Activity Statement is now fully reconciled into the fund record,
+    21 fills from November 2025 through May 1, 2026. The 4/17 letter&rsquo;s
+    positions of 67.0052 STRC and 3.271 MSTR were correct &mdash; we were
+    using stale daily-briefing baselines that didn&rsquo;t reflect the actual
+    book. Second: the BTC opportunity-cost number we have been reporting at
+    +15.6% (4/17 letter) and +13.9% (4/24 letter) was based on a static
+    methodology that didn&rsquo;t account for when the IBKR money was
+    actually deployed. Recomputed against the per-fill BTC prices, the fund
+    is currently <strong>1.2% behind opportunity cost</strong> in BTC terms
+    &mdash; not ahead. The income leg, bought during the Q1 BTC weakness,
+    cost us BTC accumulation in the subsequent rally. STRC&rsquo;s 11.5%
+    rate-hold is intact and the income thesis still works in a flat-or-down
+    BTC tape; in a rally, the math runs the other way. The bank-to-IBKR
+    transfer is the unfinished business of three letters now, and that ends
+    this week. More to come, on time, on Friday.
+  </p>
+  <p class="closing">Warm regards,</p>
+  <div class="name">Damir Simunac</div>
+  <div class="title">Managing Member &amp; Portfolio Manager &middot; MD Capital LLC</div>
 </div>
 
-<div class="footer" style="max-width:100%;padding:24px 32px;border-top:1px solid var(--border)">
-  MD Capital LLC · Illinois Series LLC · For internal use only · Not investment advice<br>
-  This letter reflects positions and market data as of March 20, 2026
-</div>
+<footer class="doc">
+  <p>
+    This letter is for informational purposes only and is intended solely for the named
+    investor(s) of MD Capital LLC. It does not constitute investment advice, an offer to sell,
+    or a solicitation to buy any security. Past performance is not indicative of future
+    results. All figures are estimates based on available market data and venue statements
+    as of the timestamp shown above; bank-cash, fill-price, and reconciliation figures are
+    preliminary and subject to revision at month-end. Bitcoin and digital-asset investments
+    involve significant risk, including the potential for total loss of capital.
+  </p>
+</footer>
 
+</div>
 </body>
 </html>
