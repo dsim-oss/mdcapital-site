@@ -451,21 +451,21 @@ button.btn-outline{background:transparent;border:1px solid var(--accent);color:v
 
 <script>
 // ===== CONFIG =====
-const H = { btc: 0.10945583, mstr: 3.271, strc: 67.5808, cashBank: 1875, cashIBKR: 91 };
+const H = { btc: 0.18142753, mstr: 5.271, strc: 102.5318, cashBank: 472, cashIBKR: 53 };
 const TOTAL_CASH = H.cashBank + H.cashIBKR;
 const PROT_CAP = 20000;
 const PREF_RATE = 0.05;
 const FUND_START = new Date('2025-08-25');
 const HALVING_DATE = new Date('2024-04-20');
-const STRC_DIV = 0.115;
+const STRC_DIV = 0.12;
 const STRC_PAR = 100;
 const BTC_AT_INCEPTION = 64000; // BTC price at LLC formation Aug 25, 2025
-const BTC_AVG_COST = 100720.00; // weighted avg Swan basis across 18 BTC lots (incl ~$74 fees)
-const BTC_COST_BASIS = 11024; // total USD Swan-deployed (incl fees)
-const MSTR_COST_BASIS = 428.00;
-const STRC_COST_BASIS = 6698.32; // gross paid incl all DRIPs
-const MSTR_AVG_COST = 130.85;
-const STRC_AVG_COST = 99.12; // blended across 16 trade fills + 5 DRIP fills
+const BTC_AVG_COST = 88044.00; // weighted avg Swan basis across 24 BTC lots (incl Swan fees)
+const BTC_COST_BASIS = 15973.60; // total USD Swan-deployed (incl fees)
+const MSTR_COST_BASIS = 785.64;
+const STRC_COST_BASIS = 9601.00; // IBKR cost basis as of 2026-09-26
+const MSTR_AVG_COST = 149.05;
+const STRC_AVG_COST = 93.64; // IBKR average cost as of 2026-09-26
 
 // Swan purchase lots (date, btc qty, price, total USD)
 const BTC_LOTS = [
@@ -488,6 +488,13 @@ const BTC_LOTS = [
   { date: '2026-03-23', qty: 0.00214592, price: 71000.00, cost: 152.36 },
   { date: '2026-04-02', qty: 0.00211268, price: 72000.00, cost: 152.11 },
   { date: '2026-04-13', qty: 0.00207633, price: 73000.00, cost: 151.57 },
+  // From Swan screenshots, 2026-08-09
+  { date: '2026-05-06', qty: 0.01207881, price: 81962.00, cost: 1000 },
+  { date: '2026-05-06', qty: 0.00665028, price: 81876.00, cost: 550 },
+  { date: '2026-05-15', qty: 0.00498207, price: 79485.00, cost: 400 },
+  { date: '2026-06-22', qty: 0.01534558, price: 64514.00, cost: 1000 },
+  { date: '2026-06-24', qty: 0.01628266, price: 60801.00, cost: 1000 },
+  { date: '2026-06-25', qty: 0.01663230, price: 59523.00, cost: 1000 },
 ];
 
 let P = { btc: null, mstr: null, strc: null };
@@ -732,7 +739,7 @@ function updateSupplyShock(){
 // ===== SOVEREIGN TREASURY =====
 function renderTreasury(){
   const entities=[
-    {name:'Strategy Inc.',type:'Corporate',btc:818334},
+    {name:'Strategy Inc.',type:'Corporate',btc:847666},
     {name:'US Strategic Reserve',type:'Sovereign',btc:207189},
     {name:'Marathon Digital',type:'Corporate',btc:44893},
     {name:'Hut 8 Mining',type:'Corporate',btc:10096},
@@ -908,8 +915,8 @@ function renderTax(){
   const lots = BTC_LOTS.map(l => ({
     date: l.date, asset: 'BTC', qty: l.qty, cost: l.cost, price: P.btc, curQty: l.qty
   }));
-  lots.push({ date: '2025-11-20', asset: 'STRC', qty: 67.5808, cost: STRC_COST_BASIS, price: P.strc || 100, curQty: 67.5808 });
-  lots.push({ date: '2025-12-02', asset: 'MSTR', qty: 3.271, cost: MSTR_COST_BASIS, price: P.mstr, curQty: 3.271 });
+  lots.push({ date: '2025-11-20', asset: 'STRC', qty: H.strc, cost: STRC_COST_BASIS, price: P.strc || 100, curQty: H.strc });
+  lots.push({ date: '2025-12-02', asset: 'MSTR', qty: H.mstr, cost: MSTR_COST_BASIS, price: P.mstr, curQty: H.mstr });
 
   let totalCost=0,totalVal=0,html='';
   lots.forEach(l=>{

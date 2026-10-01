@@ -160,10 +160,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         <div class="highlight-box">
           <strong>Key Insight:</strong> Strategy Inc. has invented a new financial primitive — using equity and preferred stock issuance to accumulate Bitcoin, creating a self-reinforcing flywheel where capital markets access becomes a BTC acquisition engine.
         </div>
-        <p style="margin-top:12px">As of May 2026, Strategy holds ~818,334 BTC (~$66B+). Their capital structure offers three distinct instruments:</p>
+        <p style="margin-top:12px">As of September 28, 2026, Strategy holds 847,666 BTC. Their capital structure offers three distinct instruments:</p>
         <ul>
           <li><strong>MSTR (Common):</strong> Levered BTC upside with NAV premium/discount dynamics. Trades as a high-beta BTC proxy. Currently at a significant discount to NAV — a potential accumulation signal.</li>
-          <li><strong>STRC (Perpetual Preferred):</strong> $100 par, 11.5% variable dividend, paid monthly. Designed to trade near par with income. Provides high yield income while maintaining BTC-correlated exposure through the issuer.</li>
+          <li><strong>STRC (Perpetual Preferred):</strong> $100 par, 12% variable dividend, paid semi-monthly. Designed to trade near par with income. Provides high yield income while maintaining BTC-correlated exposure through the issuer.</li>
           <li><strong>Convertible bonds:</strong> Not held by MD Capital currently, but worth monitoring for future opportunistic entry.</li>
         </ul>
       </div>
@@ -172,7 +172,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         <h3>3. Our Edge</h3>
         <ul>
           <li><strong>Full Capital Structure Play:</strong> Most BTC investors hold spot only. We diversify across spot BTC (direct exposure), STRC (income + stability), and MSTR (convexity). Each instrument serves a different portfolio function.</li>
-          <li><strong>Income Generation:</strong> 35.28 shares of STRC at 11.5% = ~$406/year in dividends. This income stream partially offsets BTC volatility and accelerates Protected Capital repayment.</li>
+          <li><strong>Income Generation:</strong> 102.53 shares of STRC at 12% = ~$1,230/year in dividends. This income stream partially offsets BTC volatility and accelerates Protected Capital repayment.</li>
           <li><strong>NAV Premium Arbitrage:</strong> When MSTR trades at a deep discount to NAV (as now), it offers BTC exposure at a discount. When at premium, we rotate to spot. This systematic approach adds alpha vs buy-and-hold.</li>
           <li><strong>Systematic Signal Framework:</strong> Rather than emotional trading, our macro + technical signal engine defines three regimes (Offensive / Neutral / Defensive) with pre-defined allocation adjustments.</li>
         </ul>
@@ -190,11 +190,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       <div class="thesis-section">
         <h3>5. Risk Factors</h3>
         <ul>
-          <li><strong>BTC Drawdown Risk:</strong> A 50%+ BTC correction would significantly impair NAV. Stress test: at $35k BTC, portfolio NAV drops to ~$5.4k. STRC provides partial cushion via continued dividends.</li>
+          <li><strong>BTC Drawdown Risk:</strong> A 50%+ BTC correction would significantly impair NAV. The stress test on this page shows NAV after a 50% BTC drop at today's prices. STRC provides partial cushion via continued dividends.</li>
           <li><strong>Strategy Concentration Risk:</strong> MSTR and STRC are both Strategy Inc. instruments. If Strategy faces a credit event, both positions are impaired simultaneously. Mitigation: STRC has seniority over common equity.</li>
           <li><strong>Regulatory Risk:</strong> Adverse crypto regulation could impact BTC price and Strategy's business model. Diversification across spot and equity mitigates somewhat.</li>
-          <li><strong>Liquidity Risk:</strong> With ~$14.7k total NAV (including $4k cash), position sizes are small but proportionally concentrated. Any single position exit is manageable at current sizes.</li>
-          <li><strong>Protected Capital Obligation:</strong> LP's $20k (two deposits) + 5% annual return must be prioritized. Current NAV is below the Protected Capital threshold — this needs monitoring and a clear repayment plan.</li>
+          <li><strong>Liquidity Risk:</strong> With ~$26.7k total NAV (including about $525 cash) as of September 25, 2026, position sizes are small but proportionally concentrated. Any single position exit is manageable at current sizes.</li>
+          <li><strong>Protected Capital Obligation:</strong> LP's $20k (two deposits) + 5% annual return must be prioritized. NAV sits above the Protected Capital threshold as of September 25, 2026, and it still needs monitoring.</li>
         </ul>
       </div>
 
@@ -202,7 +202,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         <h3>6. Growth Path</h3>
         <p>MD Capital's next milestones:</p>
         <ul>
-          <li>Repay Protected Capital ($20k + accrued interest) via combination of NAV appreciation, STRC dividend income, and disciplined deployment of $4k cash reserve</li>
+          <li>Repay Protected Capital ($20k + accrued interest) via combination of NAV appreciation, STRC dividend income, and disciplined deployment of new contributions</li>
           <li>Scale AUM through additional member contributions or LP admission</li>
           <li>Expand to covered call / cash-secured put strategies on MSTR/IBIT for additional income</li>
           <li>Build track record for potential LP fundraising (2% management fee + 20% carry above 8% hurdle)</li>
@@ -303,7 +303,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 </div>
 
 <script>
-const STRATEGY_BTC = 818334;
+const STRATEGY_BTC = 847666;
 const MSTR_SHARES_DILUTED = 345000000;
 
 function showSection(id, btn) {
@@ -526,10 +526,10 @@ function computeSignals() {
 
   // Compliance
   if (data.btc) {
-    const btcVal = 0.10945583 * data.btc;
-    const mstrVal = 1.271 * data.mstr;
-    const strcVal = 67.5808 * data.strc;
-    const cashVal = 4638;
+    const btcVal = 0.18142753 * data.btc;
+    const mstrVal = 5.271 * data.mstr;
+    const strcVal = 102.5318 * data.strc;
+    const cashVal = 525;
     const totalNav = btcVal + mstrVal + strcVal + cashVal;
 
     // STRC concentration
@@ -549,12 +549,12 @@ function computeSignals() {
     // Stress test
     const stressBtc = data.btc * 0.5;
     const stressMstr = data.mstr * 0.6; // MSTR drops more than BTC typically
-    const stressNav = (0.10945583 * stressBtc) + (3.271 * stressMstr) + (67.5808 * 100) + 1966; // STRC stays near par + cash
+    const stressNav = (0.18142753 * stressBtc) + (5.271 * stressMstr) + (102.5318 * 100) + 525; // STRC stays near par + cash
     document.getElementById('stressTest').innerHTML = `
       <strong>Scenario: BTC drops 50% to $${(stressBtc).toLocaleString()}</strong><br>
       Estimated portfolio NAV: <span style="color:var(--red);font-weight:700">$${stressNav.toLocaleString(undefined,{maximumFractionDigits:0})}</span><br>
-      BTC position: $${(0.10945583*stressBtc).toLocaleString(undefined,{maximumFractionDigits:0})} · MSTR: $${(3.271*stressMstr).toLocaleString(undefined,{maximumFractionDigits:0})} · STRC: $${(67.5808*100).toLocaleString()} (par stable) · Cash: $1,966<br>
-      <span style="color:var(--muted)">STRC dividends continue at ~$45.31/mo regardless of BTC price. Protected Capital shortfall would be $${(20000 - stressNav).toLocaleString(undefined,{maximumFractionDigits:0})} if immediately liquidated.</span>
+      BTC position: $${(0.18142753*stressBtc).toLocaleString(undefined,{maximumFractionDigits:0})} · MSTR: $${(5.271*stressMstr).toLocaleString(undefined,{maximumFractionDigits:0})} · STRC: $${(102.5318*100).toLocaleString()} (par stable) · Cash: $525<br>
+      <span style="color:var(--muted)">STRC dividends continue at ~$102.53/mo regardless of BTC price. Protected Capital shortfall would be $${(20000 - stressNav).toLocaleString(undefined,{maximumFractionDigits:0})} if immediately liquidated.</span>
     `;
   }
 }
