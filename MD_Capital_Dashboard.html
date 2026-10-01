@@ -281,12 +281,12 @@ a{color:var(--accent);text-decoration:none}
   <div class="crd" style="margin-bottom:0">
     <div class="section-title">STRC Dividend Income</div>
     <div class="info-g">
-      <div><div class="il">Shares Held</div><div class="iv">67.58</div></div>
+      <div><div class="il">Shares Held</div><div class="iv">102.53</div></div>
       <div><div class="il">Annual Income</div><div class="iv" id="annualDiv" style="color:var(--green)">--</div></div>
       <div><div class="il">Monthly Income</div><div class="iv" id="monthlyDiv" style="color:var(--green)">--</div></div>
       <div><div class="il">Next Record Date</div><div class="iv" style="font-size:.95rem">Oct 15, 2026</div></div>
     </div>
-    <span id="yieldOnCost" style="display:none">11.83%</span>
+    <span id="yieldOnCost" style="display:none">12.82%</span>
   </div>
 </div>
 
@@ -436,7 +436,7 @@ a{color:var(--accent);text-decoration:none}
       <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(42,42,50,0.5)"><span style="color:var(--muted)">Strategy BTC</span><span id="stratBtc" style="font-weight:600">818,334 BTC</span></div>
       <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(42,42,50,0.5)"><span style="color:var(--muted)">BTC NAV</span><span id="stratNav" style="font-weight:600">--</span></div>
       <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(42,42,50,0.5)"><span style="color:var(--muted)">MSTR Mkt Cap</span><span id="mstrMcap" style="font-weight:600">--</span></div>
-      <div style="display:flex;justify-content:space-between;padding:7px 0"><span style="color:var(--muted)">Diluted Shares</span><span style="font-weight:600">~337.8M</span></div>
+      <div style="display:flex;justify-content:space-between;padding:7px 0"><span style="color:var(--muted)">Diluted Shares</span><span style="font-weight:600">~429.9M</span></div>
     </div>
   </div>
 </div>
@@ -733,7 +733,7 @@ function render() {
   // MSTR Premium
   if (prices.btc && prices.mstr) {
     const btcNav = STRATEGY_BTC_HOLDINGS * prices.btc;
-    const mstrMcap = prices.mstr * 337800000;
+    const mstrMcap = prices.mstr * 429850000; // 847,666 BTC / 0.001972 BTC per diluted share, bitcointreasuries.net 2026-09-28
     const premium = ((mstrMcap / btcNav) - 1) * 100;
     el('mstrPremium').textContent = (premium >= 0 ? '+' : '') + premium.toFixed(1) + '%';
     el('mstrPremium').style.color = premium < 0 ? 'var(--green)' : premium > 50 ? 'var(--red)' : 'var(--accent)';
