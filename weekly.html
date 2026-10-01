@@ -59,10 +59,22 @@
   footer.doc { margin-top:40px; padding-top:16px; border-top:1px solid var(--rule); font-size:11px; color:var(--muted); line-height:1.55; }
   @media (max-width:600px) { .wrap { padding:32px 16px 60px; } .kpi-row, .signals, .m-grid { grid-template-columns:1fr; } h1 { font-size:26px; } table { font-size:13px; } th, td { padding:8px 6px; } }
   @media print { body { background:#fff; } .wrap { padding:0; max-width:100%; } }
+  .site-nav { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 28px; padding-bottom:14px; border-bottom:1px solid var(--rule); }
+  .site-nav a { font-size:14px; padding:5px 12px; border:1px solid var(--rule); border-radius:6px; color:var(--muted); text-decoration:none; background:var(--card); }
+  .site-nav a:hover { color:var(--accent); border-color:var(--accent); }
+  .site-nav a.on { color:var(--accent); border-color:var(--accent); background:var(--accent-bg); }
+  @media print { .site-nav { display:none; } }
 </style>
 </head>
 <body>
 <div class="wrap">
+<nav class="site-nav">
+  <a href="/MD_Capital_Dashboard.html">Portfolio</a>
+  <a href="/MD_Capital_Signal_System.html">Signals</a>
+  <a href="/MD_Capital_Analytics.html">Analytics</a>
+  <a href="/MD_Capital_Sentiment.html">Sentiment</a>
+  <a href="/weekly.html" class="on">Weekly letter</a>
+</nav>
 
 <header class="doc">
   <div class="eyebrow">MD Capital LLC, investor letter</div>
