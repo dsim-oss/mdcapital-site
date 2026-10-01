@@ -185,7 +185,7 @@ a{color:var(--accent);text-decoration:none}
     <div class="hero-nav" id="totalNav">--</div>
     <div class="hero-pl">
       <div class="hero-pl-val"><span id="navPLDollar">--</span> <span id="navPLPercent" style="font-size:.9rem">--</span></div>
-      <div class="hero-pl-lbl">vs $20k Contributed</div>
+      <div class="hero-pl-lbl">vs $26.4k Contributed</div>
     </div>
   </div>
   <div class="hero-row">
@@ -223,7 +223,7 @@ a{color:var(--accent);text-decoration:none}
   <div class="price-cell">
     <div class="price-lbl">Strategy Preferred (STRC)</div>
     <div class="price-val" id="strcPrice">--</div>
-    <div class="card-change" id="strcYield" style="color:var(--muted)">11.50% annual yield</div>
+    <div class="card-change" id="strcYield" style="color:var(--muted)">12.00% annual yield</div>
   </div>
 </div>
 
@@ -268,7 +268,7 @@ a{color:var(--accent);text-decoration:none}
   <div class="crd" style="margin-bottom:0">
     <div class="section-title">Capital Account</div>
     <div class="info-g">
-      <div><div class="il">Contributed</div><div class="iv">$20,000</div></div>
+      <div><div class="il">Contributed</div><div class="iv">$26,400</div></div>
       <div><div class="il">Current NAV</div><div class="iv" id="fundNav">--</div></div>
       <div><div class="il">Preferred Return Accrued</div><div class="iv" id="preferredReturn">--</div></div>
       <div><div class="il">vs Protected Capital</div><div class="iv" id="navShortfall">--</div></div>
@@ -284,7 +284,7 @@ a{color:var(--accent);text-decoration:none}
       <div><div class="il">Shares Held</div><div class="iv">67.58</div></div>
       <div><div class="il">Annual Income</div><div class="iv" id="annualDiv" style="color:var(--green)">--</div></div>
       <div><div class="il">Monthly Income</div><div class="iv" id="monthlyDiv" style="color:var(--green)">--</div></div>
-      <div><div class="il">Next Ex-Dividend</div><div class="iv" style="font-size:.95rem">May 28, 2026</div></div>
+      <div><div class="il">Next Record Date</div><div class="iv" style="font-size:.95rem">Oct 15, 2026</div></div>
     </div>
     <span id="yieldOnCost" style="display:none">11.83%</span>
   </div>
@@ -341,7 +341,7 @@ a{color:var(--accent);text-decoration:none}
       <div class="m-tag">Risk &amp; breakeven</div>
       <div class="m-name">Strategy Breakeven (BTC)</div>
       <div class="m-val" id="mBreakeven">--</div>
-      <div class="m-sub" id="mBreakevenSub">BTC price for total NAV = $20k contributed</div>
+      <div class="m-sub" id="mBreakevenSub">BTC price for total NAV = $26.4k contributed</div>
     </div>
 
     <!-- DISCIPLINE -->
@@ -526,7 +526,7 @@ a{color:var(--accent);text-decoration:none}
   <div class="section-title">Investment Thesis</div>
   <div class="thesis">
     <strong>Core Thesis:</strong> Bitcoin is in a secular bull market driven by institutional adoption, sovereign accumulation, and monetary debasement. MD Capital captures this via a barbell strategy: direct BTC spot exposure (Swan) for pure upside + BTC-treasury equities (MSTR/STRC) for leveraged convexity and yield.<br><br>
-    <strong>Edge:</strong> STRC provides ~11.5% yield anchored at $100 par, funded by Strategy's BTC-collateralized issuance engine. This generates income while maintaining BTC-correlated upside through the MSTR common equity position.<br><br>
+    <strong>Edge:</strong> STRC provides ~12% yield anchored at $100 par, funded by Strategy's BTC-collateralized issuance engine. This generates income while maintaining BTC-correlated upside through the MSTR common equity position.<br><br>
     <strong>Risk:</strong> Max 2x leverage · No >30% single non-BTC position · Daily VaR ≤ 5% · Stress-tested for 50%+ BTC drawdowns · Protected Capital priority waterfall ensures Mike's $20k + 5% is repaid first.
   </div>
 </div>
@@ -541,29 +541,29 @@ a{color:var(--accent);text-decoration:none}
 <script>
 // ===== CONFIGURATION =====
 const HOLDINGS = {
-  btc: { qty: 0.10945583, label: 'Bitcoin (Spot)', ticker: 'BTC', account: 'Swan', costBasis: 11024, avgCost: 100720.00 },
-  mstr: { qty: 3.271, label: 'Strategy Inc', ticker: 'MSTR', account: 'IBKR', costBasis: 428.00, avgCost: 130.85 },
-  strc: { qty: 67.5808, label: 'Strategy Pref (STRC)', ticker: 'STRC', account: 'IBKR', costBasis: 6698.32, avgCost: 99.12 },
-  cash_bank: { qty: 1875, label: 'Cash (Bank)', ticker: 'USD', account: 'Bank' },
-  cash_ibkr: { qty: 91, label: 'Cash (IBKR)', ticker: 'USD', account: 'IBKR' }
+  btc: { qty: 0.18142753, label: 'Bitcoin (Spot)', ticker: 'BTC', account: 'Swan', costBasis: 15973.60, avgCost: 88044.00 },
+  mstr: { qty: 5.271, label: 'Strategy Inc', ticker: 'MSTR', account: 'IBKR', costBasis: 785.64, avgCost: 149.05 },
+  strc: { qty: 102.5318, label: 'Strategy Pref (STRC)', ticker: 'STRC', account: 'IBKR', costBasis: 9601.00, avgCost: 93.64 },
+  cash_bank: { qty: 472, label: 'Cash (Bank)', ticker: 'USD', account: 'Bank' },
+  cash_ibkr: { qty: 53, label: 'Cash (IBKR)', ticker: 'USD', account: 'IBKR' }
 };
-const STRATEGY_BTC_HOLDINGS = 818334;
-const TOTAL_CONTRIBUTED = 20000;
+const STRATEGY_BTC_HOLDINGS = 847666;   // strategy.com/purchases, as of 2026-09-28
+const TOTAL_CONTRIBUTED = 26400;
 const PROTECTED_CAPITAL = 20000;
 const PREFERRED_RATE = 0.05;
 const FUND_START = new Date('2025-08-25');
-const STRC_DIV_RATE = 0.115;
+const STRC_DIV_RATE = 0.12;
 const STRC_PAR = 100;
 const SWAN_FEE_MONTHLY = 37.12;
-const TOTAL_COST_BASIS = 11024 + 6698.32 + 428.00;
+const TOTAL_COST_BASIS = 15973.60 + 9601.00 + 785.64;
 
 // ===== TIME-WEIGHTED OC METRIC INPUTS (locked from IBKR Activity Statement + Swan transfer log) =====
-const ALT_BTC_ACCUMULATED = 0.20320;       // BTC count we'd have today if STRC/MSTR money had bought BTC at fill dates
-const SWAN_DEPLOYED = 11024;               // total $ Swan-deployed (incl ~$74 Swan fees)
-const IBKR_STRC_TRADE_DEPLOYED = 6566.47;  // $ deployed in STRC trades only (excludes DRIPs)
-const IBKR_MSTR_DEPLOYED = 428.00;         // $ deployed in MSTR
-const STRC_AVG_TRADE_COST = 99.40;         // avg cost per STRC sh on trades (excl DRIPs)
-const CUMULATIVE_DIVIDENDS = 131.85;       // total STRC distributions received YTD (all DRIP-reinvested)
+const ALT_BTC_ACCUMULATED = 0.32746;       // BTC count we'd have today if STRC/MSTR money had bought BTC at fill dates
+const SWAN_DEPLOYED = 15973.60;               // total $ Swan-deployed (incl ~$74 Swan fees)
+const IBKR_STRC_TRADE_DEPLOYED = 9601.00;  // $ deployed in STRC trades only (excludes DRIPs)
+const IBKR_MSTR_DEPLOYED = 785.64;         // $ deployed in MSTR
+const STRC_AVG_TRADE_COST = 93.64;         // avg cost per STRC sh on trades (excl DRIPs)
+const CUMULATIVE_DIVIDENDS = 483.00;       // total STRC distributions received YTD (all DRIP-reinvested)
 
 // ===== STATE =====
 let prices = { btc: null, mstr: null, strc: null };
@@ -854,7 +854,7 @@ function renderMetrics(totalNav, btcVal, mstrVal, strcVal, cashVal, annualDiv) {
   const yoc = (annualDiv / IBKR_STRC_TRADE_DEPLOYED) * 100;
   el('mYoc').textContent = yoc.toFixed(2) + '%';
   el('mYoc').className = 'm-val pos';
-  el('mYocSub').innerHTML = `$${annualDiv.toFixed(0)}/yr cash on $${IBKR_STRC_TRADE_DEPLOYED.toLocaleString('en-US',{maximumFractionDigits:0})} cost · ${(yoc - STRC_DIV_RATE*100).toFixed(2)} pp above 11.5% headline`;
+  el('mYocSub').innerHTML = `$${annualDiv.toFixed(0)}/yr cash on $${IBKR_STRC_TRADE_DEPLOYED.toLocaleString('en-US',{maximumFractionDigits:0})} cost · ${(yoc - STRC_DIV_RATE*100).toFixed(2)} pp above ${(STRC_DIV_RATE*100).toFixed(1)}% headline`;
 
   // 5. Portfolio Yield Throughput
   const portYield = (annualDiv / totalNav) * 100;
@@ -865,7 +865,7 @@ function renderMetrics(totalNav, btcVal, mstrVal, strcVal, cashVal, annualDiv) {
   // 6. Cumulative Cash Income
   el('mCumIncome').textContent = '$' + CUMULATIVE_DIVIDENDS.toFixed(2);
   el('mCumIncome').className = 'm-val pos';
-  el('mCumIncomeSub').innerHTML = `5 STRC distributions reinvested via DRIP · next ~$${(annualDiv/12).toFixed(2)} on May 28`;
+  el('mCumIncomeSub').innerHTML = `All STRC distributions reinvested via DRIP · next ~$${(annualDiv/24).toFixed(2)} on Oct 15`;
 
   // 7. Strategy Breakeven (BTC price)
   // Solve: BTC_qty × X + MSTR_qty × MSTR(X) + STRC$ + cash = 20000
@@ -875,7 +875,7 @@ function renderMetrics(totalNav, btcVal, mstrVal, strcVal, cashVal, annualDiv) {
   const breakevenBtc = remaining / (HOLDINGS.btc.qty + mstrPerBtc);
   const breakevenDelta = ((breakevenBtc - spotBtc) / spotBtc * 100);
   el('mBreakeven').textContent = '$' + breakevenBtc.toLocaleString('en-US',{maximumFractionDigits:0});
-  el('mBreakevenSub').innerHTML = `BTC needs <span style="color:var(--accent)">${breakevenDelta>=0?'+':''}${breakevenDelta.toFixed(1)}%</span> from spot for total NAV = $20k contributed`;
+  el('mBreakevenSub').innerHTML = `BTC needs <span style="color:var(--accent)">${breakevenDelta>=0?'+':''}${breakevenDelta.toFixed(1)}%</span> from spot for total NAV = $${TOTAL_CONTRIBUTED.toLocaleString('en-US')} contributed`;
 
   // 8. Avg STRC Discount-to-Par
   const strcDisc = (STRC_AVG_TRADE_COST / STRC_PAR - 1) * 100;
@@ -907,7 +907,7 @@ function renderMetrics(totalNav, btcVal, mstrVal, strcVal, cashVal, annualDiv) {
   else if (utilization > 50) { tolCls = 'warn'; tolNote = 'WATCH — trigger Option E (yield-to-BTC rotation)'; }
   el('mTolerance').textContent = utilization.toFixed(1) + '%';
   el('mTolerance').className = 'm-val ' + tolCls;
-  el('mToleranceSub').innerHTML = `Annualized drag ${annualizedDrag.toFixed(2)}% &divide; 11.5% STRC yield · ${tolNote}`;
+  el('mToleranceSub').innerHTML = `Annualized drag ${annualizedDrag.toFixed(2)}% &divide; ${(STRC_DIV_RATE*100).toFixed(1)}% STRC yield · ${tolNote}`;
 }
 
 // ===== FORECASTING =====
